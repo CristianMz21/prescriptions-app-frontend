@@ -42,11 +42,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Configure pnpm onlyBuiltDependencies
-        run: pnpm config set onlyBuiltDependencies "msw esbuild sharp unrs-resolver"
-
       - name: Install dependencies
-        run: pnpm install --ignore-scripts=false
+        run: pnpm install --config.onlyBuiltDependencies="msw esbuild sharp unrs-resolver"
 
       - name: Get changed source files
         id: changed
@@ -125,11 +122,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Configure pnpm onlyBuiltDependencies
-        run: pnpm config set onlyBuiltDependencies "msw esbuild sharp unrs-resolver"
-
       - name: Install dependencies
-        run: pnpm install --ignore-scripts=false
+        run: pnpm install --config.onlyBuiltDependencies="msw esbuild sharp unrs-resolver"
 
       - name: Fetch backend OpenAPI schema
         run: |
@@ -214,11 +208,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Configure pnpm onlyBuiltDependencies
-        run: pnpm config set onlyBuiltDependencies "msw esbuild sharp unrs-resolver"
-
       - name: Install dependencies
-        run: pnpm install --ignore-scripts=false
+        run: pnpm install --config.onlyBuiltDependencies="msw esbuild sharp unrs-resolver"
 
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps chromium
