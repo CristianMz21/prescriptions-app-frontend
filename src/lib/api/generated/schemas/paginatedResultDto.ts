@@ -5,8 +5,8 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { PaginatedResultDtoDataItem } from './paginatedResultDtoDataItem';
-import type { PaginationMetaDto } from './paginationMetaDto';
+import type { PaginatedResultDtoDataItem } from "./paginatedResultDtoDataItem";
+import type { PaginationMetaDto } from "./paginationMetaDto";
 
 export interface PaginatedResultDto {
   data: PaginatedResultDtoDataItem[];

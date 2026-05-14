@@ -5,10 +5,10 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { DoctorProfileSummary } from './doctorProfileSummary';
-import type { PatientProfileSummary } from './patientProfileSummary';
-import type { Role } from './role';
-import type { ThemePreference } from './themePreference';
+import type { DoctorProfileSummary } from "./doctorProfileSummary";
+import type { PatientProfileSummary } from "./patientProfileSummary";
+import type { Role } from "./role";
+import type { ThemePreference } from "./themePreference";
 
 export interface UserProfileResponseDto {
   /** Unique user identifier (UUID v4) */

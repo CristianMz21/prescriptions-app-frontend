@@ -12,18 +12,18 @@ export interface PrescriptionItemResponseDto {
   /** Name of the medication */
   name: string;
   /**
-     * Dosage of the medication
-     * @nullable
-     */
+   * Dosage of the medication
+   * @nullable
+   */
   dosage?: string | null;
   /**
-     * Quantity to dispense (number of units)
-     * @nullable
-     */
+   * Quantity to dispense (number of units)
+   * @nullable
+   */
   quantity?: number | null;
   /**
-     * Instructions for the patient
-     * @nullable
-     */
+   * Instructions for the patient
+   * @nullable
+   */
   instructions?: string | null;
 }

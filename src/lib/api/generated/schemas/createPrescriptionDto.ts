@@ -5,15 +5,15 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { PrescriptionItemDto } from './prescriptionItemDto';
+import type { PrescriptionItemDto } from "./prescriptionItemDto";
 
 export interface CreatePrescriptionDto {
   /** Patient identifier. Accepts either the Patient profile id (Patient.id) or the related User.id — the server resolves either form. See GET /users/patients which exposes both. */
   patientId: string;
   /**
-     * List of medications in the prescription
-     * @minItems 1
-     */
+   * List of medications in the prescription
+   * @minItems 1
+   */
   items: PrescriptionItemDto[];
   /** Additional notes from the doctor */
   notes?: string;
