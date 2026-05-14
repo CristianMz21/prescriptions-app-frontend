@@ -4,28 +4,27 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import type { PrescriptionItemDto } from '@/lib/api/generated/schemas'
+import type {
+  PrescriptionItemDto,
+  UserEntity,
+} from '@/lib/api/generated/schemas'
 import {
   usePrescriptionsControllerCreate,
+  usersControllerFindOne,
   useUsersControllerFindAllPatients,
 } from '@/lib/api/generated/prescriptionManagementAPI'
 import { ApiError } from '@/lib/api/client'
 
-interface PatientSelect {
-  id: string
-  email: string
-  birthDate?: string
-}
-
 export default function NewPrescriptionPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const [patientId, setPatientId] = useState<string>('')
+  const [selectedUserId, setSelectedUserId] = useState<string>('')
   const [notes, setNotes] = useState('')
   const [items, setItems] = useState<PrescriptionItemDto[]>([
     { name: '', dosage: '', quantity: undefined, instructions: '' },
   ])
   const [error, setError] = useState<string | null>(null)
+  const [isResolvingPatient, setIsResolvingPatient] = useState(false)
 
   const { data: patientsData } = useUsersControllerFindAllPatients()
 
@@ -57,11 +56,11 @@ export default function NewPrescriptionPage() {
     setItems(newItems)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
-    if (!patientId) {
+    if (!selectedUserId) {
       setError('Please select a patient')
       return
     }
@@ -72,17 +71,35 @@ export default function NewPrescriptionPage() {
       return
     }
 
+    // The patient list endpoint returns User records but
+    // CreatePrescriptionDto.patientId requires the Patient profile id, so we
+    // resolve it via the single-user endpoint before submitting.
+    setIsResolvingPatient(true)
+    let patientProfileId: string
+    try {
+      const fullUser = await usersControllerFindOne(selectedUserId)
+      if (!fullUser.patient?.id) {
+        setError('Selected user has no patient profile')
+        return
+      }
+      patientProfileId = fullUser.patient.id
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to resolve patient')
+      return
+    } finally {
+      setIsResolvingPatient(false)
+    }
+
     createMutation.mutate({
       data: {
-        patientId,
+        patientId: patientProfileId,
         items: validItems,
         notes: notes || undefined,
       },
     })
   }
 
-  const patients: PatientSelect[] =
-    (patientsData as unknown as { data?: PatientSelect[] })?.data ?? []
+  const patients: UserEntity[] = patientsData?.data ?? []
 
   return (
     <div className="p-margin-desktop">
@@ -109,8 +126,8 @@ export default function NewPrescriptionPage() {
             <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">PATIENT</label>
             <div className="relative">
               <select
-                value={patientId}
-                onChange={(e) => setPatientId(e.target.value)}
+                value={selectedUserId}
+                onChange={(e) => setSelectedUserId(e.target.value)}
                 className="w-full bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] rounded px-3 py-2.5 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all appearance-none"
                 required
               >
@@ -118,7 +135,6 @@ export default function NewPrescriptionPage() {
                 {patients.map((patient) => (
                   <option key={patient.id} value={patient.id}>
                     {patient.email}
-                    {patient.birthDate ? ` (${patient.birthDate})` : ''}
                   </option>
                 ))}
               </select>
@@ -238,10 +254,10 @@ export default function NewPrescriptionPage() {
             </Link>
             <button
               type="submit"
-              disabled={createMutation.isPending}
+              disabled={createMutation.isPending || isResolvingPatient}
               className="bg-primary text-black px-8 py-2.5 rounded text-sm font-bold hover:opacity-90 transition-opacity shadow-[0_2px_10px_rgba(255,255,255,0.1)] disabled:opacity-50"
             >
-              {createMutation.isPending ? (
+              {createMutation.isPending || isResolvingPatient ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined animate-spin">progress_activity</span>
                   Creating...
