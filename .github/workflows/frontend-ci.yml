@@ -42,8 +42,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Configure pnpm build permissions
-        run: pnpm config set onlyBuiltDependencies "msw esbuild sharp unrs-resolver" --location project
+      - name: Approve msw build script
+        run: pnpm approve-builds msw
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -125,8 +125,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Configure pnpm build permissions
-        run: pnpm config set onlyBuiltDependencies "msw esbuild sharp unrs-resolver" --location project
+      - name: Approve msw build script
+        run: pnpm approve-builds msw
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -214,8 +214,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Configure pnpm build permissions
-        run: pnpm config set onlyBuiltDependencies "msw esbuild sharp unrs-resolver" --location project
+      - name: Approve msw build script
+        run: pnpm approve-builds msw
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
