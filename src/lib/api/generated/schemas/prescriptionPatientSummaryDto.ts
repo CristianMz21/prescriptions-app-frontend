@@ -10,8 +10,11 @@ import type { PrescriptionUserSummaryDto } from './prescriptionUserSummaryDto';
 export interface PrescriptionPatientSummaryDto {
   /** Patient unique identifier */
   id: string;
-  /** Patient date of birth (ISO-8601 date) */
-  birthDate?: string;
+  /**
+     * Patient date of birth (ISO-8601 timestamp)
+     * @nullable
+     */
+  birthDate?: string | null;
   /** Patient account */
   user: PrescriptionUserSummaryDto;
 }

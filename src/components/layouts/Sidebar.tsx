@@ -37,7 +37,7 @@ export function Sidebar({ role }: SidebarProps) {
   const navItems = navigationByRole[role]
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 border-r border-outline-variant bg-surface-container-lowest/90 backdrop-blur-md z-50 flex flex-col py-margin-desktop">
+    <aside className="fixed left-0 top-0 h-screen w-64 card-glass z-50 flex flex-col py-margin-desktop border-r border-outline-variant/30">
       <div className="px-6 mb-8">
         <h1 className="text-2xl font-bold text-primary uppercase tracking-widest">RX-OS</h1>
         <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider">Precision Control</p>

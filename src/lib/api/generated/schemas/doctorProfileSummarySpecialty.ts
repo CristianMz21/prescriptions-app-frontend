@@ -6,4 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type DoctorProfileSummarySpecialty = { [key: string]: unknown };
+/**
+ * @nullable
+ */
+export type DoctorProfileSummarySpecialty = { [key: string]: unknown } | null;

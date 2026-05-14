@@ -1,33 +1,30 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import type { PrescriptionResponseDto, ConsumePrescriptionDto } from '@/lib/api/generated/schemas'
-import { api, API_BASE_URL } from '@/lib/api/client'
-import { ApiError } from '@/lib/api/custom-instance'
+import { API_BASE_URL } from '@/lib/api/client'
+import {
+  usePrescriptionsControllerFindOne,
+  usePrescriptionsControllerMarkAsConsumed,
+} from '@/lib/api/generated/prescriptionManagementAPI'
 
 export default function PatientPrescriptionDetailPage() {
   const params = useParams()
   const queryClient = useQueryClient()
   const prescriptionId = params.id as string
 
-  const { data: prescription, isLoading, error } = useQuery<PrescriptionResponseDto, ApiError>({
-    queryKey: ['prescription', prescriptionId],
-    queryFn: async () => {
-      const response = await api.prescriptionsControllerFindOne(prescriptionId)
-      return response.data
-    },
-  })
+  const {
+    data: prescription,
+    isLoading,
+    error,
+  } = usePrescriptionsControllerFindOne(prescriptionId)
 
-  const consumeMutation = useMutation({
-    mutationFn: async (data: ConsumePrescriptionDto) => {
-      const response = await api.prescriptionsControllerMarkAsConsumed(prescriptionId, data)
-      return response.data
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['prescription', prescriptionId] })
-      void queryClient.invalidateQueries({ queryKey: ['patient-prescriptions'] })
+  const consumeMutation = usePrescriptionsControllerMarkAsConsumed({
+    mutation: {
+      onSuccess: () => {
+        void queryClient.invalidateQueries()
+      },
     },
   })
 
@@ -165,7 +162,9 @@ export default function PatientPrescriptionDetailPage() {
             </button>
             {isPending && (
               <button
-                onClick={() => consumeMutation.mutate({})}
+                onClick={() =>
+                  consumeMutation.mutate({ id: prescriptionId, data: {} })
+                }
                 disabled={consumeMutation.isPending}
                 className="px-6 py-2 rounded bg-primary text-on-primary text-sm font-medium hover:bg-primary-fixed-dim transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50"
               >

@@ -1,19 +1,11 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
-import type { PrescriptionResponseDto, PrescriptionsControllerFindAll200 } from '@/lib/api/generated/schemas'
-import { api } from '@/lib/api/client'
-import { ApiError } from '@/lib/api/custom-instance'
+import type { PrescriptionResponseDto } from '@/lib/api/generated/schemas'
+import { usePrescriptionsControllerFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
 
 export default function DoctorPrescriptionsPage() {
-  const { data, isLoading, error } = useQuery<PrescriptionsControllerFindAll200, ApiError>({
-    queryKey: ['doctor-prescriptions'],
-    queryFn: async () => {
-      const response = await api.prescriptionsControllerFindAll()
-      return response.data
-    },
-  })
+  const { data, isLoading, error } = usePrescriptionsControllerFindAll()
 
   if (isLoading) {
     return (
@@ -56,7 +48,7 @@ export default function DoctorPrescriptionsPage() {
           <p>No prescriptions found</p>
         </div>
       ) : (
-        <div className="bg-[#09090B]/80 backdrop-blur-xl border border-[#27272A] rounded-lg overflow-hidden shadow-lg">
+        <div className="card-glass overflow-hidden shadow-lg">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>

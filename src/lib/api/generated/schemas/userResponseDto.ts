@@ -23,6 +23,8 @@ export interface UserResponseDto {
   updatedAt: string;
   /** UI theme preference */
   themePreference: ThemePreference;
-  doctor?: DoctorProfileSummary;
-  patient?: PatientProfileSummary;
+  /** @nullable */
+  doctor?: DoctorProfileSummary | null;
+  /** @nullable */
+  patient?: PatientProfileSummary | null;
 }

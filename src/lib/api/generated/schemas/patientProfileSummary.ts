@@ -9,5 +9,6 @@ import type { PatientProfileSummaryBirthDate } from './patientProfileSummaryBirt
 
 export interface PatientProfileSummary {
   id: string;
+  /** @nullable */
   birthDate?: PatientProfileSummaryBirthDate;
 }

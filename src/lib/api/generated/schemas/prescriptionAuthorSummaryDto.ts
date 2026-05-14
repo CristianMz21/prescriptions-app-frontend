@@ -10,14 +10,26 @@ import type { PrescriptionUserSummaryDto } from './prescriptionUserSummaryDto';
 export interface PrescriptionAuthorSummaryDto {
   /** Doctor unique identifier */
   id: string;
-  /** Medical specialty */
-  specialty?: string;
-  /** Medical license / registration number */
-  medicalId?: string;
-  /** Text rendering of the doctor signature */
-  signatureText?: string;
-  /** URL to the doctor signature image */
-  signatureImageUrl?: string;
+  /**
+     * Medical specialty
+     * @nullable
+     */
+  specialty?: string | null;
+  /**
+     * Medical license / registration number
+     * @nullable
+     */
+  medicalId?: string | null;
+  /**
+     * Text rendering of the doctor signature
+     * @nullable
+     */
+  signatureText?: string | null;
+  /**
+     * URL to the doctor signature image
+     * @nullable
+     */
+  signatureImageUrl?: string | null;
   /** Doctor account */
   user: PrescriptionUserSummaryDto;
 }

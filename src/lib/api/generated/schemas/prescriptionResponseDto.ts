@@ -19,14 +19,20 @@ export interface PrescriptionResponseDto {
   status: PrescriptionStatus;
   /** List of medications in the prescription */
   items: PrescriptionItemResponseDto[];
-  /** Additional notes from the doctor */
-  notes?: string;
+  /**
+     * Additional notes from the doctor
+     * @nullable
+     */
+  notes?: string | null;
   /** ISO 8601 timestamp when the prescription was created */
   createdAt: string;
   /** ISO 8601 timestamp when the prescription was last updated */
   updatedAt: string;
-  /** ISO 8601 timestamp when the prescription was consumed */
-  consumedAt?: string;
+  /**
+     * ISO 8601 timestamp when the prescription was consumed
+     * @nullable
+     */
+  consumedAt?: string | null;
   /** Author (Doctor) unique identifier */
   authorId: string;
   /** Patient unique identifier */

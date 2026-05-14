@@ -2,11 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import type { CreatePrescriptionDto, PrescriptionItemDto } from '@/lib/api/generated/schemas'
-import { api } from '@/lib/api/client'
-import { ApiError } from '@/lib/api/custom-instance'
+import type { PrescriptionItemDto } from '@/lib/api/generated/schemas'
+import {
+  usePrescriptionsControllerCreate,
+  useUsersControllerFindAllPatients,
+} from '@/lib/api/generated/prescriptionManagementAPI'
+import { ApiError } from '@/lib/api/client'
 
 interface PatientSelect {
   id: string
@@ -24,25 +27,17 @@ export default function NewPrescriptionPage() {
   ])
   const [error, setError] = useState<string | null>(null)
 
-  const { data: patientsData } = useQuery({
-    queryKey: ['patients'],
-    queryFn: async () => {
-      const response = await api.usersControllerFindAllPatients()
-      return response.data
-    },
-  })
+  const { data: patientsData } = useUsersControllerFindAllPatients()
 
-  const createMutation = useMutation({
-    mutationFn: async (data: CreatePrescriptionDto) => {
-      const response = await api.prescriptionsControllerCreate(data)
-      return response.data
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['doctor-prescriptions'] })
-      router.push('/doctor/prescriptions')
-    },
-    onError: (err: ApiError) => {
-      setError(err.message || 'Failed to create prescription')
+  const createMutation = usePrescriptionsControllerCreate({
+    mutation: {
+      onSuccess: () => {
+        void queryClient.invalidateQueries()
+        router.push('/doctor/prescriptions')
+      },
+      onError: (err: ApiError) => {
+        setError(err.message || 'Failed to create prescription')
+      },
     },
   })
 
@@ -78,13 +73,16 @@ export default function NewPrescriptionPage() {
     }
 
     createMutation.mutate({
-      patientId,
-      items: validItems,
-      notes: notes || undefined,
+      data: {
+        patientId,
+        items: validItems,
+        notes: notes || undefined,
+      },
     })
   }
 
-  const patients: PatientSelect[] = patientsData?.data || []
+  const patients: PatientSelect[] =
+    (patientsData as unknown as { data?: PatientSelect[] })?.data ?? []
 
   return (
     <div className="p-margin-desktop">
@@ -101,7 +99,7 @@ export default function NewPrescriptionPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl space-y-8">
-        <section className="bg-[#09090B]/80 backdrop-blur-[12px] border border-outline-variant rounded-xl p-6 frosted-border shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+        <section className="card-glass p-6">
           <h3 className="text-xl font-semibold text-primary mb-6 flex items-center gap-2 border-b border-outline-variant/50 pb-2">
             <span className="material-symbols-outlined text-on-surface-variant">person_search</span>
             Patient Selection
@@ -113,7 +111,7 @@ export default function NewPrescriptionPage() {
               <select
                 value={patientId}
                 onChange={(e) => setPatientId(e.target.value)}
-                className="w-full bg-[#09090B] border border-[#27272A] rounded px-3 py-2.5 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all appearance-none"
+                className="w-full bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] rounded px-3 py-2.5 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all appearance-none"
                 required
               >
                 <option value="">Select a patient...</option>
@@ -129,7 +127,7 @@ export default function NewPrescriptionPage() {
           </div>
         </section>
 
-        <section className="bg-[#09090B]/80 backdrop-blur-[12px] border border-outline-variant rounded-xl p-6 frosted-border shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+        <section className="card-glass p-6">
           <div className="flex justify-between items-end border-b border-outline-variant/50 pb-2 mb-6">
             <h3 className="text-xl font-semibold text-primary flex items-center gap-2">
               <span className="material-symbols-outlined text-on-surface-variant">vaccines</span>
@@ -147,7 +145,7 @@ export default function NewPrescriptionPage() {
 
           <div className="space-y-4">
             {items.map((item, index) => (
-              <div key={index} className="bg-[#131315] border border-[#27272A] rounded-lg p-4 relative group">
+              <div key={index} className="bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] rounded-lg p-4 relative group">
                 <button
                   type="button"
                   onClick={() => handleRemoveItem(index)}
@@ -165,7 +163,7 @@ export default function NewPrescriptionPage() {
                       value={item.name}
                       onChange={(e) => handleItemChange(index, 'name', e.target.value)}
                       placeholder="e.g., Amoxicillin"
-                      className="w-full bg-[#09090B] border border-[#27272A] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                      className="w-full bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                       required
                     />
                   </div>
@@ -176,7 +174,7 @@ export default function NewPrescriptionPage() {
                       value={item.dosage || ''}
                       onChange={(e) => handleItemChange(index, 'dosage', e.target.value || undefined)}
                       placeholder="e.g., 500mg"
-                      className="w-full bg-[#09090B] border border-[#27272A] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                      className="w-full bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                     />
                   </div>
                   <div className="md:col-span-4 flex flex-col gap-1.5">
@@ -186,7 +184,7 @@ export default function NewPrescriptionPage() {
                       value={item.quantity || ''}
                       onChange={(e) => handleItemChange(index, 'quantity', e.target.value ? parseInt(e.target.value, 10) : undefined)}
                       placeholder="Qty"
-                      className="w-full bg-[#09090B] border border-[#27272A] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                      className="w-full bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                     />
                   </div>
                 </div>
@@ -197,7 +195,7 @@ export default function NewPrescriptionPage() {
                     value={item.instructions || ''}
                     onChange={(e) => handleItemChange(index, 'instructions', e.target.value || undefined)}
                     placeholder="e.g., Take one tablet by mouth twice daily"
-                    className="w-full bg-[#09090B] border border-[#27272A] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                    className="w-full bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                   />
                 </div>
               </div>
@@ -205,7 +203,7 @@ export default function NewPrescriptionPage() {
           </div>
         </section>
 
-        <section className="bg-[#09090B]/80 backdrop-blur-[12px] border border-outline-variant rounded-xl p-6 frosted-border shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+        <section className="card-glass p-6">
           <h3 className="text-xl font-semibold text-primary mb-6 flex items-center gap-2 border-b border-outline-variant/50 pb-2">
             <span className="material-symbols-outlined text-on-surface-variant">note_alt</span>
             Clinical Notes &amp; Authorization
@@ -219,7 +217,7 @@ export default function NewPrescriptionPage() {
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add diagnosis codes or internal context..."
                 rows={3}
-                className="w-full bg-[#09090B] border border-[#27272A] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all resize-none"
+                className="w-full bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] rounded px-3 py-2 text-base text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all resize-none"
               />
             </div>
           </div>

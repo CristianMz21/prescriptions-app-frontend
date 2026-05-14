@@ -12,8 +12,12 @@ import type { DoctorProfileSummarySpecialty } from './doctorProfileSummarySpecia
 
 export interface DoctorProfileSummary {
   id: string;
+  /** @nullable */
   specialty?: DoctorProfileSummarySpecialty;
+  /** @nullable */
   medicalId?: DoctorProfileSummaryMedicalId;
+  /** @nullable */
   signatureText?: DoctorProfileSummarySignatureText;
+  /** @nullable */
   signatureImageUrl?: DoctorProfileSummarySignatureImageUrl;
 }

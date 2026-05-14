@@ -1,18 +1,13 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import type { MetricsResponseDto } from '@/lib/api/generated/schemas'
-import { api } from '@/lib/api/client'
-import { ApiError } from '@/lib/api/custom-instance'
+import { useAdminControllerGetMetrics } from '@/lib/api/generated/prescriptionManagementAPI'
 
 export function MetricsContent() {
-  const { data: metrics, isLoading, error } = useQuery<MetricsResponseDto, ApiError>({
-    queryKey: ['admin-metrics'],
-    queryFn: async () => {
-      const response = await api.adminControllerGetMetrics()
-      return response.data
-    },
-  })
+  const {
+    data: metrics,
+    isLoading,
+    error,
+  } = useAdminControllerGetMetrics()
 
   if (isLoading) {
     return (
@@ -43,7 +38,7 @@ export function MetricsContent() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-        <div className="bg-[#09090B]/80 backdrop-blur-[12px] border border-[#27272A] rounded-lg p-6 relative overflow-hidden group hover:bg-[#18181B] transition-colors">
+        <div className="card-glass p-6 relative overflow-hidden group hover:bg-[var(--color-surface-container-low)] transition-colors">
           <div className="flex justify-between items-start mb-4">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Total Prescriptions</span>
             <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">medication</span>
@@ -55,7 +50,7 @@ export function MetricsContent() {
           </div>
         </div>
 
-        <div className="bg-[#09090B]/80 backdrop-blur-[12px] border border-[#27272A] rounded-lg p-6 relative overflow-hidden group hover:bg-[#18181B] transition-colors">
+        <div className="card-glass p-6 relative overflow-hidden group hover:bg-[var(--color-surface-container-low)] transition-colors">
           <div className="flex justify-between items-start mb-4">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Active Patients</span>
             <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">group</span>
@@ -67,7 +62,7 @@ export function MetricsContent() {
           </div>
         </div>
 
-        <div className="bg-[#09090B]/80 backdrop-blur-[12px] border border-[#27272A] rounded-lg p-6 relative overflow-hidden group hover:bg-[#18181B] transition-colors">
+        <div className="card-glass p-6 relative overflow-hidden group hover:bg-[var(--color-surface-container-low)] transition-colors">
           <div className="flex justify-between items-start mb-4">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Active Doctors</span>
             <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">local_hospital</span>
@@ -79,7 +74,7 @@ export function MetricsContent() {
           </div>
         </div>
 
-        <div className="bg-[#09090B]/80 backdrop-blur-[12px] border border-[#27272A] rounded-lg p-6 relative overflow-hidden group hover:bg-[#18181B] transition-colors">
+        <div className="card-glass p-6 relative overflow-hidden group hover:bg-[var(--color-surface-container-low)] transition-colors">
           <div className="flex justify-between items-start mb-4">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Prescription Status</span>
             <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">analytics</span>
@@ -98,7 +93,7 @@ export function MetricsContent() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-[#09090B]/80 backdrop-blur-[12px] border border-[#27272A] rounded-lg p-6">
+        <div className="lg:col-span-2 card-glass p-6">
           <div className="flex justify-between items-center mb-6 pb-4 border-b border-outline-variant/30">
             <h3 className="text-xl font-semibold text-primary">Volume Trends (30 Days)</h3>
             <div className="flex gap-2">
@@ -137,7 +132,7 @@ export function MetricsContent() {
           </div>
         </div>
 
-        <div className="bg-[#09090B]/80 backdrop-blur-[12px] border border-[#27272A] rounded-lg p-6">
+        <div className="card-glass p-6">
           <div className="mb-6 pb-4 border-b border-outline-variant/30">
             <h3 className="text-xl font-semibold text-primary">Distribution by Status</h3>
           </div>
@@ -183,7 +178,7 @@ export function MetricsContent() {
           </div>
           <div className="divide-y divide-outline-variant/20">
             {metrics.topDoctors.map((doctor, index) => (
-              <div key={doctor.authorId} className="p-4 flex items-center hover:bg-[#18181B] transition-colors cursor-pointer">
+              <div key={doctor.authorId} className="p-4 flex items-center hover:bg-[var(--color-surface-container-low)] transition-colors cursor-pointer">
                 <div className="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center mr-4">
                   <span className="text-sm font-bold text-primary">{index + 1}</span>
                 </div>

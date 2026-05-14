@@ -1,0 +1,70 @@
+name: API Codegen
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '24'
+  PNPM_VERSION: '11.1.1'
+  # Source of truth for the OpenAPI schema — fetched from the backend repo.
+  BACKEND_OPENAPI_URL: https://raw.githubusercontent.com/CristianMz21/prescriptions-app-backend/main/openapi.json
+
+jobs:
+  codegen:
+    name: Generate API client + typecheck + test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Fetch backend OpenAPI schema
+        # The frontend repo expects the schema at ../../backend/openapi.json
+        # (matching the local monorepo layout). In CI we recreate that path by
+        # downloading the published schema from the backend repository.
+        run: |
+          mkdir -p ../../backend
+          curl --fail --silent --show-error \
+            -o ../../backend/openapi.json \
+            "${BACKEND_OPENAPI_URL}"
+          test -s ../../backend/openapi.json
+
+      - name: Regenerate API client
+        run: pnpm run api:gen
+
+      - name: Fail if generated client is stale
+        run: |
+          if ! git diff --exit-code src/lib/api/generated; then
+            echo "::error::Generated API client is stale. Run 'pnpm api:refresh' locally and commit the result."
+            exit 1
+          fi
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Test
+        run: pnpm run test

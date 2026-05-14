@@ -6,4 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type DoctorProfileSummarySignatureText = { [key: string]: unknown };
+/**
+ * @nullable
+ */
+export type DoctorProfileSummarySignatureText = { [key: string]: unknown } | null;

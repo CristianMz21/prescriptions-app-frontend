@@ -47,15 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      await api.authControllerLogin({ email, password })
-      const response = await api.authControllerGetProfile()
+      await authControllerLogin({ email, password })
+      const profile = await authControllerGetProfile()
       startTransition(() => {
-        setUser(response.data)
-        const redirectPath = getRedirectPath(response.data.role)
+        setUser(profile)
+        const redirectPath = getRedirectPath(profile.role)
         router.push(redirectPath)
       })
-    } catch (err) {
-      throw err
     } finally {
       setIsLoading(false)
     }
@@ -64,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     setIsLoading(true)
     try {
-      await api.authControllerLogout()
+      await authControllerLogout()
     } finally {
       startTransition(() => {
         setUser(null)

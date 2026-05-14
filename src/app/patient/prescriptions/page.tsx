@@ -1,20 +1,11 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import type { PrescriptionResponseDto } from '@/lib/api/generated/schemas'
-import type { PrescriptionsControllerFindAll200 } from '@/lib/api/generated/schemas'
-import { api } from '@/lib/api/client'
-import { ApiError } from '@/lib/api/custom-instance'
+import { usePrescriptionsControllerFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
 
 export default function PatientPrescriptionsPage() {
-  const { data, isLoading, error } = useQuery<PrescriptionsControllerFindAll200, ApiError>({
-    queryKey: ['patient-prescriptions'],
-    queryFn: async () => {
-      const response = await api.prescriptionsControllerFindAll()
-      return response.data
-    },
-  })
+  const { data, isLoading, error } = usePrescriptionsControllerFindAll()
 
   if (isLoading) {
     return (

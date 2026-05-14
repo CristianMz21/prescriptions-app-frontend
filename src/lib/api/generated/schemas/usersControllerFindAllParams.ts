@@ -6,7 +6,15 @@
  * OpenAPI spec version: 1.0
  */
 
+export type UsersControllerFindAllParams = {
 /**
- * @nullable
+ * Page number (1-indexed)
+ * @minimum 1
  */
-export type DoctorProfileSummarySignatureImageUrl = { [key: string]: unknown } | null;
+page?: number;
+/**
+ * Number of items per page
+ * @minimum 1
+ */
+limit?: number;
+};

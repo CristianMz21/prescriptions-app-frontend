@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0
  */
 
-/**
- * @nullable
- */
-export type DoctorProfileSummarySignatureImageUrl = { [key: string]: unknown } | null;
+export type PaginatedResultDtoDataItem = { [key: string]: unknown };

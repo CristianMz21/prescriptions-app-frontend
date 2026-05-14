@@ -6,4 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PatientProfileSummaryBirthDate = { [key: string]: unknown };
+/**
+ * @nullable
+ */
+export type PatientProfileSummaryBirthDate = { [key: string]: unknown } | null;

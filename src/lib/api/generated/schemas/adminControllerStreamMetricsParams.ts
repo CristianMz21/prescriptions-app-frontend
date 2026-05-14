@@ -6,7 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 
+export type AdminControllerStreamMetricsParams = {
 /**
- * @nullable
+ * When true, emits one metrics event and closes the stream. Useful for automated API checks.
  */
-export type DoctorProfileSummarySignatureImageUrl = { [key: string]: unknown } | null;
+once?: boolean;
+};
