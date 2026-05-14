@@ -17,20 +17,22 @@ import {
 import { usePagination } from '@/lib/hooks/usePagination'
 import { useUrlFilters } from '@/lib/hooks/useUrlFilters'
 import { routes } from '@/lib/routes'
+import { useLegacyUrlMigration } from '@/lib/hooks/useLegacyUrlMigration'
 
-const FILTER_KEYS = ['status', 'fromDate', 'toDate', 'q'] as const
+const FILTER_KEYS = ['status', 'fromDate', 'toDate', 'q', 'sortBy', 'sortOrder', 'hasNotes', 'code', 'consumedFromDate', 'consumedToDate', 'patientEmail', 'doctorEmail'] as const
 
 export function AdminPrescriptionsView() {
+  useLegacyUrlMigration()
   const { page, limit, setPage } = usePagination({ limit: 10 })
   const { values, setFilters, clear } = useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS)
 
-  const params: AdminListPrescriptionsParams = {
+const params: AdminListPrescriptionsParams = {
     page,
     limit,
     status: values.status as PrescriptionStatus | undefined,
-    from: values.fromDate,
-    to: values.toDate,
-    q: values.q,
+    fromDate: values.fromDate,
+    toDate: values.toDate,
+    code: values.q,
   }
   const { data, isLoading, error } = useAdminListPrescriptions(params)
 
