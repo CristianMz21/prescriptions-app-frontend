@@ -38,8 +38,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Approve build scripts
-        run: pnpm config set onlyBuiltDependencies "esbuild,sharp,unrs-resolver,msw" --location project && pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Restore Next.js cache
         uses: actions/cache@v4
