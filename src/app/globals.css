@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 :root {
+  /* RX-OS palette — DARK is the primary identity. The :root values below stay
+     dark so SSR (which doesn't apply :root.dark vs no-class until JS hydrates)
+     never flashes a light frame on a dark-default app. The light overrides
+     live in `html:not(.dark)` further below so removing the `dark` class is
+     a real visual switch instead of a no-op. */
   --color-background: #131315;
   --color-on-background: #e5e1e4;
   --color-surface: #131315;
@@ -35,6 +40,42 @@
   --spacing-container-max: 1440px;
 }
 
+/* Light theme: applied when the <html> element does NOT carry .dark.
+   The ThemeToggle removes that class for LIGHT and re-adds it for DARK. */
+html:not(.dark) {
+  --color-background: #f6f6f7;
+  --color-on-background: #131315;
+  --color-surface: #ffffff;
+  --color-surface-dim: #f0f0f1;
+  --color-surface-bright: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f6f7;
+  --color-surface-container: #eeeeef;
+  --color-surface-container-high: #e7e7e8;
+  --color-surface-container-highest: #dededf;
+  --color-on-surface: #131315;
+  --color-on-surface-variant: #4b4d4f;
+  --color-outline: #71747a;
+  --color-outline-variant: #c5c8cc;
+  --color-primary: #131315;
+  --color-on-primary: #ffffff;
+  --color-secondary: #353437;
+  --color-error: #b3261e;
+  --color-error-container: #fdd9d6;
+  --color-surface-variant: #e7e7e8;
+}
+
+html:not(.dark) .glass-panel,
+html:not(.dark) .card-glass {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(19, 19, 21, 0.1);
+}
+
+html:not(.dark) body {
+  background: var(--color-background);
+  color: var(--color-on-background);
+}
+
 @theme inline {
   --color-background: var(--color-background);
   --color-foreground: var(--color-on-background);
@@ -63,6 +104,14 @@
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
   --radius-full: var(--radius-full);
+
+  /* Spacing tokens exposed to Tailwind so utilities like p-margin-desktop,
+     p-margin-mobile, p-gutter, max-w-container-max actually generate. */
+  --spacing-unit: var(--spacing-unit);
+  --spacing-gutter: var(--spacing-gutter);
+  --spacing-margin-mobile: var(--spacing-margin-mobile);
+  --spacing-margin-desktop: var(--spacing-margin-desktop);
+  --container-max: var(--spacing-container-max);
 }
 
 * {

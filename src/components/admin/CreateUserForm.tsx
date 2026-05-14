@@ -94,7 +94,7 @@ export function CreateUserForm() {
   }
 
   return (
-    <div className="p-margin-desktop max-w-2xl">
+    <div className="p-8 max-w-2xl">
       <div className="mb-8">
         <Link
           href={routes.admin.users}

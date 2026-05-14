@@ -120,7 +120,7 @@ export function CreatePrescriptionForm() {
   const isSubmitting = createMutation.isPending || isResolvingPatient
 
   return (
-    <div className="p-margin-desktop">
+    <div className="p-8">
       <div className="mb-8">
         <Link
           href={routes.doctor.prescriptions}

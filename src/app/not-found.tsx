@@ -4,7 +4,7 @@ import { routes } from '@/lib/routes'
 
 export default function NotFoundPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-margin-desktop bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-8 bg-background">
       <span className="material-symbols-outlined text-7xl text-on-surface-variant">
         explore_off
       </span>

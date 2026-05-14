@@ -30,7 +30,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-gutter relative overflow-hidden bg-background">
+    <div className="min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden bg-background">
       <div className="absolute inset-0 pointer-events-none flex justify-center items-center opacity-10">
         <div className="w-[800px] h-[800px] border border-outline rounded-full bg-gradient-to-tr from-surface-container-highest to-transparent blur-3xl" />
       </div>

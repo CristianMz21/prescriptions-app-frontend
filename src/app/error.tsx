@@ -18,7 +18,7 @@ export default function GlobalError({ error, reset }: ErrorPageProps) {
   }, [error])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-margin-desktop bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-8 bg-background">
       <span className="material-symbols-outlined text-7xl text-error" style={{ fontVariationSettings: "'FILL' 1" }}>
         error
       </span>

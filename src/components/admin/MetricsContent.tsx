@@ -19,7 +19,7 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
 
   if (isLoading) {
     return (
-      <div data-testid="metrics-overview" className="max-w-container-max mx-auto w-full">
+      <div data-testid="metrics-overview" className="max-w-[1440px] mx-auto w-full">
         <header className="mb-8">
           <h2 className="text-3xl font-bold text-primary tracking-tight">System Overview</h2>
           <p className="text-base text-on-surface-variant mt-1">
@@ -34,7 +34,7 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
   if (!metrics) return null
 
   return (
-    <div data-testid="metrics-overview" className="max-w-container-max mx-auto w-full">
+    <div data-testid="metrics-overview" className="max-w-[1440px] mx-auto w-full">
       <header className="mb-8">
         <h2 className="text-3xl font-bold text-primary tracking-tight">
           System Overview

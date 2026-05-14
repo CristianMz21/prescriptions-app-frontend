@@ -20,7 +20,7 @@ export default async function DoctorProfilePage() {
     : []
 
   return (
-    <div className="p-margin-desktop">
+    <div className="p-8">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-primary tracking-tight">My Profile</h2>
         <p className="text-base text-on-surface-variant mt-2">
