@@ -39,7 +39,7 @@ jobs:
           cache: pnpm
 
       - name: Approve build scripts
-        run: pnpm approve-builds esbuild sharp unrs-resolver
+        run: pnpm approve-builds esbuild sharp unrs-resolver msw
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
