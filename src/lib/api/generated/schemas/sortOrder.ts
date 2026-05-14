@@ -6,9 +6,10 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
+export type SortOrder = typeof SortOrder[keyof typeof SortOrder];
+
 
 export const SortOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;

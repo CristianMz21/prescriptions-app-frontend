@@ -7,8 +7,8 @@
  */
 
 export type AdminStreamMetricsParams = {
-  /**
-   * When true, emits one metrics event and closes the stream. Useful for automated API checks.
-   */
-  once?: boolean;
+/**
+ * When true, emits one metrics event and closes the stream. Useful for automated API checks.
+ */
+once?: boolean;
 };

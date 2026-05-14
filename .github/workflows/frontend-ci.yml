@@ -134,7 +134,7 @@ jobs:
           test -s ../../backend/openapi.json
 
       - name: Regenerate API client
-        run: pnpm run api:gen
+        run: pnpm run api:gen && pnpm format:write
 
       - name: Fail if generated client is stale
         run: |

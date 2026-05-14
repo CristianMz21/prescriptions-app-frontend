@@ -6,12 +6,12 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type PrescriptionSortBy =
-  (typeof PrescriptionSortBy)[keyof typeof PrescriptionSortBy];
+export type PrescriptionSortBy = typeof PrescriptionSortBy[keyof typeof PrescriptionSortBy];
+
 
 export const PrescriptionSortBy = {
-  createdAt: "createdAt",
-  consumedAt: "consumedAt",
-  code: "code",
-  status: "status",
+  createdAt: 'createdAt',
+  consumedAt: 'consumedAt',
+  code: 'code',
+  status: 'status',
 } as const;

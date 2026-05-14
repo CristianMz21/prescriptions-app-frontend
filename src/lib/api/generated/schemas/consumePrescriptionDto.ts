@@ -8,8 +8,8 @@
 
 export interface ConsumePrescriptionDto {
   /**
-   * Optional free-text reason persisted in the prescription audit log.
-   * @maxLength 500
-   */
+     * Optional free-text reason persisted in the prescription audit log.
+     * @maxLength 500
+     */
   reason?: string;
 }
