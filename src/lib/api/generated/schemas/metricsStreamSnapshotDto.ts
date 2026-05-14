@@ -5,8 +5,8 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { MetricsByStatusDto } from './metricsByStatusDto';
-import type { MetricsTotalsDto } from './metricsTotalsDto';
+import type { MetricsByStatusDto } from "./metricsByStatusDto";
+import type { MetricsTotalsDto } from "./metricsTotalsDto";
 
 export interface MetricsStreamSnapshotDto {
   /** Aggregate counts */

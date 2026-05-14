@@ -9,10 +9,10 @@
 /**
  * Current status of the prescription
  */
-export type PrescriptionStatus = typeof PrescriptionStatus[keyof typeof PrescriptionStatus];
-
+export type PrescriptionStatus =
+  (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus];
 
 export const PrescriptionStatus = {
-  PENDING: 'PENDING',
-  CONSUMED: 'CONSUMED',
+  PENDING: "PENDING",
+  CONSUMED: "CONSUMED",
 } as const;

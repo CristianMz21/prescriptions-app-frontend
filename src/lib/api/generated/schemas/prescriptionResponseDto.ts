@@ -5,10 +5,10 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { PrescriptionAuthorSummaryDto } from './prescriptionAuthorSummaryDto';
-import type { PrescriptionItemResponseDto } from './prescriptionItemResponseDto';
-import type { PrescriptionPatientSummaryDto } from './prescriptionPatientSummaryDto';
-import type { PrescriptionStatus } from './prescriptionStatus';
+import type { PrescriptionAuthorSummaryDto } from "./prescriptionAuthorSummaryDto";
+import type { PrescriptionItemResponseDto } from "./prescriptionItemResponseDto";
+import type { PrescriptionPatientSummaryDto } from "./prescriptionPatientSummaryDto";
+import type { PrescriptionStatus } from "./prescriptionStatus";
 
 export interface PrescriptionResponseDto {
   /** Prescription unique identifier */
@@ -20,18 +20,18 @@ export interface PrescriptionResponseDto {
   /** List of medications in the prescription */
   items: PrescriptionItemResponseDto[];
   /**
-     * Additional notes from the doctor
-     * @nullable
-     */
+   * Additional notes from the doctor
+   * @nullable
+   */
   notes?: string | null;
   /** ISO 8601 timestamp when the prescription was created */
   createdAt: string;
   /** ISO 8601 timestamp when the prescription was last updated */
   updatedAt: string;
   /**
-     * ISO 8601 timestamp when the prescription was consumed
-     * @nullable
-     */
+   * ISO 8601 timestamp when the prescription was consumed
+   * @nullable
+   */
   consumedAt?: string | null;
   /** Author (Doctor) unique identifier */
   authorId: string;

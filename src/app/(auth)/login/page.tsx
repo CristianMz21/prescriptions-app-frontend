@@ -1,30 +1,32 @@
-'use client'
+"use client";
 
-import { useState, type FormEvent } from 'react'
-import { useAuth } from '@/lib/hooks/useAuth'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useState, type FormEvent } from "react";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
-  const { login, isLoading } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const { login, isLoading } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
     try {
-      await login(email, password)
+      await login(email, password);
     } catch (err) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        setError(axiosError.response?.data?.message || 'Login failed')
+      if (err && typeof err === "object" && "response" in err) {
+        const axiosError = err as {
+          response?: { data?: { message?: string } };
+        };
+        setError(axiosError.response?.data?.message || "Login failed");
       } else if (err instanceof Error) {
-        setError(err.message)
+        setError(err.message);
       } else {
-        setError('An unexpected error occurred')
+        setError("An unexpected error occurred");
       }
     }
   }
@@ -37,14 +39,20 @@ export default function LoginPage() {
 
       <div className="w-full max-w-sm z-10">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-black uppercase tracking-widest text-primary">RX-OS</h1>
+          <h1 className="text-5xl font-black uppercase tracking-widest text-primary">
+            RX-OS
+          </h1>
           <p className="text-sm font-medium text-on-surface-variant mt-2 uppercase tracking-widest">
             Precision Control System
           </p>
         </div>
 
         <div className="card-glass p-8 shadow-2xl">
-          <form className="flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
+          <form
+            className="flex flex-col gap-6"
+            onSubmit={handleSubmit}
+            noValidate
+          >
             <div className="flex flex-col gap-2">
               <Label htmlFor="email" className="label-uppercase">
                 Operator Identity
@@ -98,13 +106,23 @@ export default function LoginPage() {
               </div>
             ) : null}
 
-            <Button type="submit" disabled={isLoading} className="w-full py-3 mt-4">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 mt-4"
+            >
               {isLoading ? (
-                <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                <span className="material-symbols-outlined animate-spin">
+                  progress_activity
+                </span>
               ) : (
                 <>
-                  <span className="uppercase tracking-widest font-bold">Sign In</span>
-                  <span className="material-symbols-outlined text-lg">login</span>
+                  <span className="uppercase tracking-widest font-bold">
+                    Sign In
+                  </span>
+                  <span className="material-symbols-outlined text-lg">
+                    login
+                  </span>
                 </>
               )}
             </Button>
@@ -127,12 +145,14 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-8 flex justify-center items-center gap-2 opacity-50">
-          <span className="material-symbols-outlined text-primary text-sm">lock</span>
+          <span className="material-symbols-outlined text-primary text-sm">
+            lock
+          </span>
           <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">
             End-to-End Encrypted Session
           </span>
         </div>
       </div>
     </div>
-  )
+  );
 }

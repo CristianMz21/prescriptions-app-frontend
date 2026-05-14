@@ -1,5 +1,5 @@
-import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function MetricCardsSkeleton() {
   return (
@@ -12,16 +12,18 @@ export function MetricCardsSkeleton() {
         </Card>
       ))}
     </div>
-  )
+  );
 }
 
 export function PrescriptionTableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <Card className="card-glass overflow-hidden p-0 gap-0">
       <div className="px-4 py-3 border-b border-outline-variant/30 bg-surface-container-lowest/50 flex gap-6">
-        {['Patient', 'RX Code', 'Medications', 'Status', 'Date', 'Actions'].map((h) => (
-          <Skeleton key={h} className="h-3 flex-1" />
-        ))}
+        {["Patient", "RX Code", "Medications", "Status", "Date", "Actions"].map(
+          (h) => (
+            <Skeleton key={h} className="h-3 flex-1" />
+          ),
+        )}
       </div>
       {Array.from({ length: rows }).map((_, i) => (
         <div
@@ -37,10 +39,14 @@ export function PrescriptionTableSkeleton({ rows = 5 }: { rows?: number }) {
         </div>
       ))}
     </Card>
-  )
+  );
 }
 
-export function PrescriptionCardListSkeleton({ items = 3 }: { items?: number }) {
+export function PrescriptionCardListSkeleton({
+  items = 3,
+}: {
+  items?: number;
+}) {
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
       {Array.from({ length: items }).map((_, i) => (
@@ -57,5 +63,5 @@ export function PrescriptionCardListSkeleton({ items = 3 }: { items?: number }) 
         </Card>
       ))}
     </div>
-  )
+  );
 }

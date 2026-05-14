@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
 interface ErrorStateProps {
-  message: string
-  action?: ReactNode
-  className?: string
+  message: string;
+  action?: ReactNode;
+  className?: string;
 }
 
 export function ErrorState({ message, action, className }: ErrorStateProps) {
@@ -11,7 +11,7 @@ export function ErrorState({ message, action, className }: ErrorStateProps) {
     <div
       className={
         className ??
-        'flex flex-col items-center justify-center h-64 gap-4 text-error'
+        "flex flex-col items-center justify-center h-64 gap-4 text-error"
       }
       role="alert"
       data-testid="error-state"
@@ -20,5 +20,5 @@ export function ErrorState({ message, action, className }: ErrorStateProps) {
       <p className="text-sm">{message}</p>
       {action}
     </div>
-  )
+  );
 }

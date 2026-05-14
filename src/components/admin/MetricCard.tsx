@@ -1,13 +1,13 @@
-import type { ReactNode } from 'react'
-import { Card } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import type { ReactNode } from "react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface MetricCardProps {
-  label: string
-  value: ReactNode
-  icon: string
-  footer?: ReactNode
-  className?: string
+  label: string;
+  value: ReactNode;
+  icon: string;
+  footer?: ReactNode;
+  className?: string;
 }
 
 export function MetricCard({
@@ -22,7 +22,7 @@ export function MetricCard({
       data-testid="metric-card"
       data-metric-label={label}
       className={cn(
-        'card-glass p-6 relative overflow-hidden group hover:bg-surface-container-low transition-colors gap-0',
+        "card-glass p-6 relative overflow-hidden group hover:bg-surface-container-low transition-colors gap-0",
         className,
       )}
     >
@@ -32,12 +32,14 @@ export function MetricCard({
           {icon}
         </span>
       </div>
-      <div className="text-5xl font-bold text-primary tabular-nums">{value}</div>
+      <div className="text-5xl font-bold text-primary tabular-nums">
+        {value}
+      </div>
       {footer ? (
         <div className="mt-2 flex items-center gap-1 text-on-surface-variant text-xs font-semibold">
           {footer}
         </div>
       ) : null}
     </Card>
-  )
+  );
 }

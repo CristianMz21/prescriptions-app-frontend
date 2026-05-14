@@ -1,35 +1,35 @@
-import type { APIRequestContext } from '@playwright/test'
+import type { APIRequestContext } from "@playwright/test";
 import type {
   PrescriptionResponseDto,
   Role,
   UserEntity,
-} from '../src/lib/api/generated/schemas'
+} from "../src/lib/api/generated/schemas";
 
 export const BACKEND_URL =
-  process.env.E2E_BACKEND_URL ?? 'http://localhost:3000'
+  process.env.E2E_BACKEND_URL ?? "http://localhost:3000";
 
 export const SEED = {
-  admin: { email: 'admin@clinic.com', password: 'Password123!' },
-  doctor: { email: 'doctor@clinic.com', password: 'Password123!' },
-  patient: { email: 'patient@clinic.com', password: 'Password123!' },
-} as const
+  admin: { email: "admin@clinic.com", password: "Password123!" },
+  doctor: { email: "doctor@clinic.com", password: "Password123!" },
+  patient: { email: "patient@clinic.com", password: "Password123!" },
+} as const;
 
-export type SeededRole = keyof typeof SEED
+export type SeededRole = keyof typeof SEED;
 
 export const LANDING_PATH: Record<Role, string> = {
-  ADMIN: '/admin/metrics',
-  DOCTOR: '/doctor/prescriptions',
-  PATIENT: '/patient/prescriptions',
-}
+  ADMIN: "/admin/metrics",
+  DOCTOR: "/doctor/prescriptions",
+  PATIENT: "/patient/prescriptions",
+};
 
-export function uniqueMedName(prefix = 'Aspirin') {
-  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+export function uniqueMedName(prefix = "Aspirin") {
+  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
 
 interface BackendLoginCtx {
-  apiRequest: APIRequestContext
-  email: string
-  password: string
+  apiRequest: APIRequestContext;
+  email: string;
+  password: string;
 }
 
 /** Logs into the backend with a fresh cookie jar so subsequent calls are
@@ -41,11 +41,11 @@ export async function backendLogin({
 }: BackendLoginCtx): Promise<void> {
   const res = await apiRequest.post(`${BACKEND_URL}/auth/login`, {
     data: { email, password },
-  })
+  });
   if (res.status() !== 201) {
     throw new Error(
       `Backend login for ${email} returned ${res.status()}: ${await res.text()}`,
-    )
+    );
   }
 }
 
@@ -56,18 +56,18 @@ export async function resolvePatientProfileId(
 ): Promise<string> {
   // Bump the page size — onboarding tests create extra patients, which push
   // the seed account off page 1 with the default limit.
-  const list = await apiRequest.get(`${BACKEND_URL}/users/patients?limit=100`)
-  const body = (await list.json()) as { data?: UserEntity[] }
-  const user = body.data?.find((u) => u.email === patientEmail)
+  const list = await apiRequest.get(`${BACKEND_URL}/users/patients?limit=100`);
+  const body = (await list.json()) as { data?: UserEntity[] };
+  const user = body.data?.find((u) => u.email === patientEmail);
   if (!user) {
-    throw new Error(`Patient ${patientEmail} not found in /users/patients`)
+    throw new Error(`Patient ${patientEmail} not found in /users/patients`);
   }
-  const detailRes = await apiRequest.get(`${BACKEND_URL}/users/${user.id}`)
-  const detail = (await detailRes.json()) as { patient?: { id?: string } }
+  const detailRes = await apiRequest.get(`${BACKEND_URL}/users/${user.id}`);
+  const detail = (await detailRes.json()) as { patient?: { id?: string } };
   if (!detail.patient?.id) {
-    throw new Error(`User ${patientEmail} has no patient profile`)
+    throw new Error(`User ${patientEmail} has no patient profile`);
   }
-  return detail.patient.id
+  return detail.patient.id;
 }
 
 /** Create a new PENDING prescription as a doctor against a patient. Returns
@@ -81,30 +81,30 @@ export async function seedPrescription(
     apiRequest,
     email: SEED.doctor.email,
     password: SEED.doctor.password,
-  })
+  });
   const patientId = await resolvePatientProfileId(
     apiRequest,
     SEED.patient.email,
-  )
-  const medName = options.medName ?? uniqueMedName()
+  );
+  const medName = options.medName ?? uniqueMedName();
   const res = await apiRequest.post(`${BACKEND_URL}/prescriptions`, {
     data: {
       patientId,
       items: [
         {
           name: medName,
-          dosage: '100mg',
+          dosage: "100mg",
           quantity: 30,
-          instructions: 'Once daily',
+          instructions: "Once daily",
         },
       ],
-      notes: 'E2E seed',
+      notes: "E2E seed",
     },
-  })
+  });
   if (res.status() !== 201) {
     throw new Error(
       `seedPrescription failed: ${res.status()} ${await res.text()}`,
-    )
+    );
   }
-  return (await res.json()) as PrescriptionResponseDto
+  return (await res.json()) as PrescriptionResponseDto;
 }

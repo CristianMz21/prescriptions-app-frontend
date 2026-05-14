@@ -1,44 +1,62 @@
-'use client'
+"use client";
 
-import { useAdminListPrescriptions } from '@/lib/api/generated/prescriptionManagementAPI'
+import { useAdminListPrescriptions } from "@/lib/api/generated/prescriptionManagementAPI";
 import type {
   AdminListPrescriptionsParams,
   PrescriptionResponseDto,
   PrescriptionStatus,
-} from '@/lib/api/generated/schemas'
-import { LoadingState } from '@/components/feedback/LoadingState'
-import { ErrorState } from '@/components/feedback/ErrorState'
-import { EmptyState } from '@/components/feedback/EmptyState'
-import { PrescriptionTable } from '@/components/prescription/PrescriptionTable'
+} from "@/lib/api/generated/schemas";
+import { LoadingState } from "@/components/feedback/LoadingState";
+import { ErrorState } from "@/components/feedback/ErrorState";
+import { EmptyState } from "@/components/feedback/EmptyState";
+import { PrescriptionTable } from "@/components/prescription/PrescriptionTable";
 import {
   PrescriptionFiltersBar,
   type PrescriptionFilterValues,
-} from '@/components/prescription/PrescriptionFiltersBar'
-import { usePagination } from '@/lib/hooks/usePagination'
-import { useUrlFilters } from '@/lib/hooks/useUrlFilters'
-import { routes } from '@/lib/routes'
-import { useLegacyUrlMigration } from '@/lib/hooks/useLegacyUrlMigration'
+} from "@/components/prescription/PrescriptionFiltersBar";
+import { usePagination } from "@/lib/hooks/usePagination";
+import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
+import { routes } from "@/lib/routes";
+import { useLegacyUrlMigration } from "@/lib/hooks/useLegacyUrlMigration";
 
-const FILTER_KEYS = ['status', 'fromDate', 'toDate', 'q', 'sortBy', 'sortOrder', 'hasNotes', 'code', 'consumedFromDate', 'consumedToDate', 'patientEmail', 'doctorEmail'] as const
+const FILTER_KEYS = [
+  "status",
+  "fromDate",
+  "toDate",
+  "q",
+  "sortBy",
+  "sortOrder",
+  "hasNotes",
+  "code",
+  "consumedFromDate",
+  "consumedToDate",
+  "patientEmail",
+  "doctorEmail",
+] as const;
 
 export function AdminPrescriptionsView() {
-  useLegacyUrlMigration()
-  const { page, limit, setPage } = usePagination({ limit: 10 })
-  const { values, setFilters, clear } = useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS)
+  useLegacyUrlMigration();
+  const { page, limit, setPage } = usePagination({ limit: 10 });
+  const { values, setFilters, clear } =
+    useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS);
 
-const params: AdminListPrescriptionsParams = {
+  const params: AdminListPrescriptionsParams = {
     page,
     limit,
     status: values.status as PrescriptionStatus | undefined,
     fromDate: values.fromDate,
     toDate: values.toDate,
     code: values.q,
-  }
-  const { data, isLoading, error } = useAdminListPrescriptions(params)
+  };
+  const { data, isLoading, error } = useAdminListPrescriptions(params);
 
   const handleChange = (patch: Partial<PrescriptionFilterValues>) => {
-    setFilters(patch as Partial<Record<(typeof FILTER_KEYS)[number], string | undefined>>)
-  }
+    setFilters(
+      patch as Partial<
+        Record<(typeof FILTER_KEYS)[number], string | undefined>
+      >,
+    );
+  };
 
   return (
     <div>
@@ -49,26 +67,36 @@ const params: AdminListPrescriptionsParams = {
         </p>
       </div>
 
-      <PrescriptionFiltersBar values={values} onChange={handleChange} onClear={clear} />
+      <PrescriptionFiltersBar
+        values={values}
+        onChange={handleChange}
+        onClear={clear}
+      />
 
       {isLoading ? <LoadingState label="Loading prescriptions" /> : null}
       {error ? <ErrorState message={error.message} /> : null}
-      {!isLoading && !error ? (
-        (() => {
-          const prescriptions = (data?.data as PrescriptionResponseDto[] | undefined) ?? []
-          if (prescriptions.length === 0) {
-            return <EmptyState icon="medication" title="No prescriptions match these filters" />
-          }
-          return (
-            <PrescriptionTable
-              prescriptions={prescriptions}
-              getDetailHref={(id) => `${routes.admin.prescriptions}/${id}`}
-              meta={data?.meta}
-              onPageChange={setPage}
-            />
-          )
-        })()
-      ) : null}
+      {!isLoading && !error
+        ? (() => {
+            const prescriptions =
+              (data?.data as PrescriptionResponseDto[] | undefined) ?? [];
+            if (prescriptions.length === 0) {
+              return (
+                <EmptyState
+                  icon="medication"
+                  title="No prescriptions match these filters"
+                />
+              );
+            }
+            return (
+              <PrescriptionTable
+                prescriptions={prescriptions}
+                getDetailHref={(id) => `${routes.admin.prescriptions}/${id}`}
+                meta={data?.meta}
+                onPageChange={setPage}
+              />
+            );
+          })()
+        : null}
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import type { PrescriptionResponseDto } from '@/lib/api/generated/schemas'
+import Link from "next/link";
+import type { PrescriptionResponseDto } from "@/lib/api/generated/schemas";
 import {
   Table,
   TableBody,
@@ -9,21 +9,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { PrescriptionStatusBadge } from './PrescriptionStatusBadge'
+} from "@/components/ui/table";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { PrescriptionStatusBadge } from "./PrescriptionStatusBadge";
 
 interface Pagination {
-  page: number
-  totalPages: number
-  total: number
+  page: number;
+  totalPages: number;
+  total: number;
 }
 
 interface PrescriptionTableProps {
-  prescriptions: PrescriptionResponseDto[]
-  getDetailHref: (id: string) => string
-  meta?: Pagination
-  onPageChange?: (page: number) => void
+  prescriptions: PrescriptionResponseDto[];
+  getDetailHref: (id: string) => string;
+  meta?: Pagination;
+  onPageChange?: (page: number) => void;
 }
 
 export function PrescriptionTable({
@@ -38,12 +38,24 @@ export function PrescriptionTable({
         <Table>
           <TableHeader>
             <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-              <TableHead className="uppercase tracking-wider text-xs">Patient</TableHead>
-              <TableHead className="uppercase tracking-wider text-xs">RX Code</TableHead>
-              <TableHead className="uppercase tracking-wider text-xs">Medications</TableHead>
-              <TableHead className="uppercase tracking-wider text-xs">Status</TableHead>
-              <TableHead className="uppercase tracking-wider text-xs">Date</TableHead>
-              <TableHead className="text-right uppercase tracking-wider text-xs">Actions</TableHead>
+              <TableHead className="uppercase tracking-wider text-xs">
+                Patient
+              </TableHead>
+              <TableHead className="uppercase tracking-wider text-xs">
+                RX Code
+              </TableHead>
+              <TableHead className="uppercase tracking-wider text-xs">
+                Medications
+              </TableHead>
+              <TableHead className="uppercase tracking-wider text-xs">
+                Status
+              </TableHead>
+              <TableHead className="uppercase tracking-wider text-xs">
+                Date
+              </TableHead>
+              <TableHead className="text-right uppercase tracking-wider text-xs">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -55,11 +67,11 @@ export function PrescriptionTable({
                 className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
               >
                 <TableCell className="text-sm font-medium text-primary">
-                  {rx.patient?.user?.email ?? 'N/A'}
+                  {rx.patient?.user?.email ?? "N/A"}
                 </TableCell>
                 <TableCell className="text-sm font-mono">{rx.code}</TableCell>
                 <TableCell className="text-sm">
-                  {rx.items?.map((item) => item.name).join(', ') || 'N/A'}
+                  {rx.items?.map((item) => item.name).join(", ") || "N/A"}
                 </TableCell>
                 <TableCell>
                   <PrescriptionStatusBadge status={rx.status} />
@@ -71,9 +83,14 @@ export function PrescriptionTable({
                   <Link
                     href={getDetailHref(rx.id)}
                     aria-label={`View ${rx.code}`}
-                    className={buttonVariants({ variant: 'ghost', size: 'icon-sm' })}
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "icon-sm",
+                    })}
                   >
-                    <span className="material-symbols-outlined text-xl">visibility</span>
+                    <span className="material-symbols-outlined text-xl">
+                      visibility
+                    </span>
                   </Link>
                 </TableCell>
               </TableRow>
@@ -95,7 +112,9 @@ export function PrescriptionTable({
               onClick={() => onPageChange?.(meta.page - 1)}
               aria-label="Previous page"
             >
-              <span className="material-symbols-outlined text-lg">chevron_left</span>
+              <span className="material-symbols-outlined text-lg">
+                chevron_left
+              </span>
             </Button>
             <div className="text-xs font-semibold tabular-nums">
               Page {meta.page} of {meta.totalPages}
@@ -107,11 +126,13 @@ export function PrescriptionTable({
               onClick={() => onPageChange?.(meta.page + 1)}
               aria-label="Next page"
             >
-              <span className="material-symbols-outlined text-lg">chevron_right</span>
+              <span className="material-symbols-outlined text-lg">
+                chevron_right
+              </span>
             </Button>
           </div>
         </div>
       ) : null}
     </div>
-  )
+  );
 }

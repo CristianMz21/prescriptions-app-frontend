@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { Card } from '@/components/ui/card'
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -8,34 +8,34 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { useUsersFindAllDoctors } from '@/lib/api/generated/prescriptionManagementAPI'
-import type { UserEntity } from '@/lib/api/generated/schemas'
-import { LoadingState } from '@/components/feedback/LoadingState'
-import { ErrorState } from '@/components/feedback/ErrorState'
-import { EmptyState } from '@/components/feedback/EmptyState'
-import { usePagination } from '@/lib/hooks/usePagination'
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { useUsersFindAllDoctors } from "@/lib/api/generated/prescriptionManagementAPI";
+import type { UserEntity } from "@/lib/api/generated/schemas";
+import { LoadingState } from "@/components/feedback/LoadingState";
+import { ErrorState } from "@/components/feedback/ErrorState";
+import { EmptyState } from "@/components/feedback/EmptyState";
+import { usePagination } from "@/lib/hooks/usePagination";
 
-type DoctorRow = UserEntity
+type DoctorRow = UserEntity;
 
 // The Orval schema models specialty / medicalId as opaque-record-or-null;
 // in practice the backend returns a string. Coerce safely for display.
 function stringifyOptional(value: unknown): string {
-  if (value == null) return '—'
-  if (typeof value === 'string') return value
-  return String(value)
+  if (value == null) return "—";
+  if (typeof value === "string") return value;
+  return String(value);
 }
 
 export function DoctorsTable() {
-  const { page, limit, setPage } = usePagination({ limit: 20 })
-  const { data, isLoading, error } = useUsersFindAllDoctors({ page, limit })
+  const { page, limit, setPage } = usePagination({ limit: 20 });
+  const { data, isLoading, error } = useUsersFindAllDoctors({ page, limit });
 
-  if (isLoading) return <LoadingState label="Loading doctors" />
-  if (error) return <ErrorState message={error.message} />
+  if (isLoading) return <LoadingState label="Loading doctors" />;
+  if (error) return <ErrorState message={error.message} />;
 
-  const doctors = (data?.data as DoctorRow[] | undefined) ?? []
-  const meta = data?.meta
+  const doctors = (data?.data as DoctorRow[] | undefined) ?? [];
+  const meta = data?.meta;
 
   return (
     <div>
@@ -53,10 +53,18 @@ export function DoctorsTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-                <TableHead className="uppercase tracking-wider text-xs">Email</TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">Specialty</TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">Medical ID</TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">Created</TableHead>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Email
+                </TableHead>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Specialty
+                </TableHead>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Medical ID
+                </TableHead>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Created
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -66,9 +74,15 @@ export function DoctorsTable() {
                   data-testid="doctor-row"
                   className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
                 >
-                  <TableCell className="text-sm text-primary">{u.email}</TableCell>
-                  <TableCell className="text-sm">{stringifyOptional(u.doctor?.specialty)}</TableCell>
-                  <TableCell className="text-sm font-mono">{stringifyOptional(u.doctor?.medicalId)}</TableCell>
+                  <TableCell className="text-sm text-primary">
+                    {u.email}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {stringifyOptional(u.doctor?.specialty)}
+                  </TableCell>
+                  <TableCell className="text-sm font-mono">
+                    {stringifyOptional(u.doctor?.medicalId)}
+                  </TableCell>
                   <TableCell className="text-sm tabular-nums">
                     {new Date(u.createdAt).toLocaleDateString()}
                   </TableCell>
@@ -90,7 +104,9 @@ export function DoctorsTable() {
                   onClick={() => setPage(meta.page - 1)}
                   aria-label="Previous page"
                 >
-                  <span className="material-symbols-outlined text-lg">chevron_left</span>
+                  <span className="material-symbols-outlined text-lg">
+                    chevron_left
+                  </span>
                 </Button>
                 <div className="text-xs font-semibold tabular-nums">
                   Page {meta.page} of {meta.totalPages}
@@ -102,7 +118,9 @@ export function DoctorsTable() {
                   onClick={() => setPage(meta.page + 1)}
                   aria-label="Next page"
                 >
-                  <span className="material-symbols-outlined text-lg">chevron_right</span>
+                  <span className="material-symbols-outlined text-lg">
+                    chevron_right
+                  </span>
                 </Button>
               </div>
             </div>
@@ -110,5 +128,5 @@ export function DoctorsTable() {
         </Card>
       )}
     </div>
-  )
+  );
 }

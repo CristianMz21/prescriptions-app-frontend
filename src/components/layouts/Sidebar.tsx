@@ -1,22 +1,24 @@
-'use client'
+"use client";
 
-import { useAuth } from '@/lib/hooks/useAuth'
-import type { Role } from '@/lib/api/generated/schemas'
-import { navigationByRole } from '@/lib/nav'
-import { RoleNav } from './RoleNav'
-import { ThemeToggle } from './ThemeToggle'
+import { useAuth } from "@/lib/hooks/useAuth";
+import type { Role } from "@/lib/api/generated/schemas";
+import { navigationByRole } from "@/lib/nav";
+import { RoleNav } from "./RoleNav";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface SidebarProps {
-  role: Role
+  role: Role;
 }
 
 export function Sidebar({ role }: SidebarProps) {
-  const { logout, user } = useAuth()
+  const { logout, user } = useAuth();
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 card-glass z-50 flex flex-col py-margin-desktop border-r border-outline-variant/30">
       <div className="px-6 mb-8">
-        <h1 className="text-2xl font-bold text-primary uppercase tracking-widest">RX-OS</h1>
+        <h1 className="text-2xl font-bold text-primary uppercase tracking-widest">
+          RX-OS
+        </h1>
         <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider">
           Precision Control
         </p>
@@ -53,5 +55,5 @@ export function Sidebar({ role }: SidebarProps) {
         </button>
       </div>
     </aside>
-  )
+  );
 }

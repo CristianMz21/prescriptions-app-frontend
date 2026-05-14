@@ -1,5 +1,5 @@
-import { AdminPrescriptionsView } from '@/components/admin/AdminPrescriptionsView'
+import { AdminPrescriptionsView } from "@/components/admin/AdminPrescriptionsView";
 
 export default function AdminPrescriptionsPage() {
-  return <AdminPrescriptionsView />
+  return <AdminPrescriptionsView />;
 }

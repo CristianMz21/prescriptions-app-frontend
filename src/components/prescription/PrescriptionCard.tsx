@@ -1,19 +1,19 @@
-import type { ReactNode } from 'react'
-import type { PrescriptionResponseDto } from '@/lib/api/generated/schemas'
-import { PrescriptionStatusBadge } from './PrescriptionStatusBadge'
+import type { ReactNode } from "react";
+import type { PrescriptionResponseDto } from "@/lib/api/generated/schemas";
+import { PrescriptionStatusBadge } from "./PrescriptionStatusBadge";
 
 interface PrescriptionCardProps {
-  prescription: PrescriptionResponseDto
-  actions?: ReactNode
+  prescription: PrescriptionResponseDto;
+  actions?: ReactNode;
 }
 
 export function PrescriptionCard({
   prescription: rx,
   actions,
 }: PrescriptionCardProps) {
-  const isPending = rx.status === 'PENDING'
-  const lead = rx.items?.[0]
-  const extraCount = Math.max(0, (rx.items?.length ?? 0) - 1)
+  const isPending = rx.status === "PENDING";
+  const lead = rx.items?.[0];
+  const extraCount = Math.max(0, (rx.items?.length ?? 0) - 1);
 
   return (
     <div
@@ -23,7 +23,9 @@ export function PrescriptionCard({
     >
       <div
         className={`absolute left-0 top-0 bottom-0 w-1 ${
-          isPending ? 'bg-surface-variant group-hover:bg-primary' : 'bg-surface-variant'
+          isPending
+            ? "bg-surface-variant group-hover:bg-primary"
+            : "bg-surface-variant"
         }`}
       />
 
@@ -45,7 +47,10 @@ export function PrescriptionCard({
                 <h3 className="text-xl font-semibold text-primary flex items-center gap-2">
                   {lead.name}
                   {lead.dosage ? (
-                    <span className="text-on-surface-variant"> {lead.dosage}</span>
+                    <span className="text-on-surface-variant">
+                      {" "}
+                      {lead.dosage}
+                    </span>
                   ) : null}
                   {extraCount > 0 ? (
                     <span className="text-xs font-semibold text-on-surface-variant border border-outline-variant rounded-full px-2 py-0.5 ml-auto">
@@ -58,7 +63,7 @@ export function PrescriptionCard({
                     Instructions
                   </span>
                   <p className="text-base text-on-surface">
-                    {lead.instructions || 'No instructions provided'}
+                    {lead.instructions || "No instructions provided"}
                   </p>
                 </div>
                 {extraCount > 0 && rx.items ? (
@@ -68,11 +73,16 @@ export function PrescriptionCard({
                     </summary>
                     <ul className="mt-2 flex flex-col gap-1 text-sm text-on-surface">
                       {rx.items.slice(1).map((item, idx) => (
-                        <li key={item.id ?? idx} className="flex justify-between">
+                        <li
+                          key={item.id ?? idx}
+                          className="flex justify-between"
+                        >
                           <span>
                             <span className="font-medium">{item.name}</span>
                             {item.dosage ? (
-                              <span className="text-on-surface-variant ml-1">{item.dosage}</span>
+                              <span className="text-on-surface-variant ml-1">
+                                {item.dosage}
+                              </span>
                             ) : null}
                           </span>
                           {item.quantity ? (
@@ -92,19 +102,23 @@ export function PrescriptionCard({
           <div className="flex flex-col gap-4 border-l-0 md:border-l border-outline-variant/30 md:pl-8 pt-4 md:pt-0">
             {rx.author ? (
               <div className="flex flex-col gap-1">
-                <span className="label-uppercase tracking-widest">Prescribed By</span>
+                <span className="label-uppercase tracking-widest">
+                  Prescribed By
+                </span>
                 <span className="text-base text-on-surface">
-                  {rx.author.signatureText || rx.author.user?.email || 'N/A'}
+                  {rx.author.signatureText || rx.author.user?.email || "N/A"}
                 </span>
               </div>
             ) : null}
             <div className="flex flex-col gap-1">
-              <span className="label-uppercase tracking-widest">Date Issued</span>
+              <span className="label-uppercase tracking-widest">
+                Date Issued
+              </span>
               <span className="text-base text-on-surface tabular-nums">
-                {new Date(rx.createdAt).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
+                {new Date(rx.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
                 })}
               </span>
             </div>
@@ -118,5 +132,5 @@ export function PrescriptionCard({
         ) : null}
       </div>
     </div>
-  )
+  );
 }

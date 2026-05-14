@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button, buttonVariants } from '@/components/ui/button'
+import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -11,24 +11,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { useUsersFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
-import type { UserEntity } from '@/lib/api/generated/schemas'
-import { LoadingState } from '@/components/feedback/LoadingState'
-import { ErrorState } from '@/components/feedback/ErrorState'
-import { EmptyState } from '@/components/feedback/EmptyState'
-import { usePagination } from '@/lib/hooks/usePagination'
-import { routes } from '@/lib/routes'
+} from "@/components/ui/table";
+import { useUsersFindAll } from "@/lib/api/generated/prescriptionManagementAPI";
+import type { UserEntity } from "@/lib/api/generated/schemas";
+import { LoadingState } from "@/components/feedback/LoadingState";
+import { ErrorState } from "@/components/feedback/ErrorState";
+import { EmptyState } from "@/components/feedback/EmptyState";
+import { usePagination } from "@/lib/hooks/usePagination";
+import { routes } from "@/lib/routes";
 
 export function UsersTable() {
-  const { page, limit, setPage } = usePagination({ limit: 20 })
-  const { data, isLoading, error } = useUsersFindAll({ page, limit })
+  const { page, limit, setPage } = usePagination({ limit: 20 });
+  const { data, isLoading, error } = useUsersFindAll({ page, limit });
 
-  if (isLoading) return <LoadingState label="Loading users" />
-  if (error) return <ErrorState message={error.message} />
+  if (isLoading) return <LoadingState label="Loading users" />;
+  if (error) return <ErrorState message={error.message} />;
 
-  const users = (data?.data as UserEntity[] | undefined) ?? []
-  const meta = data?.meta
+  const users = (data?.data as UserEntity[] | undefined) ?? [];
+  const meta = data?.meta;
 
   return (
     <div>
@@ -52,9 +52,15 @@ export function UsersTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-                <TableHead className="uppercase tracking-wider text-xs">Email</TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">Role</TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">Created</TableHead>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Email
+                </TableHead>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Role
+                </TableHead>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Created
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -64,9 +70,14 @@ export function UsersTable() {
                   data-testid="user-row"
                   className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
                 >
-                  <TableCell className="text-sm text-primary">{user.email}</TableCell>
+                  <TableCell className="text-sm text-primary">
+                    {user.email}
+                  </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="uppercase tracking-wider text-[0.7rem]">
+                    <Badge
+                      variant="outline"
+                      className="uppercase tracking-wider text-[0.7rem]"
+                    >
                       {user.role}
                     </Badge>
                   </TableCell>
@@ -91,7 +102,9 @@ export function UsersTable() {
                   onClick={() => setPage(meta.page - 1)}
                   aria-label="Previous page"
                 >
-                  <span className="material-symbols-outlined text-lg">chevron_left</span>
+                  <span className="material-symbols-outlined text-lg">
+                    chevron_left
+                  </span>
                 </Button>
                 <div className="text-xs font-semibold tabular-nums">
                   Page {meta.page} of {meta.totalPages}
@@ -103,7 +116,9 @@ export function UsersTable() {
                   onClick={() => setPage(meta.page + 1)}
                   aria-label="Next page"
                 >
-                  <span className="material-symbols-outlined text-lg">chevron_right</span>
+                  <span className="material-symbols-outlined text-lg">
+                    chevron_right
+                  </span>
                 </Button>
               </div>
             </div>
@@ -111,5 +126,5 @@ export function UsersTable() {
         </Card>
       )}
     </div>
-  )
+  );
 }

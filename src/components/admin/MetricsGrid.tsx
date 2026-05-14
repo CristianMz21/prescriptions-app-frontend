@@ -1,9 +1,9 @@
-import type { MetricsResponseDto } from '@/lib/api/generated/schemas'
-import { Card } from '@/components/ui/card'
-import { MetricCard } from './MetricCard'
+import type { MetricsResponseDto } from "@/lib/api/generated/schemas";
+import { Card } from "@/components/ui/card";
+import { MetricCard } from "./MetricCard";
 
 interface MetricsGridProps {
-  metrics: MetricsResponseDto
+  metrics: MetricsResponseDto;
 }
 
 export function MetricsGrid({ metrics }: MetricsGridProps) {
@@ -84,5 +84,5 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
         </div>
       </Card>
     </div>
-  )
+  );
 }

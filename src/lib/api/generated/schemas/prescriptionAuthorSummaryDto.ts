@@ -5,30 +5,30 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { PrescriptionUserSummaryDto } from './prescriptionUserSummaryDto';
+import type { PrescriptionUserSummaryDto } from "./prescriptionUserSummaryDto";
 
 export interface PrescriptionAuthorSummaryDto {
   /** Doctor unique identifier */
   id: string;
   /**
-     * Medical specialty
-     * @nullable
-     */
+   * Medical specialty
+   * @nullable
+   */
   specialty?: string | null;
   /**
-     * Medical license / registration number
-     * @nullable
-     */
+   * Medical license / registration number
+   * @nullable
+   */
   medicalId?: string | null;
   /**
-     * Text rendering of the doctor signature
-     * @nullable
-     */
+   * Text rendering of the doctor signature
+   * @nullable
+   */
   signatureText?: string | null;
   /**
-     * URL to the doctor signature image
-     * @nullable
-     */
+   * URL to the doctor signature image
+   * @nullable
+   */
   signatureImageUrl?: string | null;
   /** Doctor account */
   user: PrescriptionUserSummaryDto;

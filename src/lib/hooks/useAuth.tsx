@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   createContext,
@@ -6,63 +6,63 @@ import {
   useState,
   useTransition,
   type ReactNode,
-} from 'react'
-import { useRouter } from 'next/navigation'
-import type { UserProfileResponseDto } from '@/lib/api/generated/schemas'
+} from "react";
+import { useRouter } from "next/navigation";
+import type { UserProfileResponseDto } from "@/lib/api/generated/schemas";
 import {
   authGetProfile,
   authLogin,
   authLogout,
-} from '@/lib/api/generated/prescriptionManagementAPI'
-import { getRedirectPath, routes } from '@/lib/routes'
+} from "@/lib/api/generated/prescriptionManagementAPI";
+import { getRedirectPath, routes } from "@/lib/routes";
 
 interface AuthContextType {
-  user: UserProfileResponseDto | null
-  isLoading: boolean
-  isAuthenticated: boolean
-  login: (email: string, password: string) => Promise<void>
-  logout: () => Promise<void>
+  user: UserProfileResponseDto | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
-  children: ReactNode
-  initialUser: UserProfileResponseDto | null
+  children: ReactNode;
+  initialUser: UserProfileResponseDto | null;
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
-  const router = useRouter()
-  const [user, setUser] = useState<UserProfileResponseDto | null>(initialUser)
-  const [isLoading, setIsLoading] = useState(false)
-  const [, startTransition] = useTransition()
+  const router = useRouter();
+  const [user, setUser] = useState<UserProfileResponseDto | null>(initialUser);
+  const [isLoading, setIsLoading] = useState(false);
+  const [, startTransition] = useTransition();
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await authLogin({ email, password })
-      const profile = await authGetProfile()
+      await authLogin({ email, password });
+      const profile = await authGetProfile();
       startTransition(() => {
-        setUser(profile)
-        router.push(getRedirectPath(profile.role))
-      })
+        setUser(profile);
+        router.push(getRedirectPath(profile.role));
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const logout = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await authLogout()
+      await authLogout();
     } finally {
       startTransition(() => {
-        setUser(null)
-        router.push(routes.login)
-      })
-      setIsLoading(false)
+        setUser(null);
+        router.push(routes.login);
+      });
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <AuthContext.Provider
@@ -76,13 +76,13 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
+  return context;
 }

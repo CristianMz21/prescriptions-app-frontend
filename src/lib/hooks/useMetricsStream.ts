@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import type { MetricsResponseDto } from '@/lib/api/generated/schemas'
-import { API_BASE_URL } from '@/lib/api/client'
-import { qk } from '@/lib/api/queryKeys'
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import type { MetricsResponseDto } from "@/lib/api/generated/schemas";
+import { API_BASE_URL } from "@/lib/api/client";
+import { qk } from "@/lib/api/queryKeys";
 
 /**
  * Subscribes to /admin/metrics/stream and feeds each event payload into the
@@ -16,49 +16,52 @@ import { qk } from '@/lib/api/queryKeys'
  * browsers); the polling hook still works in that case.
  */
 export function useMetricsStream(enabled = true): void {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!enabled) return
-    if (typeof window === 'undefined' || typeof EventSource === 'undefined') return
+    if (!enabled) return;
+    if (typeof window === "undefined" || typeof EventSource === "undefined")
+      return;
 
-    const url = `${API_BASE_URL}/admin/metrics/stream`
-    let es: EventSource | null = null
+    const url = `${API_BASE_URL}/admin/metrics/stream`;
+    let es: EventSource | null = null;
     try {
-      es = new EventSource(url, { withCredentials: true })
+      es = new EventSource(url, { withCredentials: true });
     } catch {
-      return
+      return;
     }
 
     const handleMessage = (event: MessageEvent) => {
       try {
-        const payload = JSON.parse(event.data) as Partial<MetricsResponseDto>
+        const payload = JSON.parse(event.data) as Partial<MetricsResponseDto>;
         // Merge to avoid clobbering fields the stream omits (some
         // implementations only send deltas, e.g. just totals + byStatus).
-        queryClient.setQueryData(qk.metrics.summary(), (prev: MetricsResponseDto | undefined) =>
-          prev ? { ...prev, ...payload } : (payload as MetricsResponseDto),
-        )
+        queryClient.setQueryData(
+          qk.metrics.summary(),
+          (prev: MetricsResponseDto | undefined) =>
+            prev ? { ...prev, ...payload } : (payload as MetricsResponseDto),
+        );
       } catch {
         /* malformed event — ignore */
       }
-    }
+    };
     const handleError = () => {
       // SSE errors auto-reconnect; if the endpoint is missing/forbidden the
       // polling hook still keeps the cache fresh. We do nothing here so a
       // missing /admin/metrics/stream endpoint cannot crash the page.
-    }
+    };
 
-    es.addEventListener('message', handleMessage)
-    es.addEventListener('error', handleError)
+    es.addEventListener("message", handleMessage);
+    es.addEventListener("error", handleError);
 
     return () => {
       try {
-        es?.removeEventListener('message', handleMessage)
-        es?.removeEventListener('error', handleError)
-        es?.close()
+        es?.removeEventListener("message", handleMessage);
+        es?.removeEventListener("error", handleError);
+        es?.close();
       } catch {
         /* ignore — already torn down */
       }
-    }
-  }, [enabled, queryClient])
+    };
+  }, [enabled, queryClient]);
 }

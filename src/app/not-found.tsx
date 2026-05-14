@@ -1,6 +1,6 @@
-import Link from 'next/link'
-import { buttonVariants } from '@/components/ui/button'
-import { routes } from '@/lib/routes'
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { routes } from "@/lib/routes";
 
 export default function NotFoundPage() {
   return (
@@ -9,7 +9,9 @@ export default function NotFoundPage() {
         explore_off
       </span>
       <div className="text-center max-w-md">
-        <h1 className="text-3xl font-bold text-primary uppercase tracking-widest">Lost path</h1>
+        <h1 className="text-3xl font-bold text-primary uppercase tracking-widest">
+          Lost path
+        </h1>
         <p className="text-base text-on-surface-variant mt-2">
           The route you tried to reach is not part of the system.
         </p>
@@ -19,5 +21,5 @@ export default function NotFoundPage() {
         Return home
       </Link>
     </div>
-  )
+  );
 }

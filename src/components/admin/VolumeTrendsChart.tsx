@@ -1,4 +1,4 @@
-import { Card } from '@/components/ui/card'
+import { Card } from "@/components/ui/card";
 
 // Decorative-only trend visualization. Backed by a static polygon today;
 // swap to metrics.byDay when the design adds a real timeseries chart.
@@ -6,7 +6,9 @@ export function VolumeTrendsChart() {
   return (
     <Card className="card-glass lg:col-span-2 p-6 gap-0">
       <div className="flex justify-between items-center mb-6 pb-4 border-b border-outline-variant/30">
-        <h3 className="text-xl font-semibold text-primary">Volume Trends (30 Days)</h3>
+        <h3 className="text-xl font-semibold text-primary">
+          Volume Trends (30 Days)
+        </h3>
         <div className="flex gap-2">
           <button
             type="button"
@@ -46,7 +48,7 @@ export function VolumeTrendsChart() {
             className="absolute bottom-0 left-0 right-0 top-1/4 bg-gradient-to-t from-primary/10 to-primary/0 border-t-2 border-primary"
             style={{
               clipPath:
-                'polygon(0 40%, 10% 45%, 20% 30%, 30% 50%, 40% 20%, 50% 35%, 60% 15%, 70% 25%, 80% 5%, 90% 10%, 100% 0, 100% 100%, 0 100%)',
+                "polygon(0 40%, 10% 45%, 20% 30%, 30% 50%, 40% 20%, 50% 35%, 60% 15%, 70% 25%, 80% 5%, 90% 10%, 100% 0, 100% 100%, 0 100%)",
             }}
           />
         </div>
@@ -58,5 +60,5 @@ export function VolumeTrendsChart() {
         </div>
       </div>
     </Card>
-  )
+  );
 }

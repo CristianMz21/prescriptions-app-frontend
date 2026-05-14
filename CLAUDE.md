@@ -20,9 +20,11 @@ Env: copy `.env.local.example` → `.env.local`. Only `NEXT_PUBLIC_API_URL` is c
 ## Architecture
 
 ### Repo context
+
 This Next.js app lives inside a larger monorepo at `prescriptions-app/` (root) alongside a NestJS `backend/`. The API contract is owned by the backend; this app consumes it via an OpenAPI-generated client. See `../../ARCHITECTURE.md` for the full system design (data model, endpoints, role rules).
 
 ### API layer (Orval + TanStack Query + Axios)
+
 The entire client SDK under `src/lib/api/generated/` is **generated** by Orval from `backend/openapi.json` — never edit those files; regenerate with `pnpm api:refresh` instead.
 
 - `orval.config.mjs` configures generation: react-query hooks + axios fetchers + Zod-less schemas, all routed through the custom mutator at `src/lib/api/custom-instance.ts`.
@@ -31,6 +33,7 @@ The entire client SDK under `src/lib/api/generated/` is **generated** by Orval f
 - The TanStack Query `QueryClient` is created once per render tree in `src/app/providers.tsx` (defaults: `staleTime: 60s`, `retry: 1`).
 
 ### Auth (cookie session, two consumers)
+
 The backend issues an HTTP-only session cookie; this app does not store or read tokens in JS. Auth is consumed two different ways depending on rendering context:
 
 - **Server components / layouts** — `src/lib/auth/server.ts` exposes `getAuth()`, `requireAuth()`, `requireRole(roles)`. These call `/auth/profile` via `apiClient` and `redirect('/login')` on failure. Use these inside `app/<role>/layout.tsx` to gate role-scoped sections (see `app/doctor/layout.tsx`, `app/patient/layout.tsx`).
@@ -42,6 +45,7 @@ The backend issues an HTTP-only session cookie; this app does not store or read 
 Note the role enum is **uppercase** (`ADMIN`/`DOCTOR`/`PATIENT`) — this comes from the generated schemas; don't hand-roll the lowercase form shown in `ARCHITECTURE.md`.
 
 ### Routing layout
+
 App Router, organized by role: `app/(auth)/login/`, `app/admin/`, `app/doctor/`, `app/patient/`. Role guards live in each role's `layout.tsx` (server-side `requireRole`). The `(auth)` group keeps login outside any role gate.
 
 A few patient/doctor routes (e.g. `app/patient/prescriptions/[id]/consume/route.ts`) use Next.js Route Handlers as thin server-side proxies — keep these when you need to call the backend with the user's cookie from a form action without going through a client hook.

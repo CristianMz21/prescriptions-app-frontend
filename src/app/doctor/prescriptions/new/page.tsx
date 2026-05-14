@@ -1,5 +1,5 @@
-import { CreatePrescriptionForm } from '@/components/doctor/CreatePrescriptionForm'
+import { CreatePrescriptionForm } from "@/components/doctor/CreatePrescriptionForm";
 
 export default function NewPrescriptionPage() {
-  return <CreatePrescriptionForm />
+  return <CreatePrescriptionForm />;
 }

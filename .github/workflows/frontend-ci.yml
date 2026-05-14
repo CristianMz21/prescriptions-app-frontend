@@ -12,13 +12,13 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '22'
-  PNPM_VERSION: '11.1.1'
+  NODE_VERSION: "22"
+  PNPM_VERSION: "11.1.1"
 
 permissions:
   contents: read
   pull-requests: write
-  security-events: write  # Required for CodeQL upload action
+  security-events: write # Required for CodeQL upload action
 
 jobs:
   # ─── Static validation ────────────────────────────────────────────────────
@@ -192,7 +192,7 @@ jobs:
     env:
       E2E_BACKEND_URL: ${{ vars.E2E_BACKEND_URL || 'http://localhost:3000' }}
       E2E_FRONTEND_URL: ${{ vars.E2E_FRONTEND_URL || 'http://localhost:3001' }}
-      PLAYWRIGHT_WORKERS: '1'
+      PLAYWRIGHT_WORKERS: "1"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

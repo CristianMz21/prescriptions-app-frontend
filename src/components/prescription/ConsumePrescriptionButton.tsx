@@ -1,25 +1,25 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
-import { routes } from '@/lib/routes'
+} from "@/components/ui/popover";
+import { routes } from "@/lib/routes";
 
 interface ConsumePrescriptionButtonProps {
-  prescriptionId: string
+  prescriptionId: string;
 }
 
 export function ConsumePrescriptionButton({
   prescriptionId,
 }: ConsumePrescriptionButtonProps) {
-  const [open, setOpen] = useState(false)
-  const [reason, setReason] = useState('')
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -50,7 +50,12 @@ export function ConsumePrescriptionButton({
             maxLength={500}
           />
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" size="sm">
@@ -61,5 +66,5 @@ export function ConsumePrescriptionButton({
         </form>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

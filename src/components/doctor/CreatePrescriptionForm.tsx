@@ -1,99 +1,103 @@
-'use client'
+"use client";
 
-import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import type {
   PrescriptionItemDto,
   UserEntity,
-} from '@/lib/api/generated/schemas'
+} from "@/lib/api/generated/schemas";
 import {
   usePrescriptionsCreate,
   useUsersFindAllPatients,
   usersFindOne,
-} from '@/lib/api/generated/prescriptionManagementAPI'
-import { ApiError } from '@/lib/api/client'
-import { routes } from '@/lib/routes'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+} from "@/lib/api/generated/prescriptionManagementAPI";
+import { ApiError } from "@/lib/api/client";
+import { routes } from "@/lib/routes";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 
 const EMPTY_ITEM: PrescriptionItemDto = {
-  name: '',
-  dosage: '',
+  name: "",
+  dosage: "",
   quantity: undefined,
-  instructions: '',
-}
+  instructions: "",
+};
 
-const DEBOUNCE_MS = 300
-const PATIENT_LIMIT = 20
+const DEBOUNCE_MS = 300;
+const PATIENT_LIMIT = 20;
 
 export function CreatePrescriptionForm() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const [selectedUserId, setSelectedUserId] = useState('')
-  const [notes, setNotes] = useState('')
-  const [items, setItems] = useState<PrescriptionItemDto[]>([{ ...EMPTY_ITEM }])
-  const [error, setError] = useState<string | null>(null)
-  const [isResolvingPatient, setIsResolvingPatient] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [notes, setNotes] = useState("");
+  const [items, setItems] = useState<PrescriptionItemDto[]>([
+    { ...EMPTY_ITEM },
+  ]);
+  const [error, setError] = useState<string | null>(null);
+  const [isResolvingPatient, setIsResolvingPatient] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
     if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
+      clearTimeout(debounceTimerRef.current);
     }
     debounceTimerRef.current = setTimeout(() => {
-      setDebouncedSearch(searchQuery)
-    }, DEBOUNCE_MS)
+      setDebouncedSearch(searchQuery);
+    }, DEBOUNCE_MS);
     return () => {
       if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
+        clearTimeout(debounceTimerRef.current);
       }
-    }
-  }, [searchQuery])
+    };
+  }, [searchQuery]);
 
   const queryParams = {
     limit: PATIENT_LIMIT,
     page: 1,
     ...(debouncedSearch.trim().length > 0 ? { q: debouncedSearch.trim() } : {}),
-  }
+  };
 
   const {
     data: patientsData,
     isLoading: isSearching,
     isError: searchError,
-  } = useUsersFindAllPatients(queryParams)
+  } = useUsersFindAllPatients(queryParams);
 
-  const patients: UserEntity[] = patientsData?.data ?? []
+  const patients: UserEntity[] = patientsData?.data ?? [];
 
   const createMutation = usePrescriptionsCreate({
     mutation: {
       onSuccess: () => {
-        void queryClient.invalidateQueries()
-        router.push(routes.doctor.prescriptions)
+        void queryClient.invalidateQueries();
+        router.push(routes.doctor.prescriptions);
       },
       onError: (err: ApiError) => {
-        setError(err.message || 'Failed to create prescription')
+        setError(err.message || "Failed to create prescription");
       },
     },
-  })
+  });
 
-  const handleAddItem = () => setItems((prev) => [...prev, { ...EMPTY_ITEM }])
+  const handleAddItem = () => setItems((prev) => [...prev, { ...EMPTY_ITEM }]);
   const handleRemoveItem = (index: number) =>
-    setItems((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev))
+    setItems((prev) =>
+      prev.length > 1 ? prev.filter((_, i) => i !== index) : prev,
+    );
 
   const updateItem = (
     index: number,
@@ -102,36 +106,38 @@ export function CreatePrescriptionForm() {
   ) =>
     setItems((prev) =>
       prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
-    )
+    );
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-    setError(null)
+    event.preventDefault();
+    setError(null);
 
     if (!selectedUserId) {
-      setError('Please select a patient')
-      return
+      setError("Please select a patient");
+      return;
     }
-    const validItems = items.filter((item) => item.name.trim() !== '')
+    const validItems = items.filter((item) => item.name.trim() !== "");
     if (validItems.length === 0) {
-      setError('At least one medication is required')
-      return
+      setError("At least one medication is required");
+      return;
     }
 
-    setIsResolvingPatient(true)
-    let patientProfileId: string
+    setIsResolvingPatient(true);
+    let patientProfileId: string;
     try {
-      const fullUser = await usersFindOne(selectedUserId)
+      const fullUser = await usersFindOne(selectedUserId);
       if (!fullUser.patient?.id) {
-        setError('Selected user has no patient profile')
-        return
+        setError("Selected user has no patient profile");
+        return;
       }
-      patientProfileId = fullUser.patient.id
+      patientProfileId = fullUser.patient.id;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to resolve patient')
-      return
+      setError(
+        err instanceof Error ? err.message : "Failed to resolve patient",
+      );
+      return;
     } finally {
-      setIsResolvingPatient(false)
+      setIsResolvingPatient(false);
     }
 
     createMutation.mutate({
@@ -140,10 +146,10 @@ export function CreatePrescriptionForm() {
         items: validItems,
         notes: notes || undefined,
       },
-    })
-  }
+    });
+  };
 
-  const isSubmitting = createMutation.isPending || isResolvingPatient
+  const isSubmitting = createMutation.isPending || isResolvingPatient;
 
   return (
     <div className="p-8">
@@ -196,23 +202,29 @@ export function CreatePrescriptionForm() {
             </div>
             <Select
               value={selectedUserId}
-              onValueChange={(value) => setSelectedUserId(value ?? '')}
+              onValueChange={(value) => setSelectedUserId(value ?? "")}
               disabled={isSearching}
             >
               <SelectTrigger id="patient" className="w-full">
-                <SelectValue placeholder={isSearching ? 'Searching...' : 'Select a patient...'} />
+                <SelectValue
+                  placeholder={
+                    isSearching ? "Searching..." : "Select a patient..."
+                  }
+                />
               </SelectTrigger>
               <SelectContent>
                 {searchError ? (
                   <div className="px-4 py-3 text-sm text-error flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">error</span>
+                    <span className="material-symbols-outlined text-sm">
+                      error
+                    </span>
                     Failed to load patients
                   </div>
                 ) : patients.length === 0 ? (
                   <div className="px-4 py-3 text-sm text-on-surface-variant">
                     {debouncedSearch.trim().length > 0
-                      ? 'No patients found'
-                      : 'No patients available'}
+                      ? "No patients found"
+                      : "No patients available"}
                   </div>
                 ) : (
                   patients.map((patient) => (
@@ -223,21 +235,30 @@ export function CreatePrescriptionForm() {
                 )}
               </SelectContent>
             </Select>
-            {patientsData?.meta && patientsData.data.length === 0 && debouncedSearch.trim().length > 0 && (
-              <p className="text-xs text-on-surface-variant mt-1">
-                No patients matching &ldquo;{debouncedSearch}&rdquo;
-              </p>
-            )}
+            {patientsData?.meta &&
+              patientsData.data.length === 0 &&
+              debouncedSearch.trim().length > 0 && (
+                <p className="text-xs text-on-surface-variant mt-1">
+                  No patients matching &ldquo;{debouncedSearch}&rdquo;
+                </p>
+              )}
           </div>
         </Card>
 
         <Card className="card-glass p-6 gap-0">
           <div className="flex justify-between items-end border-b border-outline-variant/50 pb-2 mb-6">
             <h3 className="text-xl font-semibold text-primary flex items-center gap-2">
-              <span className="material-symbols-outlined text-on-surface-variant">vaccines</span>
+              <span className="material-symbols-outlined text-on-surface-variant">
+                vaccines
+              </span>
               Medication Details
             </h3>
-            <Button type="button" variant="ghost" size="sm" onClick={handleAddItem}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleAddItem}
+            >
               <span className="material-symbols-outlined text-sm">add</span>
               Add Item
             </Button>
@@ -259,7 +280,9 @@ export function CreatePrescriptionForm() {
 
         <Card className="card-glass p-6 gap-0">
           <h3 className="text-xl font-semibold text-primary mb-6 flex items-center gap-2 border-b border-outline-variant/50 pb-2">
-            <span className="material-symbols-outlined text-on-surface-variant">note_alt</span>
+            <span className="material-symbols-outlined text-on-surface-variant">
+              note_alt
+            </span>
             Clinical Notes &amp; Authorization
           </h3>
 
@@ -290,7 +313,7 @@ export function CreatePrescriptionForm() {
           <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8 pt-6 border-t border-outline-variant/30">
             <Link
               href={routes.doctor.prescriptions}
-              className={buttonVariants({ variant: 'outline' })}
+              className={buttonVariants({ variant: "outline" })}
             >
               Cancel
             </Link>
@@ -300,25 +323,28 @@ export function CreatePrescriptionForm() {
                   <span className="material-symbols-outlined animate-spin">
                     progress_activity
                   </span>
-                  {isResolvingPatient ? 'Resolving patient…' : 'Creating…'}
+                  {isResolvingPatient ? "Resolving patient…" : "Creating…"}
                 </>
               ) : (
-                'Issue Prescription'
+                "Issue Prescription"
               )}
             </Button>
           </div>
         </Card>
       </form>
     </div>
-  )
+  );
 }
 
 interface MedicationItemRowProps {
-  index: number
-  item: PrescriptionItemDto
-  onChange: (field: keyof PrescriptionItemDto, value: string | number | undefined) => void
-  onRemove: () => void
-  canRemove: boolean
+  index: number;
+  item: PrescriptionItemDto;
+  onChange: (
+    field: keyof PrescriptionItemDto,
+    value: string | number | undefined,
+  ) => void;
+  onRemove: () => void;
+  canRemove: boolean;
 }
 
 function MedicationItemRow({
@@ -333,7 +359,7 @@ function MedicationItemRow({
     dosage: `med-dosage-${index}`,
     quantity: `med-quantity-${index}`,
     instructions: `med-instructions-${index}`,
-  }
+  };
   return (
     <div
       data-testid="medication-item"
@@ -359,7 +385,7 @@ function MedicationItemRow({
           <Input
             id={ids.name}
             value={item.name}
-            onChange={(e) => onChange('name', e.target.value)}
+            onChange={(e) => onChange("name", e.target.value)}
             placeholder="e.g., Amoxicillin"
             required
           />
@@ -370,8 +396,8 @@ function MedicationItemRow({
           </Label>
           <Input
             id={ids.dosage}
-            value={item.dosage || ''}
-            onChange={(e) => onChange('dosage', e.target.value || undefined)}
+            value={item.dosage || ""}
+            onChange={(e) => onChange("dosage", e.target.value || undefined)}
             placeholder="e.g., 500mg"
           />
         </div>
@@ -382,9 +408,12 @@ function MedicationItemRow({
           <Input
             id={ids.quantity}
             type="number"
-            value={item.quantity ?? ''}
+            value={item.quantity ?? ""}
             onChange={(e) =>
-              onChange('quantity', e.target.value ? parseInt(e.target.value, 10) : undefined)
+              onChange(
+                "quantity",
+                e.target.value ? parseInt(e.target.value, 10) : undefined,
+              )
             }
             placeholder="Qty"
           />
@@ -396,11 +425,13 @@ function MedicationItemRow({
         </Label>
         <Input
           id={ids.instructions}
-          value={item.instructions || ''}
-          onChange={(e) => onChange('instructions', e.target.value || undefined)}
+          value={item.instructions || ""}
+          onChange={(e) =>
+            onChange("instructions", e.target.value || undefined)
+          }
           placeholder="e.g., Take one tablet by mouth twice daily"
         />
       </div>
     </div>
-  )
+  );
 }

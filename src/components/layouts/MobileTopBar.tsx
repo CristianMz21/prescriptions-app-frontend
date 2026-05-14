@@ -1,31 +1,35 @@
-'use client'
+"use client";
 
-import type { Role } from '@/lib/api/generated/schemas'
-import { navigationByRole } from '@/lib/nav'
+import type { Role } from "@/lib/api/generated/schemas";
+import { navigationByRole } from "@/lib/nav";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { RoleNav } from './RoleNav'
-import { useAuth } from '@/lib/hooks/useAuth'
-import { ThemeToggle } from './ThemeToggle'
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { RoleNav } from "./RoleNav";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface MobileTopBarProps {
-  role: Role
+  role: Role;
 }
 
 export function MobileTopBar({ role }: MobileTopBarProps) {
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuth();
   return (
     <header className="md:hidden sticky top-0 z-40 flex items-center justify-between gap-3 px-4 py-3 border-b border-outline-variant/30 bg-surface-container-lowest/90 backdrop-blur">
       <Sheet>
         <SheetTrigger
           render={
-            <Button variant="outline" size="icon-sm" aria-label="Open navigation">
+            <Button
+              variant="outline"
+              size="icon-sm"
+              aria-label="Open navigation"
+            >
               <span className="material-symbols-outlined text-lg">menu</span>
             </Button>
           }
@@ -45,7 +49,9 @@ export function MobileTopBar({ role }: MobileTopBarProps) {
                 <span className="text-xs font-semibold text-on-surface uppercase tracking-wider">
                   {user.role}
                 </span>
-                <span className="text-xs text-on-surface-variant truncate">{user.email}</span>
+                <span className="text-xs text-on-surface-variant truncate">
+                  {user.email}
+                </span>
               </div>
             ) : null}
             {user ? <ThemeToggle initial={user.themePreference} /> : null}
@@ -60,8 +66,10 @@ export function MobileTopBar({ role }: MobileTopBarProps) {
           </div>
         </SheetContent>
       </Sheet>
-      <span className="text-base font-bold text-primary uppercase tracking-widest">RX-OS</span>
+      <span className="text-base font-bold text-primary uppercase tracking-widest">
+        RX-OS
+      </span>
       <div className="w-8" />
     </header>
-  )
+  );
 }

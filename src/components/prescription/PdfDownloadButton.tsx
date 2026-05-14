@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { API_BASE_URL } from '@/lib/api/client'
+import { Button } from "@/components/ui/button";
+import { API_BASE_URL } from "@/lib/api/client";
 
 interface PdfDownloadButtonProps {
-  prescriptionId: string
+  prescriptionId: string;
 }
 
 export function PdfDownloadButton({ prescriptionId }: PdfDownloadButtonProps) {
@@ -15,13 +15,13 @@ export function PdfDownloadButton({ prescriptionId }: PdfDownloadButtonProps) {
       onClick={() =>
         window.open(
           `${API_BASE_URL}/prescriptions/${prescriptionId}/pdf`,
-          '_blank',
-          'noopener,noreferrer',
+          "_blank",
+          "noopener,noreferrer",
         )
       }
     >
       <span className="material-symbols-outlined text-lg">download</span>
       Download PDF
     </Button>
-  )
+  );
 }

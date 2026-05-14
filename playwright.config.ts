@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from "@playwright/test";
 
 /**
  * Playwright config for the Prescriptions frontend E2E suite.
@@ -14,7 +14,7 @@ import { defineConfig, devices } from '@playwright/test'
  *   to the dev server spawned for the test suite, never to manual `pnpm dev`.
  */
 export default defineConfig({
-  testDir: './e2e',
+  testDir: "./e2e",
   testMatch: /.*\.spec\.ts/,
   timeout: 60_000,
   expect: { timeout: 8_000 },
@@ -25,34 +25,34 @@ export default defineConfig({
   // causes parallel cold-compilation pile-ups and hydration/login timeouts.
   // Keep this deterministic instead of maximizing local parallelism.
   workers: 2,
-  reporter: [['list'], ['html', { open: 'never' }]],
-  globalSetup: './e2e/global-setup.ts',
+  reporter: [["list"], ["html", { open: "never" }]],
+  globalSetup: "./e2e/global-setup.ts",
   use: {
-    baseURL: 'http://localhost:3001',
-    trace: 'retain-on-failure',
-    screenshot: 'only-on-failure',
-    video: { mode: 'on', size: { width: 1280, height: 800 } },
+    baseURL: "http://localhost:3001",
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+    video: { mode: "on", size: { width: 1280, height: 800 } },
     actionTimeout: 15_000,
     navigationTimeout: 45_000,
   },
   projects: [
     {
-      name: 'chromium',
+      name: "chromium",
       use: {
-        ...devices['Desktop Chrome'],
+        ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 800 },
       },
     },
   ],
   webServer: {
-    command: 'pnpm exec next dev -H localhost -p 3001',
-    url: 'http://localhost:3001/login',
+    command: "pnpm exec next dev -H localhost -p 3001",
+    url: "http://localhost:3001/login",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    stdout: 'ignore',
-    stderr: 'pipe',
+    stdout: "ignore",
+    stderr: "pipe",
     env: {
-      NEXT_PUBLIC_API_URL: 'http://localhost:3000',
+      NEXT_PUBLIC_API_URL: "http://localhost:3000",
     },
   },
-})
+});

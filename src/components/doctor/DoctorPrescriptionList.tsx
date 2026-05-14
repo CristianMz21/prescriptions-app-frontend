@@ -1,30 +1,31 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
+import Link from "next/link";
 import type {
   PrescriptionResponseDto,
   PrescriptionsFindAllParams,
   PrescriptionsFindAllStatus,
-} from '@/lib/api/generated/schemas'
-import { usePrescriptionsFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
-import { ErrorState } from '@/components/feedback/ErrorState'
-import { EmptyState } from '@/components/feedback/EmptyState'
-import { PrescriptionTableSkeleton } from '@/components/feedback/Skeletons'
-import { PrescriptionTable } from '@/components/prescription/PrescriptionTable'
+} from "@/lib/api/generated/schemas";
+import { usePrescriptionsFindAll } from "@/lib/api/generated/prescriptionManagementAPI";
+import { ErrorState } from "@/components/feedback/ErrorState";
+import { EmptyState } from "@/components/feedback/EmptyState";
+import { PrescriptionTableSkeleton } from "@/components/feedback/Skeletons";
+import { PrescriptionTable } from "@/components/prescription/PrescriptionTable";
 import {
   PrescriptionFiltersBar,
   type PrescriptionFilterValues,
-} from '@/components/prescription/PrescriptionFiltersBar'
-import { buttonVariants } from '@/components/ui/button'
-import { routes } from '@/lib/routes'
-import { usePagination } from '@/lib/hooks/usePagination'
-import { useUrlFilters } from '@/lib/hooks/useUrlFilters'
+} from "@/components/prescription/PrescriptionFiltersBar";
+import { buttonVariants } from "@/components/ui/button";
+import { routes } from "@/lib/routes";
+import { usePagination } from "@/lib/hooks/usePagination";
+import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
 
-const FILTER_KEYS = ['status', 'fromDate', 'toDate', 'q'] as const
+const FILTER_KEYS = ["status", "fromDate", "toDate", "q"] as const;
 
 export function DoctorPrescriptionList() {
-  const { page, limit, setPage } = usePagination({ limit: 10 })
-  const { values, setFilters, clear } = useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS)
+  const { page, limit, setPage } = usePagination({ limit: 10 });
+  const { values, setFilters, clear } =
+    useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS);
 
   const params: PrescriptionsFindAllParams = {
     page,
@@ -33,14 +34,16 @@ export function DoctorPrescriptionList() {
     fromDate: values.fromDate,
     toDate: values.toDate,
     q: values.q,
-  }
-  const { data, isLoading, error } = usePrescriptionsFindAll(params)
+  };
+  const { data, isLoading, error } = usePrescriptionsFindAll(params);
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-primary">Active Prescriptions</h2>
+          <h2 className="text-3xl font-bold text-primary">
+            Active Prescriptions
+          </h2>
           <p className="text-base text-on-surface-variant mt-1">
             Manage and monitor pending and active scripts.
           </p>
@@ -54,7 +57,11 @@ export function DoctorPrescriptionList() {
       <PrescriptionFiltersBar
         values={values}
         onChange={(patch: Partial<PrescriptionFilterValues>) =>
-          setFilters(patch as Partial<Record<(typeof FILTER_KEYS)[number], string | undefined>>)
+          setFilters(
+            patch as Partial<
+              Record<(typeof FILTER_KEYS)[number], string | undefined>
+            >,
+          )
         }
         onClear={clear}
       />
@@ -63,9 +70,12 @@ export function DoctorPrescriptionList() {
       {error ? <ErrorState message={error.message} /> : null}
       {!isLoading && !error
         ? (() => {
-            const prescriptions = (data?.data as PrescriptionResponseDto[] | undefined) ?? []
+            const prescriptions =
+              (data?.data as PrescriptionResponseDto[] | undefined) ?? [];
             if (prescriptions.length === 0) {
-              return <EmptyState icon="medication" title="No prescriptions found" />
+              return (
+                <EmptyState icon="medication" title="No prescriptions found" />
+              );
             }
             return (
               <PrescriptionTable
@@ -74,9 +84,9 @@ export function DoctorPrescriptionList() {
                 meta={data?.meta}
                 onPageChange={setPage}
               />
-            )
+            );
           })()
         : null}
     </div>
-  )
+  );
 }

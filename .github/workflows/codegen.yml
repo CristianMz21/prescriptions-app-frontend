@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '24'
-  PNPM_VERSION: '11.1.1'
+  NODE_VERSION: "24"
+  PNPM_VERSION: "11.1.1"
   # Source of truth for the OpenAPI schema — fetched from the backend repo.
   BACKEND_OPENAPI_URL: https://raw.githubusercontent.com/CristianMz21/prescriptions-app-backend/main/openapi.json
 
