@@ -20,6 +20,7 @@
     "doctor": "npx -y react-doctor@latest . --verbose --diff",
     "analyze": "ANALYZE=true next build",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "api:diff": "node scripts/api-diff.mjs",
     "test:e2e:ui": "playwright test --ui",

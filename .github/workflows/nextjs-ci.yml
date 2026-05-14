@@ -17,6 +17,7 @@ env:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   ci:
@@ -77,6 +78,15 @@ jobs:
       - name: Unit tests
         if: steps.changed.outputs.any_changed == 'true' && hashFiles('vitest.config.*') != ''
         run: pnpm test
+
+      - name: Test coverage
+        if: steps.changed.outputs.any_changed == 'true' && hashFiles('vitest.config.*') != ''
+        run: pnpm test:coverage
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: E2E tests
         if: steps.changed.outputs.any_changed == 'true' && hashFiles('playwright.config.*') != ''

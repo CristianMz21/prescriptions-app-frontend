@@ -3,10 +3,10 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
 
-export type AdminControllerGetMetricsParams = {
+export type AdminGetMetricsParams = {
 /**
  * Start date for filtering metrics (ISO 8601 date string)
  */

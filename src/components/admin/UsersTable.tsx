@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useUsersControllerFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
+import { useUsersFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
 import type { UserEntity } from '@/lib/api/generated/schemas'
 import { LoadingState } from '@/components/feedback/LoadingState'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -22,7 +22,7 @@ import { routes } from '@/lib/routes'
 
 export function UsersTable() {
   const { page, limit, setPage } = usePagination({ limit: 20 })
-  const { data, isLoading, error } = useUsersControllerFindAll({ page, limit })
+  const { data, isLoading, error } = useUsersFindAll({ page, limit })
 
   if (isLoading) return <LoadingState label="Loading users" />
   if (error) return <ErrorState message={error.message} />

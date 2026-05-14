@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@/lib/hooks/useAuth'
-import { usePrescriptionsControllerFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
+import { usePrescriptionsFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
 import type { PrescriptionResponseDto } from '@/lib/api/generated/schemas'
 import { MetricCard } from '@/components/admin/MetricCard'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -11,7 +11,7 @@ export default function DoctorAnalyticsPage() {
   const { user } = useAuth()
   // The backend already scopes /prescriptions to the calling doctor; we
   // aggregate locally to compute per-doctor stats without admin metrics.
-  const { data, isLoading, error } = usePrescriptionsControllerFindAll({ limit: 200 })
+  const { data, isLoading, error } = usePrescriptionsFindAll({ limit: 200 })
 
   return (
     <div>

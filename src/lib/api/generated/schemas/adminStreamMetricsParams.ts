@@ -3,10 +3,10 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
 
-export type AdminControllerStreamMetricsParams = {
+export type AdminStreamMetricsParams = {
 /**
  * When true, emits one metrics event and closes the stream. Useful for automated API checks.
  */

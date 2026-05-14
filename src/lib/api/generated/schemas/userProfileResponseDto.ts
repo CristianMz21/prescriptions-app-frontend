@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
 import type { DoctorProfileSummary } from './doctorProfileSummary';
 import type { PatientProfileSummary } from './patientProfileSummary';

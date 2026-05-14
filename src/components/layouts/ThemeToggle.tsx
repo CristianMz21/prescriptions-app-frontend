@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useUsersControllerUpdateMyTheme } from '@/lib/api/generated/prescriptionManagementAPI'
+import { useUsersUpdateMyTheme } from '@/lib/api/generated/prescriptionManagementAPI'
 import { ThemePreference } from '@/lib/api/generated/schemas'
+import type { ErrorResponseDto } from '@/lib/api/generated/schemas'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,13 +43,13 @@ export function ThemeToggle({ initial }: ThemeToggleProps) {
     applyHtmlClass(pref)
   }, [pref])
 
-  const { mutate, isPending } = useUsersControllerUpdateMyTheme({
+  const { mutate, isPending } = useUsersUpdateMyTheme({
     mutation: {
       onSuccess: () => {
         notify.success('Theme updated')
         void queryClient.invalidateQueries({ queryKey: qk.auth.profile() })
       },
-      onError: (err) => notify.apiError(err, 'Could not save theme'),
+      onError: (err: ErrorResponseDto | Error) => notify.apiError(err, 'Could not save theme'),
     },
   })
 

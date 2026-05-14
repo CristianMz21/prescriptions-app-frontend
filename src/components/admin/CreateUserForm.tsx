@@ -17,8 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useUsersControllerCreate } from '@/lib/api/generated/prescriptionManagementAPI'
-import { Role } from '@/lib/api/generated/schemas'
+import { useUsersCreate } from '@/lib/api/generated/prescriptionManagementAPI'
+import { Role, UserResponseDto, ErrorResponseDto } from '@/lib/api/generated/schemas'
 import { qk } from '@/lib/api/queryKeys'
 import { notify } from '@/lib/notifications'
 import { routes } from '@/lib/routes'
@@ -62,16 +62,16 @@ export function CreateUserForm() {
     },
   })
 
-  const createMutation = useUsersControllerCreate({
+  const createMutation = useUsersCreate({
     mutation: {
-      onSuccess: (user) => {
+      onSuccess: (user: UserResponseDto) => {
         notify.success('User created', `${user.email} (${user.role})`)
         void queryClient.invalidateQueries({ queryKey: qk.users.all() })
         void queryClient.invalidateQueries({ queryKey: qk.users.patients() })
         void queryClient.invalidateQueries({ queryKey: qk.users.doctors() })
         router.push(routes.admin.users)
       },
-      onError: (err) => notify.apiError(err, 'Failed to create user'),
+      onError: (err: ErrorResponseDto | Error) => notify.apiError(err, 'Failed to create user'),
     },
   })
 

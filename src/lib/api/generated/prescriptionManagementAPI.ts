@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
 import {
   useMutation,
@@ -25,10 +25,10 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AdminControllerGetMetricsParams,
-  AdminControllerListPrescriptions200,
-  AdminControllerListPrescriptionsParams,
-  AdminControllerStreamMetricsParams,
+  AdminGetMetricsParams,
+  AdminListPrescriptions200,
+  AdminListPrescriptionsParams,
+  AdminStreamMetricsParams,
   ConsumePrescriptionDto,
   CreatePrescriptionDto,
   CreateUserDto,
@@ -37,20 +37,21 @@ import type {
   LoginResponseDto,
   LogoutResponseDto,
   MetricsResponseDto,
+  MetricsStreamSnapshotDto,
   PrescriptionResponseDto,
-  PrescriptionsControllerFindAll200,
-  PrescriptionsControllerFindAllParams,
+  PrescriptionsFindAll200,
+  PrescriptionsFindAllParams,
   RefreshResponseDto,
   UpdateThemeDto,
   UserEntity,
   UserProfileResponseDto,
   UserResponseDto,
-  UsersControllerFindAll200,
-  UsersControllerFindAllDoctors200,
-  UsersControllerFindAllDoctorsParams,
-  UsersControllerFindAllParams,
-  UsersControllerFindAllPatients200,
-  UsersControllerFindAllPatientsParams
+  UsersFindAll200,
+  UsersFindAllDoctors200,
+  UsersFindAllDoctorsParams,
+  UsersFindAllParams,
+  UsersFindAllPatients200,
+  UsersFindAllPatientsParams
 } from './schemas';
 
 import { customInstance } from '../custom-instance';
@@ -58,7 +59,7 @@ import { customInstance } from '../custom-instance';
  * Returns a static greeting string; useful for liveness probes and smoke checks.
  * @summary Service heartbeat
  */
-export const appControllerGetHello = (
+export const appGetHello = (
 
  signal?: AbortSignal
 ) => {
@@ -73,69 +74,69 @@ export const appControllerGetHello = (
 
 
 
-export const getAppControllerGetHelloQueryKey = () => {
+export const getAppGetHelloQueryKey = () => {
     return [
     `/`
     ] as const;
     }
 
 
-export const getAppControllerGetHelloQueryOptions = <TData = Awaited<ReturnType<typeof appControllerGetHello>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appControllerGetHello>>, TError, TData>>, }
+export const getAppGetHelloQueryOptions = <TData = Awaited<ReturnType<typeof appGetHello>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appGetHello>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAppControllerGetHelloQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getAppGetHelloQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof appControllerGetHello>>> = ({ signal }) => appControllerGetHello(signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appGetHello>>> = ({ signal }) => appGetHello(signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appControllerGetHello>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appGetHello>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AppControllerGetHelloQueryResult = NonNullable<Awaited<ReturnType<typeof appControllerGetHello>>>
-export type AppControllerGetHelloQueryError = unknown
+export type AppGetHelloQueryResult = NonNullable<Awaited<ReturnType<typeof appGetHello>>>
+export type AppGetHelloQueryError = unknown
 
 
-export function useAppControllerGetHello<TData = Awaited<ReturnType<typeof appControllerGetHello>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appControllerGetHello>>, TError, TData>> & Pick<
+export function useAppGetHello<TData = Awaited<ReturnType<typeof appGetHello>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appGetHello>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof appControllerGetHello>>,
+          Awaited<ReturnType<typeof appGetHello>>,
           TError,
-          Awaited<ReturnType<typeof appControllerGetHello>>
+          Awaited<ReturnType<typeof appGetHello>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAppControllerGetHello<TData = Awaited<ReturnType<typeof appControllerGetHello>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appControllerGetHello>>, TError, TData>> & Pick<
+export function useAppGetHello<TData = Awaited<ReturnType<typeof appGetHello>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appGetHello>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof appControllerGetHello>>,
+          Awaited<ReturnType<typeof appGetHello>>,
           TError,
-          Awaited<ReturnType<typeof appControllerGetHello>>
+          Awaited<ReturnType<typeof appGetHello>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAppControllerGetHello<TData = Awaited<ReturnType<typeof appControllerGetHello>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appControllerGetHello>>, TError, TData>>, }
+export function useAppGetHello<TData = Awaited<ReturnType<typeof appGetHello>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appGetHello>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Service heartbeat
  */
 
-export function useAppControllerGetHello<TData = Awaited<ReturnType<typeof appControllerGetHello>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appControllerGetHello>>, TError, TData>>, }
+export function useAppGetHello<TData = Awaited<ReturnType<typeof appGetHello>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appGetHello>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAppControllerGetHelloQueryOptions(options)
+  const queryOptions = getAppGetHelloQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -151,7 +152,7 @@ export function useAppControllerGetHello<TData = Awaited<ReturnType<typeof appCo
 /**
  * @summary Authenticate user and obtain access tokens
  */
-export const authControllerLogin = (
+export const authLogin = (
     loginDto: LoginDto,
  signal?: AbortSignal
 ) => {
@@ -167,11 +168,11 @@ export const authControllerLogin = (
 
 
 
-export const getAuthControllerLoginMutationOptions = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext> => {
+export const getAuthLoginMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginDto}, TContext> => {
 
-const mutationKey = ['authControllerLogin'];
+const mutationKey = ['authLogin'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -181,10 +182,10 @@ const {mutation: mutationOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogin>>, {data: LoginDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authLogin>>, {data: LoginDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerLogin(data,)
+          return  authLogin(data,)
         }
 
 
@@ -194,28 +195,28 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AuthControllerLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogin>>>
-    export type AuthControllerLoginMutationBody = LoginDto
-    export type AuthControllerLoginMutationError = ErrorResponseDto
+    export type AuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authLogin>>>
+    export type AuthLoginMutationBody = LoginDto
+    export type AuthLoginMutationError = ErrorResponseDto
 
     /**
  * @summary Authenticate user and obtain access tokens
  */
-export const useAuthControllerLogin = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext>, }
+export const useAuthLogin = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerLogin>>,
+        Awaited<ReturnType<typeof authLogin>>,
         TError,
         {data: LoginDto},
         TContext
       > => {
-      return useMutation(getAuthControllerLoginMutationOptions(options), queryClient);
+      return useMutation(getAuthLoginMutationOptions(options), queryClient);
     }
 
 /**
  * @summary Refresh access token using refresh token cookie
  */
-export const authControllerRefresh = (
+export const authRefresh = (
 
  signal?: AbortSignal
 ) => {
@@ -229,11 +230,11 @@ export const authControllerRefresh = (
 
 
 
-export const getAuthControllerRefreshMutationOptions = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefresh>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerRefresh>>, TError,void, TContext> => {
+export const getAuthRefreshMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRefresh>>, TError,void, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authRefresh>>, TError,void, TContext> => {
 
-const mutationKey = ['authControllerRefresh'];
+const mutationKey = ['authRefresh'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -243,10 +244,10 @@ const {mutation: mutationOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerRefresh>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authRefresh>>, void> = () => {
 
 
-          return  authControllerRefresh()
+          return  authRefresh()
         }
 
 
@@ -256,28 +257,28 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AuthControllerRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerRefresh>>>
+    export type AuthRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof authRefresh>>>
 
-    export type AuthControllerRefreshMutationError = ErrorResponseDto
+    export type AuthRefreshMutationError = ErrorResponseDto
 
     /**
  * @summary Refresh access token using refresh token cookie
  */
-export const useAuthControllerRefresh = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefresh>>, TError,void, TContext>, }
+export const useAuthRefresh = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRefresh>>, TError,void, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerRefresh>>,
+        Awaited<ReturnType<typeof authRefresh>>,
         TError,
         void,
         TContext
       > => {
-      return useMutation(getAuthControllerRefreshMutationOptions(options), queryClient);
+      return useMutation(getAuthRefreshMutationOptions(options), queryClient);
     }
 
 /**
  * @summary Log out and clear access/refresh token cookies
  */
-export const authControllerLogout = (
+export const authLogout = (
 
  signal?: AbortSignal
 ) => {
@@ -291,11 +292,11 @@ export const authControllerLogout = (
 
 
 
-export const getAuthControllerLogoutMutationOptions = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext> => {
+export const getAuthLogoutMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError,void, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError,void, TContext> => {
 
-const mutationKey = ['authControllerLogout'];
+const mutationKey = ['authLogout'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -305,10 +306,10 @@ const {mutation: mutationOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogout>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authLogout>>, void> = () => {
 
 
-          return  authControllerLogout()
+          return  authLogout()
         }
 
 
@@ -318,28 +319,28 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AuthControllerLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogout>>>
+    export type AuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof authLogout>>>
 
-    export type AuthControllerLogoutMutationError = ErrorResponseDto
+    export type AuthLogoutMutationError = ErrorResponseDto
 
     /**
  * @summary Log out and clear access/refresh token cookies
  */
-export const useAuthControllerLogout = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext>, }
+export const useAuthLogout = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError,void, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof authControllerLogout>>,
+        Awaited<ReturnType<typeof authLogout>>,
         TError,
         void,
         TContext
       > => {
-      return useMutation(getAuthControllerLogoutMutationOptions(options), queryClient);
+      return useMutation(getAuthLogoutMutationOptions(options), queryClient);
     }
 
 /**
  * @summary Get authenticated user profile
  */
-export const authControllerGetProfile = (
+export const authGetProfile = (
 
  signal?: AbortSignal
 ) => {
@@ -354,69 +355,69 @@ export const authControllerGetProfile = (
 
 
 
-export const getAuthControllerGetProfileQueryKey = () => {
+export const getAuthGetProfileQueryKey = () => {
     return [
     `/auth/profile`
     ] as const;
     }
 
 
-export const getAuthControllerGetProfileQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
+export const getAuthGetProfileQueryOptions = <TData = Awaited<ReturnType<typeof authGetProfile>>, TError = ErrorResponseDto>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetProfile>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGetProfileQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getAuthGetProfileQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetProfile>>> = ({ signal }) => authControllerGetProfile(signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authGetProfile>>> = ({ signal }) => authGetProfile(signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authGetProfile>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AuthControllerGetProfileQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGetProfile>>>
-export type AuthControllerGetProfileQueryError = ErrorResponseDto
+export type AuthGetProfileQueryResult = NonNullable<Awaited<ReturnType<typeof authGetProfile>>>
+export type AuthGetProfileQueryError = ErrorResponseDto
 
 
-export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>> & Pick<
+export function useAuthGetProfile<TData = Awaited<ReturnType<typeof authGetProfile>>, TError = ErrorResponseDto>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetProfile>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGetProfile>>,
+          Awaited<ReturnType<typeof authGetProfile>>,
           TError,
-          Awaited<ReturnType<typeof authControllerGetProfile>>
+          Awaited<ReturnType<typeof authGetProfile>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>> & Pick<
+export function useAuthGetProfile<TData = Awaited<ReturnType<typeof authGetProfile>>, TError = ErrorResponseDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetProfile>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authControllerGetProfile>>,
+          Awaited<ReturnType<typeof authGetProfile>>,
           TError,
-          Awaited<ReturnType<typeof authControllerGetProfile>>
+          Awaited<ReturnType<typeof authGetProfile>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
+export function useAuthGetProfile<TData = Awaited<ReturnType<typeof authGetProfile>>, TError = ErrorResponseDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetProfile>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get authenticated user profile
  */
 
-export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
+export function useAuthGetProfile<TData = Awaited<ReturnType<typeof authGetProfile>>, TError = ErrorResponseDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetProfile>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAuthControllerGetProfileQueryOptions(options)
+  const queryOptions = getAuthGetProfileQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -432,7 +433,7 @@ export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof au
 /**
  * @summary Create a new user (Admin Only)
  */
-export const usersControllerCreate = (
+export const usersCreate = (
     createUserDto: CreateUserDto,
  signal?: AbortSignal
 ) => {
@@ -448,11 +449,11 @@ export const usersControllerCreate = (
 
 
 
-export const getUsersControllerCreateMutationOptions = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerCreate>>, TError,{data: CreateUserDto}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof usersControllerCreate>>, TError,{data: CreateUserDto}, TContext> => {
+export const getUsersCreateMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersCreate>>, TError,{data: CreateUserDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof usersCreate>>, TError,{data: CreateUserDto}, TContext> => {
 
-const mutationKey = ['usersControllerCreate'];
+const mutationKey = ['usersCreate'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -462,10 +463,10 @@ const {mutation: mutationOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerCreate>>, {data: CreateUserDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersCreate>>, {data: CreateUserDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  usersControllerCreate(data,)
+          return  usersCreate(data,)
         }
 
 
@@ -475,34 +476,34 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UsersControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerCreate>>>
-    export type UsersControllerCreateMutationBody = CreateUserDto
-    export type UsersControllerCreateMutationError = ErrorResponseDto
+    export type UsersCreateMutationResult = NonNullable<Awaited<ReturnType<typeof usersCreate>>>
+    export type UsersCreateMutationBody = CreateUserDto
+    export type UsersCreateMutationError = ErrorResponseDto
 
     /**
  * @summary Create a new user (Admin Only)
  */
-export const useUsersControllerCreate = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerCreate>>, TError,{data: CreateUserDto}, TContext>, }
+export const useUsersCreate = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersCreate>>, TError,{data: CreateUserDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof usersControllerCreate>>,
+        Awaited<ReturnType<typeof usersCreate>>,
         TError,
         {data: CreateUserDto},
         TContext
       > => {
-      return useMutation(getUsersControllerCreateMutationOptions(options), queryClient);
+      return useMutation(getUsersCreateMutationOptions(options), queryClient);
     }
 
 /**
  * @summary List all users (Admin Only)
  */
-export const usersControllerFindAll = (
-    params?: UsersControllerFindAllParams,
+export const usersFindAll = (
+    params?: UsersFindAllParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customInstance<UsersControllerFindAll200>(
+      return customInstance<UsersFindAll200>(
       {url: `/users`, method: 'GET',
         params, signal
     },
@@ -512,69 +513,69 @@ export const usersControllerFindAll = (
 
 
 
-export const getUsersControllerFindAllQueryKey = (params?: UsersControllerFindAllParams,) => {
+export const getUsersFindAllQueryKey = (params?: UsersFindAllParams,) => {
     return [
     `/users`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getUsersControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = ErrorResponseDto>(params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
+export const getUsersFindAllQueryOptions = <TData = Awaited<ReturnType<typeof usersFindAll>>, TError = ErrorResponseDto>(params?: UsersFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAll>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getUsersControllerFindAllQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getUsersFindAllQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerFindAll>>> = ({ signal }) => usersControllerFindAll(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersFindAll>>> = ({ signal }) => usersFindAll(params, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type UsersControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerFindAll>>>
-export type UsersControllerFindAllQueryError = ErrorResponseDto
+export type UsersFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof usersFindAll>>>
+export type UsersFindAllQueryError = ErrorResponseDto
 
 
-export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = ErrorResponseDto>(
- params: undefined |  UsersControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>> & Pick<
+export function useUsersFindAll<TData = Awaited<ReturnType<typeof usersFindAll>>, TError = ErrorResponseDto>(
+ params: undefined |  UsersFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerFindAll>>,
+          Awaited<ReturnType<typeof usersFindAll>>,
           TError,
-          Awaited<ReturnType<typeof usersControllerFindAll>>
+          Awaited<ReturnType<typeof usersFindAll>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>> & Pick<
+export function useUsersFindAll<TData = Awaited<ReturnType<typeof usersFindAll>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerFindAll>>,
+          Awaited<ReturnType<typeof usersFindAll>>,
           TError,
-          Awaited<ReturnType<typeof usersControllerFindAll>>
+          Awaited<ReturnType<typeof usersFindAll>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
+export function useUsersFindAll<TData = Awaited<ReturnType<typeof usersFindAll>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List all users (Admin Only)
  */
 
-export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
+export function useUsersFindAll<TData = Awaited<ReturnType<typeof usersFindAll>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getUsersControllerFindAllQueryOptions(params,options)
+  const queryOptions = getUsersFindAllQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -590,13 +591,13 @@ export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof user
 /**
  * @summary List all patients (Admin/Doctor Only)
  */
-export const usersControllerFindAllPatients = (
-    params?: UsersControllerFindAllPatientsParams,
+export const usersFindAllPatients = (
+    params?: UsersFindAllPatientsParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customInstance<UsersControllerFindAllPatients200>(
+      return customInstance<UsersFindAllPatients200>(
       {url: `/users/patients`, method: 'GET',
         params, signal
     },
@@ -606,69 +607,69 @@ export const usersControllerFindAllPatients = (
 
 
 
-export const getUsersControllerFindAllPatientsQueryKey = (params?: UsersControllerFindAllPatientsParams,) => {
+export const getUsersFindAllPatientsQueryKey = (params?: UsersFindAllPatientsParams,) => {
     return [
     `/users/patients`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getUsersControllerFindAllPatientsQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError = ErrorResponseDto>(params?: UsersControllerFindAllPatientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError, TData>>, }
+export const getUsersFindAllPatientsQueryOptions = <TData = Awaited<ReturnType<typeof usersFindAllPatients>>, TError = ErrorResponseDto>(params?: UsersFindAllPatientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllPatients>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getUsersControllerFindAllPatientsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getUsersFindAllPatientsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerFindAllPatients>>> = ({ signal }) => usersControllerFindAllPatients(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersFindAllPatients>>> = ({ signal }) => usersFindAllPatients(params, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersFindAllPatients>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type UsersControllerFindAllPatientsQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerFindAllPatients>>>
-export type UsersControllerFindAllPatientsQueryError = ErrorResponseDto
+export type UsersFindAllPatientsQueryResult = NonNullable<Awaited<ReturnType<typeof usersFindAllPatients>>>
+export type UsersFindAllPatientsQueryError = ErrorResponseDto
 
 
-export function useUsersControllerFindAllPatients<TData = Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError = ErrorResponseDto>(
- params: undefined |  UsersControllerFindAllPatientsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError, TData>> & Pick<
+export function useUsersFindAllPatients<TData = Awaited<ReturnType<typeof usersFindAllPatients>>, TError = ErrorResponseDto>(
+ params: undefined |  UsersFindAllPatientsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllPatients>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerFindAllPatients>>,
+          Awaited<ReturnType<typeof usersFindAllPatients>>,
           TError,
-          Awaited<ReturnType<typeof usersControllerFindAllPatients>>
+          Awaited<ReturnType<typeof usersFindAllPatients>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUsersControllerFindAllPatients<TData = Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllPatientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError, TData>> & Pick<
+export function useUsersFindAllPatients<TData = Awaited<ReturnType<typeof usersFindAllPatients>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllPatientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllPatients>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerFindAllPatients>>,
+          Awaited<ReturnType<typeof usersFindAllPatients>>,
           TError,
-          Awaited<ReturnType<typeof usersControllerFindAllPatients>>
+          Awaited<ReturnType<typeof usersFindAllPatients>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUsersControllerFindAllPatients<TData = Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllPatientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError, TData>>, }
+export function useUsersFindAllPatients<TData = Awaited<ReturnType<typeof usersFindAllPatients>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllPatientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllPatients>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List all patients (Admin/Doctor Only)
  */
 
-export function useUsersControllerFindAllPatients<TData = Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllPatientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllPatients>>, TError, TData>>, }
+export function useUsersFindAllPatients<TData = Awaited<ReturnType<typeof usersFindAllPatients>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllPatientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllPatients>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getUsersControllerFindAllPatientsQueryOptions(params,options)
+  const queryOptions = getUsersFindAllPatientsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -684,13 +685,13 @@ export function useUsersControllerFindAllPatients<TData = Awaited<ReturnType<typ
 /**
  * @summary List all doctors (Admin Only)
  */
-export const usersControllerFindAllDoctors = (
-    params?: UsersControllerFindAllDoctorsParams,
+export const usersFindAllDoctors = (
+    params?: UsersFindAllDoctorsParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customInstance<UsersControllerFindAllDoctors200>(
+      return customInstance<UsersFindAllDoctors200>(
       {url: `/users/doctors`, method: 'GET',
         params, signal
     },
@@ -700,69 +701,69 @@ export const usersControllerFindAllDoctors = (
 
 
 
-export const getUsersControllerFindAllDoctorsQueryKey = (params?: UsersControllerFindAllDoctorsParams,) => {
+export const getUsersFindAllDoctorsQueryKey = (params?: UsersFindAllDoctorsParams,) => {
     return [
     `/users/doctors`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getUsersControllerFindAllDoctorsQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError = ErrorResponseDto>(params?: UsersControllerFindAllDoctorsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError, TData>>, }
+export const getUsersFindAllDoctorsQueryOptions = <TData = Awaited<ReturnType<typeof usersFindAllDoctors>>, TError = ErrorResponseDto>(params?: UsersFindAllDoctorsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllDoctors>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getUsersControllerFindAllDoctorsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getUsersFindAllDoctorsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerFindAllDoctors>>> = ({ signal }) => usersControllerFindAllDoctors(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersFindAllDoctors>>> = ({ signal }) => usersFindAllDoctors(params, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersFindAllDoctors>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type UsersControllerFindAllDoctorsQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerFindAllDoctors>>>
-export type UsersControllerFindAllDoctorsQueryError = ErrorResponseDto
+export type UsersFindAllDoctorsQueryResult = NonNullable<Awaited<ReturnType<typeof usersFindAllDoctors>>>
+export type UsersFindAllDoctorsQueryError = ErrorResponseDto
 
 
-export function useUsersControllerFindAllDoctors<TData = Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError = ErrorResponseDto>(
- params: undefined |  UsersControllerFindAllDoctorsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError, TData>> & Pick<
+export function useUsersFindAllDoctors<TData = Awaited<ReturnType<typeof usersFindAllDoctors>>, TError = ErrorResponseDto>(
+ params: undefined |  UsersFindAllDoctorsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllDoctors>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerFindAllDoctors>>,
+          Awaited<ReturnType<typeof usersFindAllDoctors>>,
           TError,
-          Awaited<ReturnType<typeof usersControllerFindAllDoctors>>
+          Awaited<ReturnType<typeof usersFindAllDoctors>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUsersControllerFindAllDoctors<TData = Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllDoctorsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError, TData>> & Pick<
+export function useUsersFindAllDoctors<TData = Awaited<ReturnType<typeof usersFindAllDoctors>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllDoctorsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllDoctors>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerFindAllDoctors>>,
+          Awaited<ReturnType<typeof usersFindAllDoctors>>,
           TError,
-          Awaited<ReturnType<typeof usersControllerFindAllDoctors>>
+          Awaited<ReturnType<typeof usersFindAllDoctors>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUsersControllerFindAllDoctors<TData = Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllDoctorsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError, TData>>, }
+export function useUsersFindAllDoctors<TData = Awaited<ReturnType<typeof usersFindAllDoctors>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllDoctorsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllDoctors>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List all doctors (Admin Only)
  */
 
-export function useUsersControllerFindAllDoctors<TData = Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError = ErrorResponseDto>(
- params?: UsersControllerFindAllDoctorsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAllDoctors>>, TError, TData>>, }
+export function useUsersFindAllDoctors<TData = Awaited<ReturnType<typeof usersFindAllDoctors>>, TError = ErrorResponseDto>(
+ params?: UsersFindAllDoctorsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindAllDoctors>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getUsersControllerFindAllDoctorsQueryOptions(params,options)
+  const queryOptions = getUsersFindAllDoctorsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -778,7 +779,7 @@ export function useUsersControllerFindAllDoctors<TData = Awaited<ReturnType<type
 /**
  * @summary Update the current user UI theme preference
  */
-export const usersControllerUpdateMyTheme = (
+export const usersUpdateMyTheme = (
     updateThemeDto: UpdateThemeDto,
  signal?: AbortSignal
 ) => {
@@ -794,11 +795,11 @@ export const usersControllerUpdateMyTheme = (
 
 
 
-export const getUsersControllerUpdateMyThemeMutationOptions = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateMyTheme>>, TError,{data: UpdateThemeDto}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateMyTheme>>, TError,{data: UpdateThemeDto}, TContext> => {
+export const getUsersUpdateMyThemeMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersUpdateMyTheme>>, TError,{data: UpdateThemeDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof usersUpdateMyTheme>>, TError,{data: UpdateThemeDto}, TContext> => {
 
-const mutationKey = ['usersControllerUpdateMyTheme'];
+const mutationKey = ['usersUpdateMyTheme'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -808,10 +809,10 @@ const {mutation: mutationOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerUpdateMyTheme>>, {data: UpdateThemeDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersUpdateMyTheme>>, {data: UpdateThemeDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  usersControllerUpdateMyTheme(data,)
+          return  usersUpdateMyTheme(data,)
         }
 
 
@@ -821,28 +822,28 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UsersControllerUpdateMyThemeMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerUpdateMyTheme>>>
-    export type UsersControllerUpdateMyThemeMutationBody = UpdateThemeDto
-    export type UsersControllerUpdateMyThemeMutationError = ErrorResponseDto
+    export type UsersUpdateMyThemeMutationResult = NonNullable<Awaited<ReturnType<typeof usersUpdateMyTheme>>>
+    export type UsersUpdateMyThemeMutationBody = UpdateThemeDto
+    export type UsersUpdateMyThemeMutationError = ErrorResponseDto
 
     /**
  * @summary Update the current user UI theme preference
  */
-export const useUsersControllerUpdateMyTheme = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateMyTheme>>, TError,{data: UpdateThemeDto}, TContext>, }
+export const useUsersUpdateMyTheme = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersUpdateMyTheme>>, TError,{data: UpdateThemeDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof usersControllerUpdateMyTheme>>,
+        Awaited<ReturnType<typeof usersUpdateMyTheme>>,
         TError,
         {data: UpdateThemeDto},
         TContext
       > => {
-      return useMutation(getUsersControllerUpdateMyThemeMutationOptions(options), queryClient);
+      return useMutation(getUsersUpdateMyThemeMutationOptions(options), queryClient);
     }
 
 /**
  * @summary Get user detail by ID
  */
-export const usersControllerFindOne = (
+export const usersFindOne = (
     id: string,
  signal?: AbortSignal
 ) => {
@@ -857,69 +858,69 @@ export const usersControllerFindOne = (
 
 
 
-export const getUsersControllerFindOneQueryKey = (id: string,) => {
+export const getUsersFindOneQueryKey = (id: string,) => {
     return [
     `/users/${id}`
     ] as const;
     }
 
 
-export const getUsersControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = ErrorResponseDto>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>>, }
+export const getUsersFindOneQueryOptions = <TData = Awaited<ReturnType<typeof usersFindOne>>, TError = ErrorResponseDto>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindOne>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getUsersControllerFindOneQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getUsersFindOneQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerFindOne>>> = ({ signal }) => usersControllerFindOne(id, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersFindOne>>> = ({ signal }) => usersFindOne(id, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type UsersControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerFindOne>>>
-export type UsersControllerFindOneQueryError = ErrorResponseDto
+export type UsersFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof usersFindOne>>>
+export type UsersFindOneQueryError = ErrorResponseDto
 
 
-export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = ErrorResponseDto>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>> & Pick<
+export function useUsersFindOne<TData = Awaited<ReturnType<typeof usersFindOne>>, TError = ErrorResponseDto>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindOne>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerFindOne>>,
+          Awaited<ReturnType<typeof usersFindOne>>,
           TError,
-          Awaited<ReturnType<typeof usersControllerFindOne>>
+          Awaited<ReturnType<typeof usersFindOne>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>> & Pick<
+export function useUsersFindOne<TData = Awaited<ReturnType<typeof usersFindOne>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindOne>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof usersControllerFindOne>>,
+          Awaited<ReturnType<typeof usersFindOne>>,
           TError,
-          Awaited<ReturnType<typeof usersControllerFindOne>>
+          Awaited<ReturnType<typeof usersFindOne>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>>, }
+export function useUsersFindOne<TData = Awaited<ReturnType<typeof usersFindOne>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindOne>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get user detail by ID
  */
 
-export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>>, }
+export function useUsersFindOne<TData = Awaited<ReturnType<typeof usersFindOne>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersFindOne>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getUsersControllerFindOneQueryOptions(id,options)
+  const queryOptions = getUsersFindOneQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -935,7 +936,7 @@ export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof user
 /**
  * @summary Create a new prescription (Doctor Only)
  */
-export const prescriptionsControllerCreate = (
+export const prescriptionsCreate = (
     createPrescriptionDto: CreatePrescriptionDto,
  signal?: AbortSignal
 ) => {
@@ -951,11 +952,11 @@ export const prescriptionsControllerCreate = (
 
 
 
-export const getPrescriptionsControllerCreateMutationOptions = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof prescriptionsControllerCreate>>, TError,{data: CreatePrescriptionDto}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof prescriptionsControllerCreate>>, TError,{data: CreatePrescriptionDto}, TContext> => {
+export const getPrescriptionsCreateMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof prescriptionsCreate>>, TError,{data: CreatePrescriptionDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof prescriptionsCreate>>, TError,{data: CreatePrescriptionDto}, TContext> => {
 
-const mutationKey = ['prescriptionsControllerCreate'];
+const mutationKey = ['prescriptionsCreate'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -965,10 +966,10 @@ const {mutation: mutationOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof prescriptionsControllerCreate>>, {data: CreatePrescriptionDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof prescriptionsCreate>>, {data: CreatePrescriptionDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  prescriptionsControllerCreate(data,)
+          return  prescriptionsCreate(data,)
         }
 
 
@@ -978,34 +979,34 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PrescriptionsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof prescriptionsControllerCreate>>>
-    export type PrescriptionsControllerCreateMutationBody = CreatePrescriptionDto
-    export type PrescriptionsControllerCreateMutationError = ErrorResponseDto
+    export type PrescriptionsCreateMutationResult = NonNullable<Awaited<ReturnType<typeof prescriptionsCreate>>>
+    export type PrescriptionsCreateMutationBody = CreatePrescriptionDto
+    export type PrescriptionsCreateMutationError = ErrorResponseDto
 
     /**
  * @summary Create a new prescription (Doctor Only)
  */
-export const usePrescriptionsControllerCreate = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof prescriptionsControllerCreate>>, TError,{data: CreatePrescriptionDto}, TContext>, }
+export const usePrescriptionsCreate = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof prescriptionsCreate>>, TError,{data: CreatePrescriptionDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof prescriptionsControllerCreate>>,
+        Awaited<ReturnType<typeof prescriptionsCreate>>,
         TError,
         {data: CreatePrescriptionDto},
         TContext
       > => {
-      return useMutation(getPrescriptionsControllerCreateMutationOptions(options), queryClient);
+      return useMutation(getPrescriptionsCreateMutationOptions(options), queryClient);
     }
 
 /**
- * @summary List prescriptions (Paginated)
+ * @summary List prescriptions (Paginated). Role-scoped: Doctor sees own authored, Patient sees own received, Admin sees all.
  */
-export const prescriptionsControllerFindAll = (
-    params?: PrescriptionsControllerFindAllParams,
+export const prescriptionsFindAll = (
+    params?: PrescriptionsFindAllParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customInstance<PrescriptionsControllerFindAll200>(
+      return customInstance<PrescriptionsFindAll200>(
       {url: `/prescriptions`, method: 'GET',
         params, signal
     },
@@ -1015,69 +1016,69 @@ export const prescriptionsControllerFindAll = (
 
 
 
-export const getPrescriptionsControllerFindAllQueryKey = (params?: PrescriptionsControllerFindAllParams,) => {
+export const getPrescriptionsFindAllQueryKey = (params?: PrescriptionsFindAllParams,) => {
     return [
     `/prescriptions`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getPrescriptionsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError = ErrorResponseDto>(params?: PrescriptionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError, TData>>, }
+export const getPrescriptionsFindAllQueryOptions = <TData = Awaited<ReturnType<typeof prescriptionsFindAll>>, TError = ErrorResponseDto>(params?: PrescriptionsFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindAll>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getPrescriptionsControllerFindAllQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getPrescriptionsFindAllQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof prescriptionsControllerFindAll>>> = ({ signal }) => prescriptionsControllerFindAll(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prescriptionsFindAll>>> = ({ signal }) => prescriptionsFindAll(params, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type PrescriptionsControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof prescriptionsControllerFindAll>>>
-export type PrescriptionsControllerFindAllQueryError = ErrorResponseDto
+export type PrescriptionsFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof prescriptionsFindAll>>>
+export type PrescriptionsFindAllQueryError = ErrorResponseDto
 
 
-export function usePrescriptionsControllerFindAll<TData = Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError = ErrorResponseDto>(
- params: undefined |  PrescriptionsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError, TData>> & Pick<
+export function usePrescriptionsFindAll<TData = Awaited<ReturnType<typeof prescriptionsFindAll>>, TError = ErrorResponseDto>(
+ params: undefined |  PrescriptionsFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof prescriptionsControllerFindAll>>,
+          Awaited<ReturnType<typeof prescriptionsFindAll>>,
           TError,
-          Awaited<ReturnType<typeof prescriptionsControllerFindAll>>
+          Awaited<ReturnType<typeof prescriptionsFindAll>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function usePrescriptionsControllerFindAll<TData = Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError = ErrorResponseDto>(
- params?: PrescriptionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError, TData>> & Pick<
+export function usePrescriptionsFindAll<TData = Awaited<ReturnType<typeof prescriptionsFindAll>>, TError = ErrorResponseDto>(
+ params?: PrescriptionsFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof prescriptionsControllerFindAll>>,
+          Awaited<ReturnType<typeof prescriptionsFindAll>>,
           TError,
-          Awaited<ReturnType<typeof prescriptionsControllerFindAll>>
+          Awaited<ReturnType<typeof prescriptionsFindAll>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function usePrescriptionsControllerFindAll<TData = Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError = ErrorResponseDto>(
- params?: PrescriptionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError, TData>>, }
+export function usePrescriptionsFindAll<TData = Awaited<ReturnType<typeof prescriptionsFindAll>>, TError = ErrorResponseDto>(
+ params?: PrescriptionsFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary List prescriptions (Paginated)
+ * @summary List prescriptions (Paginated). Role-scoped: Doctor sees own authored, Patient sees own received, Admin sees all.
  */
 
-export function usePrescriptionsControllerFindAll<TData = Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError = ErrorResponseDto>(
- params?: PrescriptionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindAll>>, TError, TData>>, }
+export function usePrescriptionsFindAll<TData = Awaited<ReturnType<typeof prescriptionsFindAll>>, TError = ErrorResponseDto>(
+ params?: PrescriptionsFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getPrescriptionsControllerFindAllQueryOptions(params,options)
+  const queryOptions = getPrescriptionsFindAllQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1093,7 +1094,7 @@ export function usePrescriptionsControllerFindAll<TData = Awaited<ReturnType<typ
 /**
  * @summary Get prescription detail by ID
  */
-export const prescriptionsControllerFindOne = (
+export const prescriptionsFindOne = (
     id: string,
  signal?: AbortSignal
 ) => {
@@ -1108,69 +1109,69 @@ export const prescriptionsControllerFindOne = (
 
 
 
-export const getPrescriptionsControllerFindOneQueryKey = (id: string,) => {
+export const getPrescriptionsFindOneQueryKey = (id: string,) => {
     return [
     `/prescriptions/${id}`
     ] as const;
     }
 
 
-export const getPrescriptionsControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError = ErrorResponseDto>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError, TData>>, }
+export const getPrescriptionsFindOneQueryOptions = <TData = Awaited<ReturnType<typeof prescriptionsFindOne>>, TError = ErrorResponseDto>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindOne>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getPrescriptionsControllerFindOneQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getPrescriptionsFindOneQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof prescriptionsControllerFindOne>>> = ({ signal }) => prescriptionsControllerFindOne(id, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prescriptionsFindOne>>> = ({ signal }) => prescriptionsFindOne(id, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type PrescriptionsControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof prescriptionsControllerFindOne>>>
-export type PrescriptionsControllerFindOneQueryError = ErrorResponseDto
+export type PrescriptionsFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof prescriptionsFindOne>>>
+export type PrescriptionsFindOneQueryError = ErrorResponseDto
 
 
-export function usePrescriptionsControllerFindOne<TData = Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError = ErrorResponseDto>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError, TData>> & Pick<
+export function usePrescriptionsFindOne<TData = Awaited<ReturnType<typeof prescriptionsFindOne>>, TError = ErrorResponseDto>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindOne>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof prescriptionsControllerFindOne>>,
+          Awaited<ReturnType<typeof prescriptionsFindOne>>,
           TError,
-          Awaited<ReturnType<typeof prescriptionsControllerFindOne>>
+          Awaited<ReturnType<typeof prescriptionsFindOne>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function usePrescriptionsControllerFindOne<TData = Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError, TData>> & Pick<
+export function usePrescriptionsFindOne<TData = Awaited<ReturnType<typeof prescriptionsFindOne>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindOne>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof prescriptionsControllerFindOne>>,
+          Awaited<ReturnType<typeof prescriptionsFindOne>>,
           TError,
-          Awaited<ReturnType<typeof prescriptionsControllerFindOne>>
+          Awaited<ReturnType<typeof prescriptionsFindOne>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function usePrescriptionsControllerFindOne<TData = Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError, TData>>, }
+export function usePrescriptionsFindOne<TData = Awaited<ReturnType<typeof prescriptionsFindOne>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindOne>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get prescription detail by ID
  */
 
-export function usePrescriptionsControllerFindOne<TData = Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerFindOne>>, TError, TData>>, }
+export function usePrescriptionsFindOne<TData = Awaited<ReturnType<typeof prescriptionsFindOne>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsFindOne>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getPrescriptionsControllerFindOneQueryOptions(id,options)
+  const queryOptions = getPrescriptionsFindOneQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1186,7 +1187,7 @@ export function usePrescriptionsControllerFindOne<TData = Awaited<ReturnType<typ
 /**
  * @summary Mark prescription as consumed (Patient Only)
  */
-export const prescriptionsControllerMarkAsConsumed = (
+export const prescriptionsMarkAsConsumed = (
     id: string,
     consumePrescriptionDto: ConsumePrescriptionDto,
  signal?: AbortSignal
@@ -1203,11 +1204,11 @@ export const prescriptionsControllerMarkAsConsumed = (
 
 
 
-export const getPrescriptionsControllerMarkAsConsumedMutationOptions = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof prescriptionsControllerMarkAsConsumed>>, TError,{id: string;data: ConsumePrescriptionDto}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof prescriptionsControllerMarkAsConsumed>>, TError,{id: string;data: ConsumePrescriptionDto}, TContext> => {
+export const getPrescriptionsMarkAsConsumedMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof prescriptionsMarkAsConsumed>>, TError,{id: string;data: ConsumePrescriptionDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof prescriptionsMarkAsConsumed>>, TError,{id: string;data: ConsumePrescriptionDto}, TContext> => {
 
-const mutationKey = ['prescriptionsControllerMarkAsConsumed'];
+const mutationKey = ['prescriptionsMarkAsConsumed'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1217,10 +1218,10 @@ const {mutation: mutationOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof prescriptionsControllerMarkAsConsumed>>, {id: string;data: ConsumePrescriptionDto}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof prescriptionsMarkAsConsumed>>, {id: string;data: ConsumePrescriptionDto}> = (props) => {
           const {id,data} = props ?? {};
 
-          return  prescriptionsControllerMarkAsConsumed(id,data,)
+          return  prescriptionsMarkAsConsumed(id,data,)
         }
 
 
@@ -1230,28 +1231,28 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PrescriptionsControllerMarkAsConsumedMutationResult = NonNullable<Awaited<ReturnType<typeof prescriptionsControllerMarkAsConsumed>>>
-    export type PrescriptionsControllerMarkAsConsumedMutationBody = ConsumePrescriptionDto
-    export type PrescriptionsControllerMarkAsConsumedMutationError = ErrorResponseDto
+    export type PrescriptionsMarkAsConsumedMutationResult = NonNullable<Awaited<ReturnType<typeof prescriptionsMarkAsConsumed>>>
+    export type PrescriptionsMarkAsConsumedMutationBody = ConsumePrescriptionDto
+    export type PrescriptionsMarkAsConsumedMutationError = ErrorResponseDto
 
     /**
  * @summary Mark prescription as consumed (Patient Only)
  */
-export const usePrescriptionsControllerMarkAsConsumed = <TError = ErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof prescriptionsControllerMarkAsConsumed>>, TError,{id: string;data: ConsumePrescriptionDto}, TContext>, }
+export const usePrescriptionsMarkAsConsumed = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof prescriptionsMarkAsConsumed>>, TError,{id: string;data: ConsumePrescriptionDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof prescriptionsControllerMarkAsConsumed>>,
+        Awaited<ReturnType<typeof prescriptionsMarkAsConsumed>>,
         TError,
         {id: string;data: ConsumePrescriptionDto},
         TContext
       > => {
-      return useMutation(getPrescriptionsControllerMarkAsConsumedMutationOptions(options), queryClient);
+      return useMutation(getPrescriptionsMarkAsConsumedMutationOptions(options), queryClient);
     }
 
 /**
  * @summary Download prescription PDF
  */
-export const prescriptionsControllerDownloadPdf = (
+export const prescriptionsDownloadPdf = (
     id: string,
  signal?: AbortSignal
 ) => {
@@ -1267,69 +1268,69 @@ export const prescriptionsControllerDownloadPdf = (
 
 
 
-export const getPrescriptionsControllerDownloadPdfQueryKey = (id: string,) => {
+export const getPrescriptionsDownloadPdfQueryKey = (id: string,) => {
     return [
     `/prescriptions/${id}/pdf`
     ] as const;
     }
 
 
-export const getPrescriptionsControllerDownloadPdfQueryOptions = <TData = Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError = ErrorResponseDto>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError, TData>>, }
+export const getPrescriptionsDownloadPdfQueryOptions = <TData = Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError = ErrorResponseDto>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getPrescriptionsControllerDownloadPdfQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getPrescriptionsDownloadPdfQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>> = ({ signal }) => prescriptionsControllerDownloadPdf(id, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prescriptionsDownloadPdf>>> = ({ signal }) => prescriptionsDownloadPdf(id, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type PrescriptionsControllerDownloadPdfQueryResult = NonNullable<Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>>
-export type PrescriptionsControllerDownloadPdfQueryError = ErrorResponseDto
+export type PrescriptionsDownloadPdfQueryResult = NonNullable<Awaited<ReturnType<typeof prescriptionsDownloadPdf>>>
+export type PrescriptionsDownloadPdfQueryError = ErrorResponseDto
 
 
-export function usePrescriptionsControllerDownloadPdf<TData = Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError = ErrorResponseDto>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError, TData>> & Pick<
+export function usePrescriptionsDownloadPdf<TData = Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError = ErrorResponseDto>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>,
+          Awaited<ReturnType<typeof prescriptionsDownloadPdf>>,
           TError,
-          Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>
+          Awaited<ReturnType<typeof prescriptionsDownloadPdf>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function usePrescriptionsControllerDownloadPdf<TData = Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError, TData>> & Pick<
+export function usePrescriptionsDownloadPdf<TData = Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>,
+          Awaited<ReturnType<typeof prescriptionsDownloadPdf>>,
           TError,
-          Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>
+          Awaited<ReturnType<typeof prescriptionsDownloadPdf>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function usePrescriptionsControllerDownloadPdf<TData = Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError, TData>>, }
+export function usePrescriptionsDownloadPdf<TData = Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Download prescription PDF
  */
 
-export function usePrescriptionsControllerDownloadPdf<TData = Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError = ErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsControllerDownloadPdf>>, TError, TData>>, }
+export function usePrescriptionsDownloadPdf<TData = Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError = ErrorResponseDto>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionsDownloadPdf>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getPrescriptionsControllerDownloadPdfQueryOptions(id,options)
+  const queryOptions = getPrescriptionsDownloadPdfQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1345,13 +1346,13 @@ export function usePrescriptionsControllerDownloadPdf<TData = Awaited<ReturnType
 /**
  * @summary List all prescriptions (Admin Only)
  */
-export const adminControllerListPrescriptions = (
-    params?: AdminControllerListPrescriptionsParams,
+export const adminListPrescriptions = (
+    params?: AdminListPrescriptionsParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customInstance<AdminControllerListPrescriptions200>(
+      return customInstance<AdminListPrescriptions200>(
       {url: `/admin/prescriptions`, method: 'GET',
         params, signal
     },
@@ -1361,69 +1362,69 @@ export const adminControllerListPrescriptions = (
 
 
 
-export const getAdminControllerListPrescriptionsQueryKey = (params?: AdminControllerListPrescriptionsParams,) => {
+export const getAdminListPrescriptionsQueryKey = (params?: AdminListPrescriptionsParams,) => {
     return [
     `/admin/prescriptions`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getAdminControllerListPrescriptionsQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError = ErrorResponseDto>(params?: AdminControllerListPrescriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError, TData>>, }
+export const getAdminListPrescriptionsQueryOptions = <TData = Awaited<ReturnType<typeof adminListPrescriptions>>, TError = ErrorResponseDto>(params?: AdminListPrescriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminListPrescriptions>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAdminControllerListPrescriptionsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getAdminListPrescriptionsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerListPrescriptions>>> = ({ signal }) => adminControllerListPrescriptions(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminListPrescriptions>>> = ({ signal }) => adminListPrescriptions(params, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminListPrescriptions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AdminControllerListPrescriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerListPrescriptions>>>
-export type AdminControllerListPrescriptionsQueryError = ErrorResponseDto
+export type AdminListPrescriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof adminListPrescriptions>>>
+export type AdminListPrescriptionsQueryError = ErrorResponseDto
 
 
-export function useAdminControllerListPrescriptions<TData = Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError = ErrorResponseDto>(
- params: undefined |  AdminControllerListPrescriptionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError, TData>> & Pick<
+export function useAdminListPrescriptions<TData = Awaited<ReturnType<typeof adminListPrescriptions>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminListPrescriptionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminListPrescriptions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof adminControllerListPrescriptions>>,
+          Awaited<ReturnType<typeof adminListPrescriptions>>,
           TError,
-          Awaited<ReturnType<typeof adminControllerListPrescriptions>>
+          Awaited<ReturnType<typeof adminListPrescriptions>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAdminControllerListPrescriptions<TData = Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError = ErrorResponseDto>(
- params?: AdminControllerListPrescriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError, TData>> & Pick<
+export function useAdminListPrescriptions<TData = Awaited<ReturnType<typeof adminListPrescriptions>>, TError = ErrorResponseDto>(
+ params?: AdminListPrescriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminListPrescriptions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof adminControllerListPrescriptions>>,
+          Awaited<ReturnType<typeof adminListPrescriptions>>,
           TError,
-          Awaited<ReturnType<typeof adminControllerListPrescriptions>>
+          Awaited<ReturnType<typeof adminListPrescriptions>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAdminControllerListPrescriptions<TData = Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError = ErrorResponseDto>(
- params?: AdminControllerListPrescriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError, TData>>, }
+export function useAdminListPrescriptions<TData = Awaited<ReturnType<typeof adminListPrescriptions>>, TError = ErrorResponseDto>(
+ params?: AdminListPrescriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminListPrescriptions>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List all prescriptions (Admin Only)
  */
 
-export function useAdminControllerListPrescriptions<TData = Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError = ErrorResponseDto>(
- params?: AdminControllerListPrescriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerListPrescriptions>>, TError, TData>>, }
+export function useAdminListPrescriptions<TData = Awaited<ReturnType<typeof adminListPrescriptions>>, TError = ErrorResponseDto>(
+ params?: AdminListPrescriptionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminListPrescriptions>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAdminControllerListPrescriptionsQueryOptions(params,options)
+  const queryOptions = getAdminListPrescriptionsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1439,8 +1440,8 @@ export function useAdminControllerListPrescriptions<TData = Awaited<ReturnType<t
 /**
  * @summary Get dashboard metrics (Admin Only)
  */
-export const adminControllerGetMetrics = (
-    params?: AdminControllerGetMetricsParams,
+export const adminGetMetrics = (
+    params?: AdminGetMetricsParams,
  signal?: AbortSignal
 ) => {
 
@@ -1455,69 +1456,69 @@ export const adminControllerGetMetrics = (
 
 
 
-export const getAdminControllerGetMetricsQueryKey = (params?: AdminControllerGetMetricsParams,) => {
+export const getAdminGetMetricsQueryKey = (params?: AdminGetMetricsParams,) => {
     return [
     `/admin/metrics`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getAdminControllerGetMetricsQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError = ErrorResponseDto>(params?: AdminControllerGetMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError, TData>>, }
+export const getAdminGetMetricsQueryOptions = <TData = Awaited<ReturnType<typeof adminGetMetrics>>, TError = ErrorResponseDto>(params?: AdminGetMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminGetMetrics>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetMetricsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getAdminGetMetricsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetMetrics>>> = ({ signal }) => adminControllerGetMetrics(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminGetMetrics>>> = ({ signal }) => adminGetMetrics(params, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminGetMetrics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AdminControllerGetMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetMetrics>>>
-export type AdminControllerGetMetricsQueryError = ErrorResponseDto
+export type AdminGetMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof adminGetMetrics>>>
+export type AdminGetMetricsQueryError = ErrorResponseDto
 
 
-export function useAdminControllerGetMetrics<TData = Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError = ErrorResponseDto>(
- params: undefined |  AdminControllerGetMetricsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError, TData>> & Pick<
+export function useAdminGetMetrics<TData = Awaited<ReturnType<typeof adminGetMetrics>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminGetMetricsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminGetMetrics>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof adminControllerGetMetrics>>,
+          Awaited<ReturnType<typeof adminGetMetrics>>,
           TError,
-          Awaited<ReturnType<typeof adminControllerGetMetrics>>
+          Awaited<ReturnType<typeof adminGetMetrics>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAdminControllerGetMetrics<TData = Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError = ErrorResponseDto>(
- params?: AdminControllerGetMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError, TData>> & Pick<
+export function useAdminGetMetrics<TData = Awaited<ReturnType<typeof adminGetMetrics>>, TError = ErrorResponseDto>(
+ params?: AdminGetMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminGetMetrics>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof adminControllerGetMetrics>>,
+          Awaited<ReturnType<typeof adminGetMetrics>>,
           TError,
-          Awaited<ReturnType<typeof adminControllerGetMetrics>>
+          Awaited<ReturnType<typeof adminGetMetrics>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAdminControllerGetMetrics<TData = Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError = ErrorResponseDto>(
- params?: AdminControllerGetMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError, TData>>, }
+export function useAdminGetMetrics<TData = Awaited<ReturnType<typeof adminGetMetrics>>, TError = ErrorResponseDto>(
+ params?: AdminGetMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminGetMetrics>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get dashboard metrics (Admin Only)
  */
 
-export function useAdminControllerGetMetrics<TData = Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError = ErrorResponseDto>(
- params?: AdminControllerGetMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetMetrics>>, TError, TData>>, }
+export function useAdminGetMetrics<TData = Awaited<ReturnType<typeof adminGetMetrics>>, TError = ErrorResponseDto>(
+ params?: AdminGetMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminGetMetrics>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAdminControllerGetMetricsQueryOptions(params,options)
+  const queryOptions = getAdminGetMetricsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1533,13 +1534,13 @@ export function useAdminControllerGetMetrics<TData = Awaited<ReturnType<typeof a
 /**
  * @summary Stream live admin metrics over Server-Sent Events (Admin Only)
  */
-export const adminControllerStreamMetrics = (
-    params?: AdminControllerStreamMetricsParams,
+export const adminStreamMetrics = (
+    params?: AdminStreamMetricsParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customInstance<void>(
+      return customInstance<MetricsStreamSnapshotDto>(
       {url: `/admin/metrics/stream`, method: 'GET',
         params, signal
     },
@@ -1549,69 +1550,69 @@ export const adminControllerStreamMetrics = (
 
 
 
-export const getAdminControllerStreamMetricsQueryKey = (params?: AdminControllerStreamMetricsParams,) => {
+export const getAdminStreamMetricsQueryKey = (params?: AdminStreamMetricsParams,) => {
     return [
     `/admin/metrics/stream`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getAdminControllerStreamMetricsQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError = ErrorResponseDto>(params?: AdminControllerStreamMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError, TData>>, }
+export const getAdminStreamMetricsQueryOptions = <TData = Awaited<ReturnType<typeof adminStreamMetrics>>, TError = ErrorResponseDto>(params?: AdminStreamMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminStreamMetrics>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAdminControllerStreamMetricsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getAdminStreamMetricsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerStreamMetrics>>> = ({ signal }) => adminControllerStreamMetrics(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminStreamMetrics>>> = ({ signal }) => adminStreamMetrics(params, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminStreamMetrics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AdminControllerStreamMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerStreamMetrics>>>
-export type AdminControllerStreamMetricsQueryError = ErrorResponseDto
+export type AdminStreamMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof adminStreamMetrics>>>
+export type AdminStreamMetricsQueryError = ErrorResponseDto
 
 
-export function useAdminControllerStreamMetrics<TData = Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError = ErrorResponseDto>(
- params: undefined |  AdminControllerStreamMetricsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError, TData>> & Pick<
+export function useAdminStreamMetrics<TData = Awaited<ReturnType<typeof adminStreamMetrics>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminStreamMetricsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminStreamMetrics>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof adminControllerStreamMetrics>>,
+          Awaited<ReturnType<typeof adminStreamMetrics>>,
           TError,
-          Awaited<ReturnType<typeof adminControllerStreamMetrics>>
+          Awaited<ReturnType<typeof adminStreamMetrics>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAdminControllerStreamMetrics<TData = Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError = ErrorResponseDto>(
- params?: AdminControllerStreamMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError, TData>> & Pick<
+export function useAdminStreamMetrics<TData = Awaited<ReturnType<typeof adminStreamMetrics>>, TError = ErrorResponseDto>(
+ params?: AdminStreamMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminStreamMetrics>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof adminControllerStreamMetrics>>,
+          Awaited<ReturnType<typeof adminStreamMetrics>>,
           TError,
-          Awaited<ReturnType<typeof adminControllerStreamMetrics>>
+          Awaited<ReturnType<typeof adminStreamMetrics>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAdminControllerStreamMetrics<TData = Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError = ErrorResponseDto>(
- params?: AdminControllerStreamMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError, TData>>, }
+export function useAdminStreamMetrics<TData = Awaited<ReturnType<typeof adminStreamMetrics>>, TError = ErrorResponseDto>(
+ params?: AdminStreamMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminStreamMetrics>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Stream live admin metrics over Server-Sent Events (Admin Only)
  */
 
-export function useAdminControllerStreamMetrics<TData = Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError = ErrorResponseDto>(
- params?: AdminControllerStreamMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerStreamMetrics>>, TError, TData>>, }
+export function useAdminStreamMetrics<TData = Awaited<ReturnType<typeof adminStreamMetrics>>, TError = ErrorResponseDto>(
+ params?: AdminStreamMetricsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminStreamMetrics>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAdminControllerStreamMetricsQueryOptions(params,options)
+  const queryOptions = getAdminStreamMetricsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

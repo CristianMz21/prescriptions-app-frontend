@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
@@ -9,9 +9,9 @@ import type {
   UserEntity,
 } from '@/lib/api/generated/schemas'
 import {
-  usePrescriptionsControllerCreate,
-  usersControllerFindOne,
-  useUsersControllerFindAllPatients,
+  usePrescriptionsCreate,
+  useUsersFindAllPatients,
+  usersFindOne,
 } from '@/lib/api/generated/prescriptionManagementAPI'
 import { ApiError } from '@/lib/api/client'
 import { routes } from '@/lib/routes'
@@ -35,6 +35,9 @@ const EMPTY_ITEM: PrescriptionItemDto = {
   instructions: '',
 }
 
+const DEBOUNCE_MS = 300
+const PATIENT_LIMIT = 20
+
 export function CreatePrescriptionForm() {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -43,14 +46,40 @@ export function CreatePrescriptionForm() {
   const [items, setItems] = useState<PrescriptionItemDto[]>([{ ...EMPTY_ITEM }])
   const [error, setError] = useState<string | null>(null)
   const [isResolvingPatient, setIsResolvingPatient] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // Fetch a generous page so the dropdown isn't truncated when the patient
-  // roster grows. A real product would lazy-load via search; this MVP just
-  // fits the seed + e2e-created accounts on a single request.
-  const { data: patientsData } = useUsersControllerFindAllPatients({ limit: 200 })
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery)
+    }, DEBOUNCE_MS)
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [searchQuery])
+
+  const queryParams = {
+    limit: PATIENT_LIMIT,
+    page: 1,
+    ...(debouncedSearch.trim().length > 0 ? { q: debouncedSearch.trim() } : {}),
+  }
+
+  const {
+    data: patientsData,
+    isLoading: isSearching,
+    isError: searchError,
+  } = useUsersFindAllPatients(queryParams)
+
   const patients: UserEntity[] = patientsData?.data ?? []
 
-  const createMutation = usePrescriptionsControllerCreate({
+  const createMutation = usePrescriptionsCreate({
     mutation: {
       onSuccess: () => {
         void queryClient.invalidateQueries()
@@ -89,13 +118,10 @@ export function CreatePrescriptionForm() {
       return
     }
 
-    // The patient list endpoint returns User records but
-    // CreatePrescriptionDto.patientId requires the Patient profile id, so we
-    // resolve it via the single-user endpoint before submitting.
     setIsResolvingPatient(true)
     let patientProfileId: string
     try {
-      const fullUser = await usersControllerFindOne(selectedUserId)
+      const fullUser = await usersFindOne(selectedUserId)
       if (!fullUser.patient?.id) {
         setError('Selected user has no patient profile')
         return
@@ -149,21 +175,59 @@ export function CreatePrescriptionForm() {
             <Label htmlFor="patient" className="label-uppercase">
               Patient
             </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-lg pointer-events-none">
+                search
+              </span>
+              <Input
+                id="patient-search"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search patient by email..."
+                className="pl-10 py-3 text-base"
+                autoComplete="off"
+              />
+              {isSearching && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant animate-spin">
+                  progress_activity
+                </span>
+              )}
+            </div>
             <Select
               value={selectedUserId}
               onValueChange={(value) => setSelectedUserId(value ?? '')}
+              disabled={isSearching}
             >
               <SelectTrigger id="patient" className="w-full">
-                <SelectValue placeholder="Select a patient..." />
+                <SelectValue placeholder={isSearching ? 'Searching...' : 'Select a patient...'} />
               </SelectTrigger>
               <SelectContent>
-                {patients.map((patient) => (
-                  <SelectItem key={patient.id} value={patient.id}>
-                    {patient.email}
-                  </SelectItem>
-                ))}
+                {searchError ? (
+                  <div className="px-4 py-3 text-sm text-error flex items-center gap-2">
+                    <span className="material-symbols-outlined text-sm">error</span>
+                    Failed to load patients
+                  </div>
+                ) : patients.length === 0 ? (
+                  <div className="px-4 py-3 text-sm text-on-surface-variant">
+                    {debouncedSearch.trim().length > 0
+                      ? 'No patients found'
+                      : 'No patients available'}
+                  </div>
+                ) : (
+                  patients.map((patient) => (
+                    <SelectItem key={patient.id} value={patient.id}>
+                      {patient.email}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
+            {patientsData?.meta && patientsData.data.length === 0 && debouncedSearch.trim().length > 0 && (
+              <p className="text-xs text-on-surface-variant mt-1">
+                No patients matching &ldquo;{debouncedSearch}&rdquo;
+              </p>
+            )}
           </div>
         </Card>
 
@@ -219,7 +283,7 @@ export function CreatePrescriptionForm() {
               className="mb-4 p-3 bg-error-container/10 border border-error rounded text-sm text-error flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-sm">error</span>
-              {error}
+              <span>{error}</span>
             </div>
           ) : null}
 
@@ -230,7 +294,7 @@ export function CreatePrescriptionForm() {
             >
               Cancel
             </Link>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !selectedUserId}>
               {isSubmitting ? (
                 <>
                   <span className="material-symbols-outlined animate-spin">

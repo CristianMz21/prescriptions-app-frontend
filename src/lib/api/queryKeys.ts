@@ -10,44 +10,44 @@
  *   queryClient.invalidateQueries({ queryKey: qk.prescriptions.detail(id) })
  */
 import {
-  getAdminControllerGetMetricsQueryKey,
-  getAuthControllerGetProfileQueryKey,
-  getPrescriptionsControllerFindAllQueryKey,
-  getPrescriptionsControllerFindOneQueryKey,
-  getUsersControllerFindAllDoctorsQueryKey,
-  getUsersControllerFindAllPatientsQueryKey,
-  getUsersControllerFindAllQueryKey,
-  getUsersControllerFindOneQueryKey,
+  getAdminGetMetricsQueryKey,
+  getAuthGetProfileQueryKey,
+  getPrescriptionsFindAllQueryKey,
+  getPrescriptionsFindOneQueryKey,
+  getUsersFindAllDoctorsQueryKey,
+  getUsersFindAllPatientsQueryKey,
+  getUsersFindAllQueryKey,
+  getUsersFindOneQueryKey,
 } from './generated/prescriptionManagementAPI'
 import type {
-  AdminControllerGetMetricsParams,
-  PrescriptionsControllerFindAllParams,
-  UsersControllerFindAllDoctorsParams,
-  UsersControllerFindAllParams,
-  UsersControllerFindAllPatientsParams,
+  AdminGetMetricsParams,
+  PrescriptionsFindAllParams,
+  UsersFindAllDoctorsParams,
+  UsersFindAllParams,
+  UsersFindAllPatientsParams,
 } from './generated/schemas'
 
 export const qk = {
   auth: {
-    profile: () => getAuthControllerGetProfileQueryKey(),
+    profile: () => getAuthGetProfileQueryKey(),
   },
   prescriptions: {
     all: ['/prescriptions'] as const,
-    list: (params?: PrescriptionsControllerFindAllParams) =>
-      getPrescriptionsControllerFindAllQueryKey(params),
-    detail: (id: string) => getPrescriptionsControllerFindOneQueryKey(id),
+    list: (params?: PrescriptionsFindAllParams) =>
+      getPrescriptionsFindAllQueryKey(params),
+    detail: (id: string) => getPrescriptionsFindOneQueryKey(id),
   },
   users: {
-    all: (params?: UsersControllerFindAllParams) =>
-      getUsersControllerFindAllQueryKey(params),
-    patients: (params?: UsersControllerFindAllPatientsParams) =>
-      getUsersControllerFindAllPatientsQueryKey(params),
-    doctors: (params?: UsersControllerFindAllDoctorsParams) =>
-      getUsersControllerFindAllDoctorsQueryKey(params),
-    detail: (id: string) => getUsersControllerFindOneQueryKey(id),
+    all: (params?: UsersFindAllParams) =>
+      getUsersFindAllQueryKey(params),
+    patients: (params?: UsersFindAllPatientsParams) =>
+      getUsersFindAllPatientsQueryKey(params),
+    doctors: (params?: UsersFindAllDoctorsParams) =>
+      getUsersFindAllDoctorsQueryKey(params),
+    detail: (id: string) => getUsersFindOneQueryKey(id),
   },
   metrics: {
-    summary: (params?: AdminControllerGetMetricsParams) =>
-      getAdminControllerGetMetricsQueryKey(params),
+    summary: (params?: AdminGetMetricsParams) =>
+      getAdminGetMetricsQueryKey(params),
   },
 } as const

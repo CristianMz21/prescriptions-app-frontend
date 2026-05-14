@@ -6,13 +6,10 @@
  * OpenAPI spec version: 0.0.1
  */
 
-/**
- * Current status of the prescription
- */
-export type PrescriptionStatus = typeof PrescriptionStatus[keyof typeof PrescriptionStatus];
+export type PrescriptionsFindAllStatus = typeof PrescriptionsFindAllStatus[keyof typeof PrescriptionsFindAllStatus];
 
 
-export const PrescriptionStatus = {
+export const PrescriptionsFindAllStatus = {
   PENDING: 'PENDING',
   CONSUMED: 'CONSUMED',
 } as const;

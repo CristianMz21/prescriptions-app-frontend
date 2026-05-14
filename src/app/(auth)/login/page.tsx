@@ -61,6 +61,7 @@ export default function LoginPage() {
                   placeholder="Enter designated email"
                   className="pl-10 py-3 text-base"
                   required
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -81,6 +82,7 @@ export default function LoginPage() {
                   placeholder="Enter security key"
                   className="pl-10 py-3 text-base"
                   required
+                  autoComplete="current-password"
                 />
               </div>
             </div>

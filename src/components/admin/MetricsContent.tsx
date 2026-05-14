@@ -1,6 +1,6 @@
 'use client'
 
-import { useAdminControllerGetMetrics } from '@/lib/api/generated/prescriptionManagementAPI'
+import { useAdminGetMetrics } from '@/lib/api/generated/prescriptionManagementAPI'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { MetricCardsSkeleton } from '@/components/feedback/Skeletons'
 import { useMetricsStream } from '@/lib/hooks/useMetricsStream'
@@ -14,7 +14,7 @@ interface MetricsContentProps {
 }
 
 export function MetricsContent({ live = true }: MetricsContentProps = {}) {
-  const { data: metrics, isLoading, error } = useAdminControllerGetMetrics()
+  const { data: metrics, isLoading, error } = useAdminGetMetrics()
   useMetricsStream(live)
 
   if (isLoading) {

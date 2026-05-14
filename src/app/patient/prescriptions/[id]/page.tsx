@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { usePrescriptionsControllerFindOne } from '@/lib/api/generated/prescriptionManagementAPI'
+import { usePrescriptionsFindOne } from '@/lib/api/generated/prescriptionManagementAPI'
 import { LoadingState } from '@/components/feedback/LoadingState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
@@ -16,7 +16,7 @@ export default function PatientPrescriptionDetailPage() {
   const prescriptionId = params.id as string
 
   const { data: prescription, isLoading, error } =
-    usePrescriptionsControllerFindOne(prescriptionId)
+    usePrescriptionsFindOne(prescriptionId)
 
   return (
     <div className="max-w-3xl mx-auto">

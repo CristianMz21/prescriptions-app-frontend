@@ -10,9 +10,9 @@ import {
 import { useRouter } from 'next/navigation'
 import type { UserProfileResponseDto } from '@/lib/api/generated/schemas'
 import {
-  authControllerGetProfile,
-  authControllerLogin,
-  authControllerLogout,
+  authGetProfile,
+  authLogin,
+  authLogout,
 } from '@/lib/api/generated/prescriptionManagementAPI'
 import { getRedirectPath, routes } from '@/lib/routes'
 
@@ -40,8 +40,8 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      await authControllerLogin({ email, password })
-      const profile = await authControllerGetProfile()
+      await authLogin({ email, password })
+      const profile = await authGetProfile()
       startTransition(() => {
         setUser(profile)
         router.push(getRedirectPath(profile.role))
@@ -54,7 +54,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const logout = async () => {
     setIsLoading(true)
     try {
-      await authControllerLogout()
+      await authLogout()
     } finally {
       startTransition(() => {
         setUser(null)

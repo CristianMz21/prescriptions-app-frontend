@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import type { PrescriptionResponseDto } from '@/lib/api/generated/schemas'
-import { usePrescriptionsControllerFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
+import { usePrescriptionsFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { PrescriptionCardListSkeleton } from '@/components/feedback/Skeletons'
@@ -13,7 +13,7 @@ import { PdfDownloadButton } from './PdfDownloadButton'
 import { ConsumePrescriptionButton } from './ConsumePrescriptionButton'
 
 export function PrescriptionCardList() {
-  const { data, isLoading, error } = usePrescriptionsControllerFindAll()
+  const { data, isLoading, error } = usePrescriptionsFindAll()
 
   if (isLoading) return <PrescriptionCardListSkeleton />
   if (error) return <ErrorState message={error.message} />

@@ -3,21 +3,17 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
-import type { DoctorProfileSummaryMedicalId } from './doctorProfileSummaryMedicalId';
-import type { DoctorProfileSummarySignatureImageUrl } from './doctorProfileSummarySignatureImageUrl';
-import type { DoctorProfileSummarySignatureText } from './doctorProfileSummarySignatureText';
-import type { DoctorProfileSummarySpecialty } from './doctorProfileSummarySpecialty';
 
 export interface DoctorProfileSummary {
   id: string;
   /** @nullable */
-  specialty?: DoctorProfileSummarySpecialty;
+  specialty?: string | null;
   /** @nullable */
-  medicalId?: DoctorProfileSummaryMedicalId;
+  medicalId?: string | null;
   /** @nullable */
-  signatureText?: DoctorProfileSummarySignatureText;
+  signatureText?: string | null;
   /** @nullable */
-  signatureImageUrl?: DoctorProfileSummarySignatureImageUrl;
+  signatureImageUrl?: string | null;
 }

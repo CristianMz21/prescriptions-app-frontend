@@ -3,22 +3,18 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
 
-export * from './adminControllerGetMetricsParams';
-export * from './adminControllerListPrescriptions200';
-export * from './adminControllerListPrescriptionsParams';
-export * from './adminControllerStreamMetricsParams';
+export * from './adminGetMetricsParams';
+export * from './adminListPrescriptions200';
+export * from './adminListPrescriptionsParams';
+export * from './adminStreamMetricsParams';
 export * from './authUserDto';
 export * from './consumePrescriptionDto';
 export * from './createPrescriptionDto';
 export * from './createUserDto';
 export * from './doctorProfileSummary';
-export * from './doctorProfileSummaryMedicalId';
-export * from './doctorProfileSummarySignatureImageUrl';
-export * from './doctorProfileSummarySignatureText';
-export * from './doctorProfileSummarySpecialty';
 export * from './errorResponseDto';
 export * from './loginDto';
 export * from './loginResponseDto';
@@ -26,21 +22,21 @@ export * from './logoutResponseDto';
 export * from './metricsByDayItemDto';
 export * from './metricsByStatusDto';
 export * from './metricsResponseDto';
+export * from './metricsStreamSnapshotDto';
 export * from './metricsTopDoctorItemDto';
 export * from './metricsTotalsDto';
 export * from './paginatedResultDto';
 export * from './paginatedResultDtoDataItem';
 export * from './paginationMetaDto';
 export * from './patientProfileSummary';
-export * from './patientProfileSummaryBirthDate';
 export * from './prescriptionAuthorSummaryDto';
 export * from './prescriptionItemDto';
 export * from './prescriptionItemResponseDto';
 export * from './prescriptionPatientSummaryDto';
 export * from './prescriptionResponseDto';
-export * from './prescriptionsControllerFindAll200';
-export * from './prescriptionsControllerFindAllParams';
-export * from './prescriptionsControllerFindAllStatus';
+export * from './prescriptionsFindAll200';
+export * from './prescriptionsFindAllParams';
+export * from './prescriptionsFindAllStatus';
 export * from './prescriptionStatus';
 export * from './prescriptionUserSummaryDto';
 export * from './refreshResponseDto';
@@ -50,9 +46,9 @@ export * from './updateThemeDto';
 export * from './userEntity';
 export * from './userProfileResponseDto';
 export * from './userResponseDto';
-export * from './usersControllerFindAll200';
-export * from './usersControllerFindAllDoctors200';
-export * from './usersControllerFindAllDoctorsParams';
-export * from './usersControllerFindAllParams';
-export * from './usersControllerFindAllPatients200';
-export * from './usersControllerFindAllPatientsParams';
+export * from './usersFindAll200';
+export * from './usersFindAllDoctors200';
+export * from './usersFindAllDoctorsParams';
+export * from './usersFindAllParams';
+export * from './usersFindAllPatients200';
+export * from './usersFindAllPatientsParams';

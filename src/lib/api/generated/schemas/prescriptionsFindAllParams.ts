@@ -3,11 +3,11 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
-import type { PrescriptionsControllerFindAllStatus } from './prescriptionsControllerFindAllStatus';
+import type { PrescriptionsFindAllStatus } from './prescriptionsFindAllStatus';
 
-export type PrescriptionsControllerFindAllParams = {
+export type PrescriptionsFindAllParams = {
 /**
  * Número de página (1-indexed).
  * @minimum 1
@@ -21,7 +21,7 @@ limit?: number;
 /**
  * Filtrar por estado de prescripción.
  */
-status?: PrescriptionsControllerFindAllStatus;
+status?: PrescriptionsFindAllStatus;
 /**
  * Filtrar desde fecha (ISO 8601).
  */

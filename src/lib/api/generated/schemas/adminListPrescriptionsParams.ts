@@ -3,11 +3,11 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
 import type { PrescriptionStatus } from './prescriptionStatus';
 
-export type AdminControllerListPrescriptionsParams = {
+export type AdminListPrescriptionsParams = {
 /**
  * Page number (1-indexed)
  * @minimum 1

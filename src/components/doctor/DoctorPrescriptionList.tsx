@@ -3,10 +3,10 @@
 import Link from 'next/link'
 import type {
   PrescriptionResponseDto,
-  PrescriptionsControllerFindAllParams,
-  PrescriptionsControllerFindAllStatus,
+  PrescriptionsFindAllParams,
+  PrescriptionsFindAllStatus,
 } from '@/lib/api/generated/schemas'
-import { usePrescriptionsControllerFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
+import { usePrescriptionsFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { PrescriptionTableSkeleton } from '@/components/feedback/Skeletons'
@@ -26,15 +26,15 @@ export function DoctorPrescriptionList() {
   const { page, limit, setPage } = usePagination({ limit: 10 })
   const { values, setFilters, clear } = useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS)
 
-  const params: PrescriptionsControllerFindAllParams = {
+  const params: PrescriptionsFindAllParams = {
     page,
     limit,
-    status: values.status as PrescriptionsControllerFindAllStatus | undefined,
+    status: values.status as PrescriptionsFindAllStatus | undefined,
     fromDate: values.fromDate,
     toDate: values.toDate,
     q: values.q,
   }
-  const { data, isLoading, error } = usePrescriptionsControllerFindAll(params)
+  const { data, isLoading, error } = usePrescriptionsFindAll(params)
 
   return (
     <div>

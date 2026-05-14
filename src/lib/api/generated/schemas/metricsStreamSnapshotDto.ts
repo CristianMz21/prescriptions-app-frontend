@@ -5,18 +5,14 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { MetricsByDayItemDto } from './metricsByDayItemDto';
 import type { MetricsByStatusDto } from './metricsByStatusDto';
-import type { MetricsTopDoctorItemDto } from './metricsTopDoctorItemDto';
 import type { MetricsTotalsDto } from './metricsTotalsDto';
 
-export interface MetricsResponseDto {
+export interface MetricsStreamSnapshotDto {
   /** Aggregate counts */
   totals: MetricsTotalsDto;
   /** Prescription counts by status */
   byStatus: MetricsByStatusDto;
-  /** Daily prescription counts for the last 30 days (or filtered range) */
-  byDay: MetricsByDayItemDto[];
-  /** Top 5 doctors by prescription count in the filtered period */
-  topDoctors: MetricsTopDoctorItemDto[];
+  /** ISO 8601 timestamp of the snapshot */
+  timestamp: string;
 }

@@ -3,10 +3,10 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
 
-export type UsersControllerFindAllPatientsParams = {
+export type UsersFindAllDoctorsParams = {
 /**
  * Page number (1-indexed)
  * @minimum 1
@@ -17,4 +17,8 @@ page?: number;
  * @minimum 1
  */
 limit?: number;
+/**
+ * Case-insensitive search by user email.
+ */
+q?: string;
 };

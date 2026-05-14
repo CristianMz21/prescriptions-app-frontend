@@ -3,12 +3,11 @@
  * Do not edit manually.
  * Prescription Management API
  * API documentation for the MVP Prescription Management System.
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 0.0.1
  */
-import type { PatientProfileSummaryBirthDate } from './patientProfileSummaryBirthDate';
 
 export interface PatientProfileSummary {
   id: string;
   /** @nullable */
-  birthDate?: PatientProfileSummaryBirthDate;
+  birthDate?: string | null;
 }

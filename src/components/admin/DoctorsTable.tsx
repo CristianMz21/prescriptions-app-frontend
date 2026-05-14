@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { useUsersControllerFindAllDoctors } from '@/lib/api/generated/prescriptionManagementAPI'
+import { useUsersFindAllDoctors } from '@/lib/api/generated/prescriptionManagementAPI'
 import type { UserEntity } from '@/lib/api/generated/schemas'
 import { LoadingState } from '@/components/feedback/LoadingState'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -29,7 +29,7 @@ function stringifyOptional(value: unknown): string {
 
 export function DoctorsTable() {
   const { page, limit, setPage } = usePagination({ limit: 20 })
-  const { data, isLoading, error } = useUsersControllerFindAllDoctors({ page, limit })
+  const { data, isLoading, error } = useUsersFindAllDoctors({ page, limit })
 
   if (isLoading) return <LoadingState label="Loading doctors" />
   if (error) return <ErrorState message={error.message} />

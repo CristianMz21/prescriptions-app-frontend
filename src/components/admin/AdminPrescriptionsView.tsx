@@ -1,8 +1,8 @@
 'use client'
 
-import { useAdminControllerListPrescriptions } from '@/lib/api/generated/prescriptionManagementAPI'
+import { useAdminListPrescriptions } from '@/lib/api/generated/prescriptionManagementAPI'
 import type {
-  AdminControllerListPrescriptionsParams,
+  AdminListPrescriptionsParams,
   PrescriptionResponseDto,
   PrescriptionStatus,
 } from '@/lib/api/generated/schemas'
@@ -24,7 +24,7 @@ export function AdminPrescriptionsView() {
   const { page, limit, setPage } = usePagination({ limit: 10 })
   const { values, setFilters, clear } = useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS)
 
-  const params: AdminControllerListPrescriptionsParams = {
+  const params: AdminListPrescriptionsParams = {
     page,
     limit,
     status: values.status as PrescriptionStatus | undefined,
@@ -32,7 +32,7 @@ export function AdminPrescriptionsView() {
     to: values.toDate,
     q: values.q,
   }
-  const { data, isLoading, error } = useAdminControllerListPrescriptions(params)
+  const { data, isLoading, error } = useAdminListPrescriptions(params)
 
   const handleChange = (patch: Partial<PrescriptionFilterValues>) => {
     setFilters(patch as Partial<Record<(typeof FILTER_KEYS)[number], string | undefined>>)
