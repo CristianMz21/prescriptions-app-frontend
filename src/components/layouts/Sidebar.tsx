@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/hooks/useAuth'
 import type { Role } from '@/lib/api/generated/schemas'
 import { navigationByRole } from '@/lib/nav'
 import { RoleNav } from './RoleNav'
+import { ThemeToggle } from './ThemeToggle'
 
 interface SidebarProps {
   role: Role
@@ -40,6 +41,7 @@ export function Sidebar({ role }: SidebarProps) {
             </span>
           </div>
         ) : null}
+        {user ? <ThemeToggle initial={user.themePreference} /> : null}
         <button
           type="button"
           data-testid="sidebar-logout"

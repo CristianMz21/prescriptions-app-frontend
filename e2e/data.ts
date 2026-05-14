@@ -54,7 +54,9 @@ export async function resolvePatientProfileId(
   apiRequest: APIRequestContext,
   patientEmail: string,
 ): Promise<string> {
-  const list = await apiRequest.get(`${BACKEND_URL}/users/patients`)
+  // Bump the page size — onboarding tests create extra patients, which push
+  // the seed account off page 1 with the default limit.
+  const list = await apiRequest.get(`${BACKEND_URL}/users/patients?limit=100`)
   const body = (await list.json()) as { data?: UserEntity[] }
   const user = body.data?.find((u) => u.email === patientEmail)
   if (!user) {

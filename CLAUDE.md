@@ -46,6 +46,24 @@ App Router, organized by role: `app/(auth)/login/`, `app/admin/`, `app/doctor/`,
 
 A few patient/doctor routes (e.g. `app/patient/prescriptions/[id]/consume/route.ts`) use Next.js Route Handlers as thin server-side proxies — keep these when you need to call the backend with the user's cookie from a form action without going through a client hook.
 
+### Refresh-token rotation
+
+Both `apiClient` (`src/lib/api/custom-instance.ts`) and `serverApiRequest` (`src/lib/auth/server.ts`) intercept 401s on non-`/auth/*` requests, call `POST /auth/refresh`, and replay the original call once. Concurrent 401s coalesce into a single refresh attempt. The interceptor never recurses into auth endpoints. Tests in `src/lib/api/refresh.test.ts` (msw-driven) lock this contract.
+
+## Forms, toasts, theme, and URL filters
+
+- **Toasts** — `notify.success/error/info/apiError` in `src/lib/notifications.ts`, mounted via `<Toaster />` in `src/app/providers.tsx`. Always use `notify.apiError(err)` in mutation `onError` so backend `ErrorResponseDto.message` reaches the user.
+- **Forms** — `react-hook-form` + `zod` resolver. See `src/components/admin/CreateUserForm.tsx` for the canonical pattern (schema, conditional fields per role, `<Field>` row helper with `role="alert"` error spans).
+- **Theme** — `usersControllerUpdateMyTheme` is wired through `<ThemeToggle initial={user.themePreference}>`. Root layout reads `initialUser.themePreference` and sets `<html>` class up front so there's no SSR flash.
+- **Filters + pagination** — `usePagination()` and `useUrlFilters()` in `src/lib/hooks/`. Both write the URL via `router.push`, so refresh/back/forward survive. `useUrlFilters` resets `page=1` on any filter change.
+- **Live metrics** — `useMetricsStream()` (`src/lib/hooks/useMetricsStream.ts`) opens an `EventSource` against `/admin/metrics/stream` and feeds events into the existing React Query cache via `setQueryData`. `useAdminControllerGetMetrics` polling stays as the source of truth; SSE just accelerates updates while a tab is open.
+
+## Health + ops
+
+- `GET /api/health` returns `{ ok: true }` (no-cache) for k8s/Vercel probes.
+- `pnpm api:diff` (`scripts/api-diff.mjs`) compares the live backend's `/docs-json` against the committed `backend/openapi.json`. Pin in CI.
+- `vercel.json` ships strict security headers; deploy with `NEXT_PUBLIC_API_URL` matching the same registrable hostname as the front-end origin (otherwise sameSite cookies drop).
+
 ## Conventions specific to this codebase
 
 - **Path alias**: `@/*` → `./src/*` (configured in `tsconfig.json`).

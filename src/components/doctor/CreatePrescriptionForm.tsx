@@ -44,7 +44,10 @@ export function CreatePrescriptionForm() {
   const [error, setError] = useState<string | null>(null)
   const [isResolvingPatient, setIsResolvingPatient] = useState(false)
 
-  const { data: patientsData } = useUsersControllerFindAllPatients()
+  // Fetch a generous page so the dropdown isn't truncated when the patient
+  // roster grows. A real product would lazy-load via search; this MVP just
+  // fits the seed + e2e-created accounts on a single request.
+  const { data: patientsData } = useUsersControllerFindAllPatients({ limit: 200 })
   const patients: UserEntity[] = patientsData?.data ?? []
 
   const createMutation = usePrescriptionsControllerCreate({

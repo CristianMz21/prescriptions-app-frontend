@@ -23,12 +23,14 @@ interface PrescriptionTableProps {
   prescriptions: PrescriptionResponseDto[]
   getDetailHref: (id: string) => string
   meta?: Pagination
+  onPageChange?: (page: number) => void
 }
 
 export function PrescriptionTable({
   prescriptions,
   getDetailHref,
   meta,
+  onPageChange,
 }: PrescriptionTableProps) {
   return (
     <div className="card-glass overflow-hidden shadow-lg">
@@ -86,13 +88,25 @@ export function PrescriptionTable({
             Showing {prescriptions.length} of {meta.total}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon-sm" disabled={meta.page <= 1} aria-label="Previous page">
+            <Button
+              variant="outline"
+              size="icon-sm"
+              disabled={meta.page <= 1 || !onPageChange}
+              onClick={() => onPageChange?.(meta.page - 1)}
+              aria-label="Previous page"
+            >
               <span className="material-symbols-outlined text-lg">chevron_left</span>
             </Button>
             <div className="text-xs font-semibold tabular-nums">
               Page {meta.page} of {meta.totalPages}
             </div>
-            <Button variant="outline" size="icon-sm" disabled={meta.page >= meta.totalPages} aria-label="Next page">
+            <Button
+              variant="outline"
+              size="icon-sm"
+              disabled={meta.page >= meta.totalPages || !onPageChange}
+              onClick={() => onPageChange?.(meta.page + 1)}
+              aria-label="Next page"
+            >
               <span className="material-symbols-outlined text-lg">chevron_right</span>
             </Button>
           </div>

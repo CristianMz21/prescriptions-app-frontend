@@ -4,15 +4,22 @@ export const routes = {
   login: '/login',
   admin: {
     metrics: '/admin/metrics',
+    users: '/admin/users',
+    newUser: '/admin/users/new',
+    doctors: '/admin/doctors',
+    prescriptions: '/admin/prescriptions',
   },
   doctor: {
     prescriptions: '/doctor/prescriptions',
     newPrescription: '/doctor/prescriptions/new',
+    profile: '/doctor/profile',
+    analytics: '/doctor/analytics',
   },
   patient: {
     prescriptions: '/patient/prescriptions',
     detail: (id: string) => `/patient/prescriptions/${id}`,
     consume: (id: string) => `/patient/prescriptions/${id}/consume`,
+    profile: '/patient/profile',
   },
 } as const
 

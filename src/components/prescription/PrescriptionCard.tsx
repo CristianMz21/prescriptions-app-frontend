@@ -13,6 +13,7 @@ export function PrescriptionCard({
 }: PrescriptionCardProps) {
   const isPending = rx.status === 'PENDING'
   const lead = rx.items?.[0]
+  const extraCount = Math.max(0, (rx.items?.length ?? 0) - 1)
 
   return (
     <div
@@ -41,10 +42,15 @@ export function PrescriptionCard({
           <div className="md:col-span-2 flex flex-col gap-2">
             {lead ? (
               <>
-                <h3 className="text-xl font-semibold text-primary">
+                <h3 className="text-xl font-semibold text-primary flex items-center gap-2">
                   {lead.name}
                   {lead.dosage ? (
                     <span className="text-on-surface-variant"> {lead.dosage}</span>
+                  ) : null}
+                  {extraCount > 0 ? (
+                    <span className="text-xs font-semibold text-on-surface-variant border border-outline-variant rounded-full px-2 py-0.5 ml-auto">
+                      +{extraCount} more
+                    </span>
                   ) : null}
                 </h3>
                 <div className="bg-surface-container-lowest border border-outline-variant/50 rounded p-3">
@@ -55,6 +61,30 @@ export function PrescriptionCard({
                     {lead.instructions || 'No instructions provided'}
                   </p>
                 </div>
+                {extraCount > 0 && rx.items ? (
+                  <details className="mt-2 group">
+                    <summary className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant cursor-pointer hover:text-primary transition-colors">
+                      Show all medications
+                    </summary>
+                    <ul className="mt-2 flex flex-col gap-1 text-sm text-on-surface">
+                      {rx.items.slice(1).map((item, idx) => (
+                        <li key={item.id ?? idx} className="flex justify-between">
+                          <span>
+                            <span className="font-medium">{item.name}</span>
+                            {item.dosage ? (
+                              <span className="text-on-surface-variant ml-1">{item.dosage}</span>
+                            ) : null}
+                          </span>
+                          {item.quantity ? (
+                            <span className="text-on-surface-variant tabular-nums">
+                              ×{item.quantity}
+                            </span>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
               </>
             ) : null}
           </div>

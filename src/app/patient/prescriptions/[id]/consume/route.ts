@@ -10,10 +10,20 @@ export async function POST(
   try {
     await requireRole(['PATIENT'])
 
+    let reason: string | undefined
+    const contentType = request.headers.get('content-type') ?? ''
+    if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
+      const form = await request.formData()
+      const raw = form.get('reason')
+      if (typeof raw === 'string' && raw.trim().length > 0) {
+        reason = raw.trim().slice(0, 500)
+      }
+    }
+
     await serverApiRequest({
       url: `/prescriptions/${id}/consume`,
       method: 'PATCH',
-      data: {},
+      data: reason ? { reason } : {},
     })
 
     return NextResponse.redirect(

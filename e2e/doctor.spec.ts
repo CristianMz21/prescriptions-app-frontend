@@ -40,7 +40,9 @@ test.describe('Doctor prescription flows', () => {
 
     // Open the shadcn Select trigger, then pick the seeded patient.
     await page.getByRole('combobox').click()
-    await page.getByRole('option', { name: SEED.patient.email }).click()
+    // shadcn/base-ui select renders items as listitem-like nodes; matching by
+    // visible text is the most resilient selector across primitive versions.
+    await page.getByText(SEED.patient.email, { exact: true }).first().click()
 
     const medName = uniqueMedName()
     await page.getByLabel('Medication name').first().fill(medName)
@@ -81,7 +83,9 @@ test.describe('Doctor prescription flows', () => {
     await loginAs('doctor')
     await page.goto('/doctor/prescriptions/new')
     await page.getByRole('combobox').click()
-    await page.getByRole('option', { name: SEED.patient.email }).click()
+    // shadcn/base-ui select renders items as listitem-like nodes; matching by
+    // visible text is the most resilient selector across primitive versions.
+    await page.getByText(SEED.patient.email, { exact: true }).first().click()
     // Leave medication name blank — HTML5 required attribute will block submit
     // before our validation runs, so we assert the field invalidity directly.
     const nameInput = page.getByLabel('Medication name').first()

@@ -1,22 +1,40 @@
 'use client'
 
 import Link from 'next/link'
-import type { PrescriptionResponseDto } from '@/lib/api/generated/schemas'
+import type {
+  PrescriptionResponseDto,
+  PrescriptionsControllerFindAllParams,
+  PrescriptionsControllerFindAllStatus,
+} from '@/lib/api/generated/schemas'
 import { usePrescriptionsControllerFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
-import { LoadingState } from '@/components/feedback/LoadingState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { PrescriptionTableSkeleton } from '@/components/feedback/Skeletons'
 import { PrescriptionTable } from '@/components/prescription/PrescriptionTable'
+import {
+  PrescriptionFiltersBar,
+  type PrescriptionFilterValues,
+} from '@/components/prescription/PrescriptionFiltersBar'
 import { buttonVariants } from '@/components/ui/button'
 import { routes } from '@/lib/routes'
+import { usePagination } from '@/lib/hooks/usePagination'
+import { useUrlFilters } from '@/lib/hooks/useUrlFilters'
+
+const FILTER_KEYS = ['status', 'fromDate', 'toDate', 'q'] as const
 
 export function DoctorPrescriptionList() {
-  const { data, isLoading, error } = usePrescriptionsControllerFindAll()
+  const { page, limit, setPage } = usePagination({ limit: 10 })
+  const { values, setFilters, clear } = useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS)
 
-  if (isLoading) return <LoadingState label="Loading prescriptions" />
-  if (error) return <ErrorState message={error.message} />
-
-  const prescriptions = (data?.data as PrescriptionResponseDto[] | undefined) ?? []
+  const params: PrescriptionsControllerFindAllParams = {
+    page,
+    limit,
+    status: values.status as PrescriptionsControllerFindAllStatus | undefined,
+    fromDate: values.fromDate,
+    toDate: values.toDate,
+    q: values.q,
+  }
+  const { data, isLoading, error } = usePrescriptionsControllerFindAll(params)
 
   return (
     <div>
@@ -33,15 +51,32 @@ export function DoctorPrescriptionList() {
         </Link>
       </div>
 
-      {prescriptions.length === 0 ? (
-        <EmptyState icon="medication" title="No prescriptions found" />
-      ) : (
-        <PrescriptionTable
-          prescriptions={prescriptions}
-          getDetailHref={(id) => `${routes.doctor.prescriptions}/${id}`}
-          meta={data?.meta}
-        />
-      )}
+      <PrescriptionFiltersBar
+        values={values}
+        onChange={(patch: Partial<PrescriptionFilterValues>) =>
+          setFilters(patch as Partial<Record<(typeof FILTER_KEYS)[number], string | undefined>>)
+        }
+        onClear={clear}
+      />
+
+      {isLoading ? <PrescriptionTableSkeleton /> : null}
+      {error ? <ErrorState message={error.message} /> : null}
+      {!isLoading && !error
+        ? (() => {
+            const prescriptions = (data?.data as PrescriptionResponseDto[] | undefined) ?? []
+            if (prescriptions.length === 0) {
+              return <EmptyState icon="medication" title="No prescriptions found" />
+            }
+            return (
+              <PrescriptionTable
+                prescriptions={prescriptions}
+                getDetailHref={(id) => `${routes.doctor.prescriptions}/${id}`}
+                meta={data?.meta}
+                onPageChange={setPage}
+              />
+            )
+          })()
+        : null}
     </div>
   )
 }

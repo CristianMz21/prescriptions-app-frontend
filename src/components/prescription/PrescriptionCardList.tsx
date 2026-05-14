@@ -3,9 +3,9 @@
 import Link from 'next/link'
 import type { PrescriptionResponseDto } from '@/lib/api/generated/schemas'
 import { usePrescriptionsControllerFindAll } from '@/lib/api/generated/prescriptionManagementAPI'
-import { LoadingState } from '@/components/feedback/LoadingState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { PrescriptionCardListSkeleton } from '@/components/feedback/Skeletons'
 import { buttonVariants } from '@/components/ui/button'
 import { routes } from '@/lib/routes'
 import { PrescriptionCard } from './PrescriptionCard'
@@ -15,7 +15,7 @@ import { ConsumePrescriptionButton } from './ConsumePrescriptionButton'
 export function PrescriptionCardList() {
   const { data, isLoading, error } = usePrescriptionsControllerFindAll()
 
-  if (isLoading) return <LoadingState label="Loading prescriptions" />
+  if (isLoading) return <PrescriptionCardListSkeleton />
   if (error) return <ErrorState message={error.message} />
 
   // Orval emits data as the union from PaginatedResultDto allOf — narrow to the

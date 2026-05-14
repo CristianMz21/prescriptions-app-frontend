@@ -91,13 +91,15 @@ test.describe('Patient prescription flows', () => {
     await expect(page).toHaveURL(new RegExp(`/patient/prescriptions/${fresh.id}$`))
     await expect(page.getByTestId('status-badge')).toHaveAttribute('data-status', 'PENDING')
 
-    // The consume button submits a real form POST to the Next.js Route Handler
-    // /patient/prescriptions/{id}/consume, which proxies a PATCH to the backend
-    // and 303-redirects back to the detail page. So we don't observe the
-    // backend PATCH from the browser — we observe the redirect's effect.
+    // The Mark-as-Consumed button is a popover trigger; the actual form
+    // submit lives behind a confirmation step (so the patient can supply an
+    // optional reason). Open the popover, then submit. The form action is a
+    // POST → Next Route Handler → backend PATCH → 303 redirect, so we don't
+    // see the backend PATCH from the browser; we wait for the badge to flip.
     await page.getByRole('button', { name: /mark as consumed/i }).click()
+    await page.getByRole('button', { name: /confirm/i }).click()
     await expect(page.getByTestId('status-badge')).toHaveAttribute('data-status', 'CONSUMED', {
-      timeout: 10_000,
+      timeout: 15_000,
     })
     await expect(page.getByRole('button', { name: /mark as consumed/i })).toHaveCount(0)
   })

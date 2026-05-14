@@ -25,9 +25,14 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const initialUser = await getAuth()
+  // SSR theme: avoid flash by setting the right html class up front. SYSTEM
+  // resolves on the client via prefers-color-scheme; default to dark for SSR.
+  const themeIsDark =
+    initialUser?.themePreference === 'LIGHT' ? false : true
+  const htmlClass = themeIsDark ? 'dark' : ''
 
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={htmlClass} data-theme={initialUser?.themePreference ?? 'SYSTEM'}>
       <head>
         <link
           rel="stylesheet"
