@@ -3,13 +3,15 @@ import { defineConfig, devices } from '@playwright/test'
 /**
  * Playwright config for the Prescriptions frontend E2E suite.
  *
- * Why baseURL is 127.0.0.1 (not localhost):
- *   The backend issues HttpOnly cookies on `127.0.0.1:3000` with `sameSite: lax`.
- *   When the browser is pointed at `localhost:3001` (the dev default), browser XHRs
- *   to `127.0.0.1:3000` are cross-site and the cookie is dropped — login can't
- *   complete. Driving the test runner against `127.0.0.1:3001` keeps both
- *   origins under the same registrable name (`127.0.0.1`), so cookies flow
- *   normally without an env override, a Next rewrite, or manual cookie injection.
+ * Hostname coordination (test environment only):
+ *   The backend's CORS allowlist accepts `Origin: http://localhost:3001`. To
+ *   make `sameSite: lax` cookies flow between browser and backend XHRs, the
+ *   browser origin and the API origin must share a registrable hostname. The
+ *   suite therefore uses `localhost` everywhere:
+ *     - Playwright baseURL: http://localhost:3001 (matches backend CORS)
+ *     - NEXT_PUBLIC_API_URL: http://localhost:3000 (cookie domain matches)
+ *   The application's env defaults are unchanged — these overrides apply only
+ *   to the dev server spawned for the test suite, never to manual `pnpm dev`.
  */
 export default defineConfig({
   testDir: './e2e',
@@ -23,12 +25,12 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   globalSetup: './e2e/global-setup.ts',
   use: {
-    baseURL: 'http://127.0.0.1:3001',
+    baseURL: 'http://localhost:3001',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'off',
     actionTimeout: 10_000,
-    navigationTimeout: 15_000,
+    navigationTimeout: 30_000,
   },
   projects: [
     {
@@ -40,11 +42,14 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm dev -- -H 127.0.0.1 -p 3001',
-    url: 'http://127.0.0.1:3001/login',
+    command: 'pnpm exec next dev -H localhost -p 3001',
+    url: 'http://localhost:3001/login',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     stdout: 'ignore',
     stderr: 'pipe',
+    env: {
+      NEXT_PUBLIC_API_URL: 'http://localhost:3000',
+    },
   },
 })

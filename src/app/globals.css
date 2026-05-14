@@ -79,11 +79,15 @@ body {
 
 .glass-panel {
   background: rgba(9, 9, 11, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   position: relative;
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  .glass-panel {
+    backdrop-filter: blur(12px);
+  }
 }
 
 .glass-panel::before {
@@ -107,10 +111,14 @@ body {
 
 .card-glass {
   background: rgba(9, 9, 11, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  .card-glass {
+    backdrop-filter: blur(12px);
+  }
 }
 
 .btn-primary {

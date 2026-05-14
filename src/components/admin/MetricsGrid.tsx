@@ -57,7 +57,11 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
           </>
         }
       />
-      <Card className="card-glass p-6 group hover:bg-surface-container-low transition-colors gap-0">
+      <Card
+        data-testid="metric-card"
+        data-metric-label="Prescription Status"
+        className="card-glass p-6 group hover:bg-surface-container-low transition-colors gap-0"
+      >
         <div className="flex justify-between items-start mb-4">
           <span className="label-uppercase">Prescription Status</span>
           <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">

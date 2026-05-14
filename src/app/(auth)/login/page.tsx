@@ -86,7 +86,11 @@ export default function LoginPage() {
             </div>
 
             {error ? (
-              <div className="flex items-center gap-2 text-error text-sm" role="alert">
+              <div
+                className="flex items-center gap-2 text-error text-sm"
+                role="alert"
+                data-testid="login-error"
+              >
                 <span className="material-symbols-outlined text-sm">error</span>
                 <span>{error}</span>
               </div>

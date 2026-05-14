@@ -1,3 +1,7 @@
+/* eslint-disable react-hooks/rules-of-hooks --
+ * Playwright fixtures expose a `use` callback that ESLint's react-hooks plugin
+ * misreads as React's `use` hook. These are test fixtures, not React.
+ */
 import {
   test as base,
   expect,

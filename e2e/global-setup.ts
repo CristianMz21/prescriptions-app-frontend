@@ -1,9 +1,9 @@
-import { request, type FullConfig } from '@playwright/test'
+import { request } from '@playwright/test'
 
-const BACKEND = process.env.E2E_BACKEND_URL ?? 'http://127.0.0.1:3000'
-const FRONTEND = process.env.E2E_FRONTEND_URL ?? 'http://127.0.0.1:3001'
+const BACKEND = process.env.E2E_BACKEND_URL ?? 'http://localhost:3000'
+const FRONTEND = process.env.E2E_FRONTEND_URL ?? 'http://localhost:3001'
 
-export default async function globalSetup(_config: FullConfig) {
+export default async function globalSetup(): Promise<void> {
   const ctx = await request.newContext()
   try {
     // Backend up? /auth/profile without a cookie should be 401.

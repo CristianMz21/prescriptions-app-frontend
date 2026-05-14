@@ -6,7 +6,7 @@ import type {
 } from '../src/lib/api/generated/schemas'
 
 export const BACKEND_URL =
-  process.env.E2E_BACKEND_URL ?? 'http://127.0.0.1:3000'
+  process.env.E2E_BACKEND_URL ?? 'http://localhost:3000'
 
 export const SEED = {
   admin: { email: 'admin@clinic.com', password: 'Password123!' },

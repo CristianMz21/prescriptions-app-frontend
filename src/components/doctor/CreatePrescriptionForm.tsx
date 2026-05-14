@@ -180,6 +180,7 @@ export function CreatePrescriptionForm() {
             {items.map((item, index) => (
               <MedicationItemRow
                 key={index}
+                index={index}
                 item={item}
                 onChange={(field, value) => updateItem(index, field, value)}
                 onRemove={() => handleRemoveItem(index)}
@@ -209,7 +210,11 @@ export function CreatePrescriptionForm() {
           </div>
 
           {error ? (
-            <div className="mb-4 p-3 bg-error-container/10 border border-error rounded text-sm text-error flex items-center gap-2">
+            <div
+              role="alert"
+              data-testid="form-error"
+              className="mb-4 p-3 bg-error-container/10 border border-error rounded text-sm text-error flex items-center gap-2"
+            >
               <span className="material-symbols-outlined text-sm">error</span>
               {error}
             </div>
@@ -242,6 +247,7 @@ export function CreatePrescriptionForm() {
 }
 
 interface MedicationItemRowProps {
+  index: number
   item: PrescriptionItemDto
   onChange: (field: keyof PrescriptionItemDto, value: string | number | undefined) => void
   onRemove: () => void
@@ -249,13 +255,23 @@ interface MedicationItemRowProps {
 }
 
 function MedicationItemRow({
+  index,
   item,
   onChange,
   onRemove,
   canRemove,
 }: MedicationItemRowProps) {
+  const ids = {
+    name: `med-name-${index}`,
+    dosage: `med-dosage-${index}`,
+    quantity: `med-quantity-${index}`,
+    instructions: `med-instructions-${index}`,
+  }
   return (
-    <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 relative group">
+    <div
+      data-testid="medication-item"
+      className="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 relative group"
+    >
       <Button
         type="button"
         variant="ghost"
@@ -270,8 +286,11 @@ function MedicationItemRow({
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 pr-8">
         <div className="md:col-span-5 flex flex-col gap-1.5">
-          <Label className="label-uppercase">Medication name</Label>
+          <Label htmlFor={ids.name} className="label-uppercase">
+            Medication name
+          </Label>
           <Input
+            id={ids.name}
             value={item.name}
             onChange={(e) => onChange('name', e.target.value)}
             placeholder="e.g., Amoxicillin"
@@ -279,16 +298,22 @@ function MedicationItemRow({
           />
         </div>
         <div className="md:col-span-3 flex flex-col gap-1.5">
-          <Label className="label-uppercase">Dosage</Label>
+          <Label htmlFor={ids.dosage} className="label-uppercase">
+            Dosage
+          </Label>
           <Input
+            id={ids.dosage}
             value={item.dosage || ''}
             onChange={(e) => onChange('dosage', e.target.value || undefined)}
             placeholder="e.g., 500mg"
           />
         </div>
         <div className="md:col-span-4 flex flex-col gap-1.5">
-          <Label className="label-uppercase">Dispense quantity</Label>
+          <Label htmlFor={ids.quantity} className="label-uppercase">
+            Dispense quantity
+          </Label>
           <Input
+            id={ids.quantity}
             type="number"
             value={item.quantity ?? ''}
             onChange={(e) =>
@@ -299,8 +324,11 @@ function MedicationItemRow({
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label className="label-uppercase">Patient instructions (SIG)</Label>
+        <Label htmlFor={ids.instructions} className="label-uppercase">
+          Patient instructions (SIG)
+        </Label>
         <Input
+          id={ids.instructions}
           value={item.instructions || ''}
           onChange={(e) => onChange('instructions', e.target.value || undefined)}
           placeholder="e.g., Take one tablet by mouth twice daily"

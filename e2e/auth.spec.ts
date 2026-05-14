@@ -32,7 +32,7 @@ test.describe('Auth & route guards', () => {
     await page.getByLabel('Security Key').fill('definitely-wrong')
     await page.getByRole('button', { name: /sign in/i }).click()
     await errorResponse
-    await expect(page.getByRole('alert')).toBeVisible()
+    await expect(page.getByTestId('login-error')).toBeVisible()
     await expect(page).toHaveURL(/\/login$/)
   })
 
