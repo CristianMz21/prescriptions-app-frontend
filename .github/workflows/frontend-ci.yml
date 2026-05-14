@@ -42,11 +42,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Approve msw build script
-        run: pnpm approve-builds msw
+      - name: Approve build scripts
+        run: pnpm approve-builds msw esbuild sharp unrs-resolver
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Get changed source files
         id: changed
@@ -125,11 +125,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Approve msw build script
-        run: pnpm approve-builds msw
+      - name: Approve build scripts
+        run: pnpm approve-builds msw esbuild sharp unrs-resolver
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Fetch backend OpenAPI schema
         run: |
@@ -214,11 +214,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Approve msw build script
-        run: pnpm approve-builds msw
+      - name: Approve build scripts
+        run: pnpm approve-builds msw esbuild sharp unrs-resolver
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps chromium
