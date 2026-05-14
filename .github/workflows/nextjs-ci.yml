@@ -25,15 +25,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -45,7 +45,7 @@ jobs:
         run: pnpm install
 
       - name: Restore Next.js cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: next-cache
         with:
           path: ${{ github.workspace }}/.next/cache
@@ -55,7 +55,7 @@ jobs:
 
       - name: Get changed files
         id: changed
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             src/**
@@ -84,7 +84,7 @@ jobs:
         run: pnpm test:coverage
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -99,7 +99,7 @@ jobs:
 
       - name: Upload build artifact
         if: steps.changed.outputs.any_changed == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nextjs-build
           path: |
