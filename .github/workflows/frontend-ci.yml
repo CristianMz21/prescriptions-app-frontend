@@ -14,7 +14,6 @@ concurrency:
 env:
   NODE_VERSION: '22'
   PNPM_VERSION: '11.1.1'
-  PNPM_ENABLE_ONLY_BUILT_DEPENDENCIES: 'esbuild,sharp,unrs-resolver,msw'
 
 permissions:
   contents: read
