@@ -32,8 +32,12 @@ export function useMetricsStream(enabled = true): void {
 
     const handleMessage = (event: MessageEvent) => {
       try {
-        const payload = JSON.parse(event.data) as MetricsResponseDto
-        queryClient.setQueryData(qk.metrics.summary(), payload)
+        const payload = JSON.parse(event.data) as Partial<MetricsResponseDto>
+        // Merge to avoid clobbering fields the stream omits (some
+        // implementations only send deltas, e.g. just totals + byStatus).
+        queryClient.setQueryData(qk.metrics.summary(), (prev: MetricsResponseDto | undefined) =>
+          prev ? { ...prev, ...payload } : (payload as MetricsResponseDto),
+        )
       } catch {
         /* malformed event — ignore */
       }
