@@ -6,11 +6,12 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type UserSortBy = (typeof UserSortBy)[keyof typeof UserSortBy];
+export type UserSortBy = typeof UserSortBy[keyof typeof UserSortBy];
+
 
 export const UserSortBy = {
-  createdAt: "createdAt",
-  updatedAt: "updatedAt",
-  email: "email",
-  role: "role",
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  role: 'role',
 } as const;

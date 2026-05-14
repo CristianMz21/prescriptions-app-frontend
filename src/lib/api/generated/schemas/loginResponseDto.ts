@@ -5,7 +5,7 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { AuthUserDto } from "./authUserDto";
+import type { AuthUserDto } from './authUserDto';
 
 export interface LoginResponseDto {
   /** Confirmation message */

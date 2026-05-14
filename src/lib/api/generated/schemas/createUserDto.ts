@@ -5,7 +5,7 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { Role } from "./role";
+import type { Role } from './role';
 
 export interface CreateUserDto {
   /** User email address */
@@ -19,14 +19,14 @@ export interface CreateUserDto {
   /** Date of birth ISO-8601 (only applies when role=PATIENT) */
   birthDate?: string;
   /**
-   * Medical license number (only applies when role=DOCTOR)
-   * @maxLength 64
-   */
+     * Medical license number (only applies when role=DOCTOR)
+     * @maxLength 64
+     */
   medicalId?: string;
   /**
-   * Text-based handwritten-style signature label rendered on PDFs (DOCTOR only)
-   * @maxLength 120
-   */
+     * Text-based handwritten-style signature label rendered on PDFs (DOCTOR only)
+     * @maxLength 120
+     */
   signatureText?: string;
   /** URL to a signature image rendered on PDFs (DOCTOR only) */
   signatureImageUrl?: string;

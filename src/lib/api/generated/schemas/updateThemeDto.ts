@@ -5,7 +5,7 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { ThemePreference } from "./themePreference";
+import type { ThemePreference } from './themePreference';
 
 export interface UpdateThemeDto {
   /** UI theme preference for the current user. SYSTEM follows the OS preference. */

@@ -5,7 +5,7 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { Role } from "./role";
+import type { Role } from './role';
 
 export interface PrescriptionUserSummaryDto {
   /** User unique identifier */

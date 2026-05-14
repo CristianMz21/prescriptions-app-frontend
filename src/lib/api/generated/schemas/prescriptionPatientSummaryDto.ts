@@ -5,15 +5,15 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { PrescriptionUserSummaryDto } from "./prescriptionUserSummaryDto";
+import type { PrescriptionUserSummaryDto } from './prescriptionUserSummaryDto';
 
 export interface PrescriptionPatientSummaryDto {
   /** Patient unique identifier */
   id: string;
   /**
-   * Patient date of birth (ISO-8601 timestamp)
-   * @nullable
-   */
+     * Patient date of birth (ISO-8601 timestamp)
+     * @nullable
+     */
   birthDate?: string | null;
   /** Patient account */
   user: PrescriptionUserSummaryDto;
