@@ -7,11 +7,13 @@ export const routes = {
     users: "/admin/users",
     newUser: "/admin/users/new",
     doctors: "/admin/doctors",
+    patients: "/admin/patients",
     prescriptions: "/admin/prescriptions",
   },
   doctor: {
     prescriptions: "/doctor/prescriptions",
     newPrescription: "/doctor/prescriptions/new",
+    patients: "/doctor/patients",
     profile: "/doctor/profile",
     analytics: "/doctor/analytics",
   },

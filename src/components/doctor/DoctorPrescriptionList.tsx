@@ -20,7 +20,15 @@ import { routes } from "@/lib/routes";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
 
-const FILTER_KEYS = ["status", "fromDate", "toDate", "q"] as const;
+const FILTER_KEYS = [
+  "status",
+  "fromDate",
+  "toDate",
+  "q",
+  "sortBy",
+  "sortOrder",
+  "hasNotes",
+] as const;
 
 export function DoctorPrescriptionList() {
   const { page, limit, setPage } = usePagination({ limit: 10 });
@@ -34,6 +42,16 @@ export function DoctorPrescriptionList() {
     fromDate: values.fromDate,
     toDate: values.toDate,
     q: values.q,
+    sortBy: values.sortBy as PrescriptionsFindAllParams["sortBy"] | undefined,
+    sortOrder: values.sortOrder as
+      | PrescriptionsFindAllParams["sortOrder"]
+      | undefined,
+    hasNotes:
+      values.hasNotes === "true"
+        ? true
+        : values.hasNotes === "false"
+          ? false
+          : undefined,
   };
   const { data, isLoading, error } = usePrescriptionsFindAll(params);
 
@@ -64,6 +82,7 @@ export function DoctorPrescriptionList() {
           )
         }
         onClear={clear}
+        role="DOCTOR"
       />
 
       {isLoading ? <PrescriptionTableSkeleton /> : null}

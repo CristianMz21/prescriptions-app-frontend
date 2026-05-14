@@ -46,7 +46,22 @@ export function AdminPrescriptionsView() {
     status: values.status as PrescriptionStatus | undefined,
     fromDate: values.fromDate,
     toDate: values.toDate,
-    code: values.q,
+    code: values.code,
+    sortBy: values.sortBy as AdminListPrescriptionsParams["sortBy"] | undefined,
+    sortOrder: values.sortOrder as
+      | AdminListPrescriptionsParams["sortOrder"]
+      | undefined,
+    hasNotes:
+      values.hasNotes === "true"
+        ? true
+        : values.hasNotes === "false"
+          ? false
+          : undefined,
+    consumedFromDate: values.consumedFromDate,
+    consumedToDate: values.consumedToDate,
+    patientEmail: values.patientEmail,
+    doctorEmail: values.doctorEmail,
+    q: values.q,
   };
   const { data, isLoading, error } = useAdminListPrescriptions(params);
 
@@ -71,6 +86,7 @@ export function AdminPrescriptionsView() {
         values={values}
         onChange={handleChange}
         onClear={clear}
+        role="ADMIN"
       />
 
       {isLoading ? <LoadingState label="Loading prescriptions" /> : null}

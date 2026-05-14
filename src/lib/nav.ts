@@ -17,6 +17,7 @@ export const navigationByRole: Record<Role, NavItem[]> = {
     },
     { href: routes.admin.users, label: "Users", icon: "group" },
     { href: routes.admin.doctors, label: "Doctors", icon: "local_hospital" },
+    { href: routes.admin.patients, label: "Patients", icon: "person" },
   ],
   DOCTOR: [
     {
@@ -29,6 +30,7 @@ export const navigationByRole: Record<Role, NavItem[]> = {
       label: "New Script",
       icon: "add_circle",
     },
+    { href: routes.doctor.patients, label: "Patients", icon: "person" },
     { href: routes.doctor.analytics, label: "Analytics", icon: "monitoring" },
     { href: routes.doctor.profile, label: "Profile", icon: "account_circle" },
   ],

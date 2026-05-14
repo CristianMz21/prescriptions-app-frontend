@@ -1,30 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useUsersFindAll } from "@/lib/api/generated/prescriptionManagementAPI";
-import type {
-  UserEntity,
-  UsersFindAllParams,
-  Role,
-  ThemePreference,
-} from "@/lib/api/generated/schemas";
-import { LoadingState } from "@/components/feedback/LoadingState";
-import { ErrorState } from "@/components/feedback/ErrorState";
-import { EmptyState } from "@/components/feedback/EmptyState";
-import { usePagination } from "@/lib/hooks/usePagination";
-import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
-import { routes } from "@/lib/routes";
-import { UrlSortableHeader } from "@/components/filters/SortableHeader";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -32,61 +19,67 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { useUsersFindAllPatients } from "@/lib/api/generated/prescriptionManagementAPI";
+import type {
+  UserEntity,
+  UsersFindAllPatientsParams,
+} from "@/lib/api/generated/schemas";
+import { LoadingState } from "@/components/feedback/LoadingState";
+import { ErrorState } from "@/components/feedback/ErrorState";
+import { EmptyState } from "@/components/feedback/EmptyState";
+import { usePagination } from "@/lib/hooks/usePagination";
+import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
+import { UrlSortableHeader } from "@/components/filters/SortableHeader";
 
 const FILTER_KEYS = [
   "q",
-  "role",
+  "birthDateFromDate",
+  "birthDateToDate",
+  "minAge",
+  "maxAge",
   "createdFromDate",
   "createdToDate",
-  "themePreference",
   "sortBy",
   "sortOrder",
 ] as const;
 
-const ROLE_OPTIONS = ["ADMIN", "DOCTOR", "PATIENT"] as const;
-const THEME_OPTIONS = ["LIGHT", "DARK", "SYSTEM"] as const;
-
-export function UsersTable() {
+export function AdminPatientsTable() {
   const { page, limit, setPage } = usePagination({ limit: 20 });
   const { values, setFilters, clear } =
     useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS);
 
-  const params: UsersFindAllParams = {
+  const params: UsersFindAllPatientsParams = {
     page,
     limit,
     q: values.q,
-    role: values.role as Role | undefined,
+    birthDateFromDate: values.birthDateFromDate,
+    birthDateToDate: values.birthDateToDate,
+    minAge: values.minAge ? Number(values.minAge) : undefined,
+    maxAge: values.maxAge ? Number(values.maxAge) : undefined,
     createdFromDate: values.createdFromDate,
     createdToDate: values.createdToDate,
-    themePreference: values.themePreference as ThemePreference | undefined,
-    sortBy: values.sortBy as UsersFindAllParams["sortBy"] | undefined,
-    sortOrder: values.sortOrder as UsersFindAllParams["sortOrder"] | undefined,
+    sortBy: values.sortBy as UsersFindAllPatientsParams["sortBy"] | undefined,
+    sortOrder: values.sortOrder as
+      | UsersFindAllPatientsParams["sortOrder"]
+      | undefined,
   };
 
-  const { data, isLoading, error } = useUsersFindAll(params);
+  const { data, isLoading, error } = useUsersFindAllPatients(params);
 
-  const users = (data?.data as UserEntity[] | undefined) ?? [];
+  const patients = (data?.data as UserEntity[] | undefined) ?? [];
   const meta = data?.meta;
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-3xl font-bold text-primary">Users</h2>
-          <p className="text-base text-on-surface-variant mt-1">
-            Every account in the system, paginated.
-          </p>
-        </div>
-        <Link href={routes.admin.newUser} className={buttonVariants()}>
-          <span className="material-symbols-outlined text-lg">person_add</span>
-          New User
-        </Link>
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-primary">Patients</h2>
+        <p className="text-base text-on-surface-variant mt-1">
+          All patients in the system, filterable by birth date and age range.
+        </p>
       </div>
 
       <Card className="card-glass p-4 mb-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
           <div className="flex flex-col gap-1.5">
             <Label className="label-uppercase">Search</Label>
             <Input
@@ -98,27 +91,53 @@ export function UsersTable() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Role</Label>
-            <Select
-              value={values.role ?? "__ALL__"}
-              onValueChange={(v) =>
-                setFilters({
-                  role: v === "__ALL__" ? undefined : (v as Role),
-                })
+            <Label className="label-uppercase">Birth Date From</Label>
+            <Input
+              type="date"
+              value={values.birthDateFromDate ?? ""}
+              onChange={(e) =>
+                setFilters({ birthDateFromDate: e.target.value || undefined })
               }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__ALL__">All</SelectItem>
-                {ROLE_OPTIONS.map((r) => (
-                  <SelectItem key={r} value={r}>
-                    {r}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Birth Date To</Label>
+            <Input
+              type="date"
+              value={values.birthDateToDate ?? ""}
+              onChange={(e) =>
+                setFilters({ birthDateToDate: e.target.value || undefined })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Min Age</Label>
+            <Input
+              type="number"
+              min={0}
+              max={150}
+              placeholder="e.g. 18"
+              value={values.minAge ?? ""}
+              onChange={(e) =>
+                setFilters({ minAge: e.target.value || undefined })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Max Age</Label>
+            <Input
+              type="number"
+              min={0}
+              max={150}
+              placeholder="e.g. 65"
+              value={values.maxAge ?? ""}
+              onChange={(e) =>
+                setFilters({ maxAge: e.target.value || undefined })
+              }
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -144,31 +163,6 @@ export function UsersTable() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Theme</Label>
-            <Select
-              value={values.themePreference ?? "__ALL__"}
-              onValueChange={(v) =>
-                setFilters({
-                  themePreference:
-                    v === "__ALL__" ? undefined : (v as ThemePreference),
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__ALL__">All</SelectItem>
-                {THEME_OPTIONS.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
             <Label className="label-uppercase">Sort By</Label>
             <Select
               value={values.sortBy ?? "__NONE__"}
@@ -187,7 +181,6 @@ export function UsersTable() {
                 <SelectItem value="__NONE__">— None —</SelectItem>
                 <SelectItem value="createdAt">Created</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
-                <SelectItem value="role">Role</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -212,62 +205,73 @@ export function UsersTable() {
               ))}
             </div>
           </div>
-        </div>
 
-        <div className="flex mt-3">
-          <Button type="button" variant="outline" onClick={clear}>
-            Clear
-          </Button>
+          <div className="flex items-end">
+            <Button type="button" variant="outline" onClick={clear}>
+              Clear
+            </Button>
+          </div>
         </div>
       </Card>
 
-      {isLoading ? <LoadingState label="Loading users" /> : null}
+      {isLoading ? <LoadingState label="Loading patients" /> : null}
       {error ? <ErrorState message={error.message} /> : null}
 
-      {users.length === 0 && !isLoading && !error ? (
-        <EmptyState icon="group" title="No users match these filters" />
+      {patients.length === 0 && !isLoading && !error ? (
+        <EmptyState icon="person" title="No patients match these filters" />
       ) : (
         <Card className="card-glass overflow-hidden p-0 gap-0">
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
                 <UrlSortableHeader sortBy="email">Email</UrlSortableHeader>
-                <UrlSortableHeader sortBy="role">Role</UrlSortableHeader>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Birth Date
+                </TableHead>
+                <TableHead className="uppercase tracking-wider text-xs">
+                  Age
+                </TableHead>
                 <UrlSortableHeader sortBy="createdAt">
                   Created
                 </UrlSortableHeader>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
-                <TableRow
-                  key={user.id}
-                  data-testid="user-row"
-                  className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
-                >
-                  <TableCell className="text-sm text-primary">
-                    {user.email}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="uppercase tracking-wider text-[0.7rem]"
-                    >
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm tabular-nums">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {patients.map((u) => {
+                const birthDate = u.patient?.birthDate;
+                const age = birthDate
+                  ? new Date().getFullYear() - new Date(birthDate).getFullYear()
+                  : null;
+                return (
+                  <TableRow
+                    key={u.id}
+                    data-testid="patient-row"
+                    className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
+                  >
+                    <TableCell className="text-sm text-primary">
+                      {u.email}
+                    </TableCell>
+                    <TableCell className="text-sm tabular-nums">
+                      {birthDate
+                        ? new Date(birthDate).toLocaleDateString()
+                        : "—"}
+                    </TableCell>
+                    <TableCell className="text-sm tabular-nums">
+                      {age !== null ? `${age}` : "—"}
+                    </TableCell>
+                    <TableCell className="text-sm tabular-nums">
+                      {new Date(u.createdAt).toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
 
           {meta ? (
             <div className="border-t border-outline-variant/30 p-4 flex items-center justify-between bg-surface-container-lowest/30">
               <div className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                Showing {users.length} of {meta.total}
+                Showing {patients.length} of {meta.total}
               </div>
               <div className="flex items-center gap-2">
                 <Button

@@ -10,17 +10,37 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useUsersFindAllDoctors } from "@/lib/api/generated/prescriptionManagementAPI";
-import type { UserEntity } from "@/lib/api/generated/schemas";
+import type {
+  UserEntity,
+  UsersFindAllDoctorsParams,
+} from "@/lib/api/generated/schemas";
 import { LoadingState } from "@/components/feedback/LoadingState";
 import { ErrorState } from "@/components/feedback/ErrorState";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { usePagination } from "@/lib/hooks/usePagination";
+import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
+import { UrlSortableHeader } from "@/components/filters/SortableHeader";
 
-type DoctorRow = UserEntity;
+const FILTER_KEYS = [
+  "q",
+  "specialty",
+  "medicalId",
+  "createdFromDate",
+  "createdToDate",
+  "sortBy",
+  "sortOrder",
+] as const;
 
-// The Orval schema models specialty / medicalId as opaque-record-or-null;
-// in practice the backend returns a string. Coerce safely for display.
 function stringifyOptional(value: unknown): string {
   if (value == null) return "—";
   if (typeof value === "string") return value;
@@ -29,12 +49,26 @@ function stringifyOptional(value: unknown): string {
 
 export function DoctorsTable() {
   const { page, limit, setPage } = usePagination({ limit: 20 });
-  const { data, isLoading, error } = useUsersFindAllDoctors({ page, limit });
+  const { values, setFilters, clear } =
+    useUrlFilters<(typeof FILTER_KEYS)[number]>(FILTER_KEYS);
 
-  if (isLoading) return <LoadingState label="Loading doctors" />;
-  if (error) return <ErrorState message={error.message} />;
+  const params: UsersFindAllDoctorsParams = {
+    page,
+    limit,
+    q: values.q,
+    specialty: values.specialty,
+    medicalId: values.medicalId,
+    createdFromDate: values.createdFromDate,
+    createdToDate: values.createdToDate,
+    sortBy: values.sortBy as UsersFindAllDoctorsParams["sortBy"] | undefined,
+    sortOrder: values.sortOrder as
+      | UsersFindAllDoctorsParams["sortOrder"]
+      | undefined,
+  };
 
-  const doctors = (data?.data as DoctorRow[] | undefined) ?? [];
+  const { data, isLoading, error } = useUsersFindAllDoctors(params);
+
+  const doctors = (data?.data as UserEntity[] | undefined) ?? [];
   const meta = data?.meta;
 
   return (
@@ -46,25 +80,139 @@ export function DoctorsTable() {
         </p>
       </div>
 
-      {doctors.length === 0 ? (
-        <EmptyState icon="local_hospital" title="No doctors" />
+      <Card className="card-glass p-4 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Search</Label>
+            <Input
+              type="search"
+              placeholder="Email, specialty, medical ID"
+              value={values.q ?? ""}
+              onChange={(e) => setFilters({ q: e.target.value || undefined })}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Specialty</Label>
+            <Input
+              type="search"
+              placeholder="e.g. cardiology"
+              value={values.specialty ?? ""}
+              onChange={(e) =>
+                setFilters({ specialty: e.target.value || undefined })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Medical ID</Label>
+            <Input
+              type="search"
+              placeholder="e.g. MED-1234"
+              value={values.medicalId ?? ""}
+              onChange={(e) =>
+                setFilters({ medicalId: e.target.value || undefined })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Created From</Label>
+            <Input
+              type="date"
+              value={values.createdFromDate ?? ""}
+              onChange={(e) =>
+                setFilters({ createdFromDate: e.target.value || undefined })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Created To</Label>
+            <Input
+              type="date"
+              value={values.createdToDate ?? ""}
+              onChange={(e) =>
+                setFilters({ createdToDate: e.target.value || undefined })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Sort By</Label>
+            <Select
+              value={values.sortBy ?? "__NONE__"}
+              onValueChange={(v) =>
+                setFilters({
+                  sortBy: v === "__NONE__" ? undefined : (v ?? undefined),
+                  sortOrder:
+                    v !== "__NONE__" ? (values.sortOrder ?? "asc") : undefined,
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__NONE__">— None —</SelectItem>
+                <SelectItem value="createdAt">Created</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Order</Label>
+            <div className="flex gap-1">
+              {(["asc", "desc"] as const).map((o) => (
+                <Button
+                  key={o}
+                  type="button"
+                  variant={values.sortOrder === o ? "default" : "outline"}
+                  size="sm"
+                  onClick={() =>
+                    setFilters({
+                      sortOrder: values.sortOrder === o ? undefined : o,
+                    })
+                  }
+                >
+                  {o === "asc" ? "↑ Asc" : "↓ Desc"}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-end">
+            <Button type="button" variant="outline" onClick={clear}>
+              Clear
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {isLoading ? <LoadingState label="Loading doctors" /> : null}
+      {error ? <ErrorState message={error.message} /> : null}
+
+      {doctors.length === 0 && !isLoading && !error ? (
+        <EmptyState
+          icon="local_hospital"
+          title="No doctors match these filters"
+        />
       ) : (
         <Card className="card-glass overflow-hidden p-0 gap-0">
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-                <TableHead className="uppercase tracking-wider text-xs">
-                  Email
-                </TableHead>
+                <UrlSortableHeader sortBy="email">Email</UrlSortableHeader>
                 <TableHead className="uppercase tracking-wider text-xs">
                   Specialty
                 </TableHead>
                 <TableHead className="uppercase tracking-wider text-xs">
                   Medical ID
                 </TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">
+                <UrlSortableHeader sortBy="createdAt">
                   Created
-                </TableHead>
+                </UrlSortableHeader>
               </TableRow>
             </TableHeader>
             <TableBody>
