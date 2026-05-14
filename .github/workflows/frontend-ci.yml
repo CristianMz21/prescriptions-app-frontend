@@ -42,9 +42,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Approve build scripts
-        run: pnpm approve-builds msw esbuild sharp unrs-resolver
-
       - name: Install dependencies
         run: pnpm install
 
@@ -124,9 +121,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-
-      - name: Approve build scripts
-        run: pnpm approve-builds msw esbuild sharp unrs-resolver
 
       - name: Install dependencies
         run: pnpm install
@@ -213,9 +207,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-
-      - name: Approve build scripts
-        run: pnpm approve-builds msw esbuild sharp unrs-resolver
 
       - name: Install dependencies
         run: pnpm install
