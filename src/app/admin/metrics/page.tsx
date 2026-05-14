@@ -1,16 +1,5 @@
-import { requireRole } from '@/lib/auth/server'
-import { Sidebar } from '@/components/layouts/Sidebar'
-import { MetricsContent } from './MetricsContent'
+import { MetricsContent } from '@/components/admin/MetricsContent'
 
-export default async function AdminMetricsPage() {
-  await requireRole(['ADMIN'])
-
-  return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar role="ADMIN" />
-      <main className="flex-1 ml-64 p-margin-desktop">
-        <MetricsContent />
-      </main>
-    </div>
-  )
+export default function AdminMetricsPage() {
+  return <MetricsContent />
 }

@@ -200,6 +200,23 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Match the loaded Material Symbols Outlined variable font and avoid the FOUT
+   that shows the icon NAME as plain text before the font swaps in. */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
 .status-indicator {
   display: inline-flex;
   align-items: center;
@@ -216,4 +233,52 @@ body {
 
 .status-consumed {
   color: var(--color-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   shadcn/ui token aliases — bridge shadcn's expected variable names
+   (--background, --card, --primary-foreground, --border, --ring …) to the
+   existing RX-OS palette so primitives in src/components/ui/* render in the
+   project palette without us hand-editing each generated file. Keep this
+   block at the bottom so it doesn't intermix with the M3 design tokens.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --background: var(--color-background);
+  --foreground: var(--color-on-surface);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-on-surface);
+  --popover: var(--color-surface-container);
+  --popover-foreground: var(--color-on-surface);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-on-primary);
+  --secondary: var(--color-surface-container-high);
+  --secondary-foreground: var(--color-on-surface);
+  --muted: var(--color-surface-container);
+  --muted-foreground: var(--color-on-surface-variant);
+  --accent: var(--color-surface-container-highest);
+  --accent-foreground: var(--color-on-surface);
+  --destructive: var(--color-error);
+  --destructive-foreground: var(--color-on-primary);
+  --border: var(--color-outline-variant);
+  --input: var(--color-outline-variant);
+  --ring: var(--color-primary);
+  --radius: var(--radius-md);
+}
+
+@theme inline {
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }

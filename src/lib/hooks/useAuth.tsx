@@ -8,12 +8,13 @@ import {
   type ReactNode,
 } from 'react'
 import { useRouter } from 'next/navigation'
-import type { UserProfileResponseDto, Role } from '@/lib/api/generated/schemas'
+import type { UserProfileResponseDto } from '@/lib/api/generated/schemas'
 import {
   authControllerGetProfile,
   authControllerLogin,
   authControllerLogout,
 } from '@/lib/api/generated/prescriptionManagementAPI'
+import { getRedirectPath, routes } from '@/lib/routes'
 
 interface AuthContextType {
   user: UserProfileResponseDto | null
@@ -25,22 +26,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-function getRedirectPath(role: Role): string {
-  switch (role) {
-    case 'ADMIN':
-      return '/admin/metrics'
-    case 'DOCTOR':
-      return '/doctor/prescriptions'
-    case 'PATIENT':
-      return '/patient/prescriptions'
-    default:
-      return '/login'
-  }
+interface AuthProviderProps {
+  children: ReactNode
+  initialUser: UserProfileResponseDto | null
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const router = useRouter()
-  const [user, setUser] = useState<UserProfileResponseDto | null>(null)
+  const [user, setUser] = useState<UserProfileResponseDto | null>(initialUser)
   const [isLoading, setIsLoading] = useState(false)
   const [, startTransition] = useTransition()
 
@@ -51,8 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profile = await authControllerGetProfile()
       startTransition(() => {
         setUser(profile)
-        const redirectPath = getRedirectPath(profile.role)
-        router.push(redirectPath)
+        router.push(getRedirectPath(profile.role))
       })
     } finally {
       setIsLoading(false)
@@ -66,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       startTransition(() => {
         setUser(null)
-        router.push('/login')
+        router.push(routes.login)
       })
       setIsLoading(false)
     }

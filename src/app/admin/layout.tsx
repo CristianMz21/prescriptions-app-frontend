@@ -1,11 +1,11 @@
 import { requireRole } from '@/lib/auth/server'
 import { AppShell } from '@/components/layouts/AppShell'
 
-export default async function DoctorLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  await requireRole(['DOCTOR'])
-  return <AppShell role="DOCTOR">{children}</AppShell>
+  await requireRole(['ADMIN'])
+  return <AppShell role="ADMIN">{children}</AppShell>
 }

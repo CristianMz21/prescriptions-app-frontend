@@ -3,8 +3,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { AuthProvider } from '@/lib/hooks/useAuth'
+import type { UserProfileResponseDto } from '@/lib/api/generated/schemas'
 
-export function Providers({ children }: { children: React.ReactNode }) {
+interface ProvidersProps {
+  children: React.ReactNode
+  initialUser: UserProfileResponseDto | null
+}
+
+export function Providers({ children, initialUser }: ProvidersProps) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -14,12 +20,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
             retry: 1,
           },
         },
-      })
+      }),
   )
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider initialUser={initialUser}>{children}</AuthProvider>
     </QueryClientProvider>
   )
 }
