@@ -1,4 +1,4 @@
-import { request } from '@playwright/test'
+import { chromium, request } from '@playwright/test'
 
 const BACKEND = process.env.E2E_BACKEND_URL ?? 'http://localhost:3000'
 const FRONTEND = process.env.E2E_FRONTEND_URL ?? 'http://localhost:3001'
@@ -28,7 +28,17 @@ export default async function globalSetup(): Promise<void> {
     await ctx.dispose()
   }
 
-  // Frontend `/login` is healthchecked by Playwright's webServer block; no
-  // extra ping needed here.
-  void FRONTEND
+  // Warm up the Next.js dev server by visiting the login page and waiting for
+  // the form to be interactive. This forces React hydration + first compilation
+  // before parallel workers start hitting the app, preventing cold-compile
+  // pile-ups that cause login/profile response timeouts.
+  const browser = await chromium.launch()
+  const warmupPage = await browser.newPage()
+  try {
+    await warmupPage.goto(`${FRONTEND}/login`)
+    await warmupPage.getByLabel(/operator identity/i).waitFor({ state: 'visible', timeout: 30_000 })
+    await warmupPage.getByLabel(/security key/i).waitFor({ state: 'visible', timeout: 30_000 })
+  } finally {
+    await browser.close()
+  }
 }

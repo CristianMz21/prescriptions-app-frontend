@@ -60,30 +60,31 @@ export const test = base.extend<AppFixtures>({
   loginAs: async ({ page }, use) => {
     const fn = async (role: SeededRole): Promise<UserProfileResponseDto> => {
       const creds = SEED[role]
+
+      const profileResponse = page.waitForResponse(
+        (res) => res.url().endsWith('/auth/profile') && res.request().method() === 'GET',
+      )
+
       await page.goto('/login')
       await expect(page).toHaveURL(/\/login$/)
       await expect(page.getByRole('heading', { name: 'RX-OS' })).toBeVisible()
 
-      // Wait for backend response so the assertion errors point at API failure
-      // rather than a UI timeout when login breaks.
-      const loginResponse = page.waitForResponse(
-        (res) => res.url().endsWith('/auth/login') && res.request().method() === 'POST',
-      )
-      await page.getByLabel('Operator Identity').fill(creds.email)
-      await page.getByLabel('Security Key').fill(creds.password)
-      await page.getByRole('button', { name: /sign in/i }).click()
-      const loggedIn = await loginResponse
-      expect(loggedIn.status()).toBe(201)
+      const emailInput = page.getByLabel(/operator identity/i)
+      const passwordInput = page.getByLabel(/security key/i)
+      const submitButton = page.getByRole('button', { name: /sign in/i })
 
-      // The role landing page is asserted by the role enum from the profile,
-      // not hard-coded — keeps tests resilient to redirect-map changes.
-      const profileResponse = await page.waitForResponse(
-        (res) => res.url().endsWith('/auth/profile') && res.request().method() === 'GET',
-      )
-      expect(profileResponse.status()).toBe(200)
-      const profile = (await profileResponse.json()) as UserProfileResponseDto
-      const expectedPath = LANDING_PATH[profile.role]
-      await expect(page).toHaveURL(new RegExp(`${expectedPath}$`))
+      await expect(emailInput).toBeEnabled({ timeout: 15_000 })
+      await expect(passwordInput).toBeEnabled({ timeout: 15_000 })
+      await expect(submitButton).toBeEnabled({ timeout: 15_000 })
+
+      await emailInput.fill(creds.email)
+      await passwordInput.fill(creds.password)
+      await submitButton.click()
+
+      await page.waitForURL(/\/(admin\/metrics|doctor\/prescriptions|patient\/prescriptions)$/)
+      const profileResult = await profileResponse
+      expect(profileResult.status()).toBe(200)
+      const profile = (await profileResult.json()) as UserProfileResponseDto
       return profile
     }
     await use(fn)

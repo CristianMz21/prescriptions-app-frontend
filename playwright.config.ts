@@ -21,9 +21,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  // dev `next` cold-compiles each new page on first hit; parallel workers
-  // can stack 5+ first-time compiles on the same worker thread and time out.
-  workers: process.env.CI ? 2 : 4,
+  // Next.js dev mode cold-compiles routes on first access. More than 2 workers
+  // causes parallel cold-compilation pile-ups and hydration/login timeouts.
+  // Keep this deterministic instead of maximizing local parallelism.
+  workers: 2,
   reporter: [['list'], ['html', { open: 'never' }]],
   globalSetup: './e2e/global-setup.ts',
   use: {

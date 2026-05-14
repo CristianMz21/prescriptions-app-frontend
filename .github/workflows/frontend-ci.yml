@@ -1,0 +1,254 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '11.1.1'
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write  # Required for CodeQL upload action
+
+jobs:
+  # ─── Static validation ────────────────────────────────────────────────────
+  # Runs all fast, stateless checks in parallel with build.
+  # Required as a branch protection check — no code reaches main without these passing.
+  static-validation:
+    name: Static Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Approve build scripts
+        run: pnpm approve-builds esbuild sharp unrs-resolver
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Get changed source files
+        id: changed
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            src/**
+            app/**
+            components/**
+            lib/**
+
+      - name: Format check
+        if: steps.changed.outputs.any_changed == 'true'
+        run: pnpm format
+
+      - name: Lint
+        if: steps.changed.outputs.any_changed == 'true'
+        run: pnpm lint
+
+      - name: Typecheck
+        if: steps.changed.outputs.any_changed == 'true'
+        run: pnpm typecheck
+
+      - name: Unit tests
+        if: steps.changed.outputs.any_changed == 'true'
+        run: pnpm test
+
+      - name: Test coverage
+        if: steps.changed.outputs.any_changed == 'true'
+        run: pnpm test:coverage
+
+      - name: Upload coverage report
+        if: steps.changed.outputs.any_changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+      - name: Build
+        if: steps.changed.outputs.any_changed == 'true'
+        run: pnpm build
+
+      - name: Upload Next.js build artifact
+        if: steps.changed.outputs.any_changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-build
+          path: .next/
+          retention-days: 1
+
+  # ─── Contract validation ──────────────────────────────────────────────────
+  # Ensures the Orval-generated client stays in sync with the backend OpenAPI
+  # contract. Fetches the published schema from the backend repo, regenerates
+  # the client, and fails if `git diff` detects drift.
+  # Runs only after static-validation passes (typecheck must green before wasting
+  # time on codegen).
+  contract-validation:
+    name: Contract Validation
+    runs-on: ubuntu-latest
+    needs: static-validation
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Fetch backend OpenAPI schema
+        run: |
+          mkdir -p ../../backend
+          curl --fail --silent --show-error \
+            -o ../../backend/openapi.json \
+            "https://raw.githubusercontent.com/CristianMz21/prescriptions-app-backend/main/openapi.json"
+          test -s ../../backend/openapi.json
+
+      - name: Regenerate API client
+        run: pnpm run api:gen
+
+      - name: Fail if generated client is stale
+        run: |
+          if ! git diff --exit-code src/lib/api/generated; then
+            echo "::error::Generated API client is stale. Run 'pnpm api:refresh' locally and commit the result."
+            exit 1
+          fi
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Test
+        run: pnpm run test
+
+  # ─── SonarCloud ───────────────────────────────────────────────────────────
+  # Runs SonarCloud analysis on the code. Depends on static-validation so we
+  # only scan code that passes all other checks.
+  sonarcloud:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+    needs: static-validation
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # ─── E2E ──────────────────────────────────────────────────────────────────
+  # Playwright end-to-end tests. Runs after contract-validation so a broken
+  # API contract never wastes time on browser automation.
+  #
+  # IMPORTANT: This job intentionally uses --workers=1.
+  # The suite is not proven parallel-safe due to Next.js cold compilation
+  # pile-ups and shared seeded state. Local development may use higher
+  # parallelism but CI must be conservative until the suite is hardened.
+  #
+  # REQUIREMENT: E2E_BACKEND_URL must point to a running backend instance.
+  # The global-setup in playwright.config.ts will fail fast if the backend
+  # is unreachable or credentials are stale. Do not add arbitrary waits as
+  # a substitute for a reachable backend.
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: contract-validation
+    permissions:
+      contents: read
+    env:
+      E2E_BACKEND_URL: ${{ vars.E2E_BACKEND_URL || 'http://localhost:3000' }}
+      E2E_FRONTEND_URL: ${{ vars.E2E_FRONTEND_URL || 'http://localhost:3001' }}
+      PLAYWRIGHT_WORKERS: '1'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Approve build scripts
+        run: pnpm approve-builds esbuild sharp unrs-resolver
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        id: playwright
+        run: pnpm exec playwright test --project=chromium --reporter=line
+        continue-on-error: false
+
+      - name: Upload Playwright HTML report
+        if: failure() && steps.playwright.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload Playwright traces
+        if: failure() && steps.playwright.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 14
+
+      - name: Upload Playwright videos
+        if: failure() && steps.playwright.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-videos
+          path: test-results/
+          pattern: "**/*.webm"
+          retention-days: 14

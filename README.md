@@ -1,5 +1,7 @@
 # Prescriptions App Frontend
 
+[![Frontend CI](https://github.com/CristianMz21/prescriptions-app-frontend/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/CristianMz21/prescriptions-app-frontend/actions/workflows/frontend-ci.yml)
+
 A Next.js 15 application for managing medical prescriptions, built with the Rx-OS design system.
 
 ## Tech Stack
