@@ -40,7 +40,7 @@ jobs:
         run: pnpm approve-builds --all
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Fetch backend OpenAPI schema
         # The frontend repo expects the schema at ../../backend/openapi.json
