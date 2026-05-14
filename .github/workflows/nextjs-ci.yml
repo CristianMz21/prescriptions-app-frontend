@@ -39,9 +39,10 @@ jobs:
           cache: pnpm
 
       - name: Approve build scripts
-        run: |
-          pnpm config set allowBuilds esbuild,sharp,unrs-resolver,msw --location project
-          pnpm install
+        run: pnpm approve-builds esbuild@0.21.5 esbuild@0.27.7 msw@2.14.6 sharp@0.34.5 unrs-resolver@1.11.1
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Restore Next.js cache
         uses: actions/cache@v4
