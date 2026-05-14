@@ -5,20 +5,49 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
+import type { Role } from './role';
+import type { SortOrder } from './sortOrder';
+import type { ThemePreference } from './themePreference';
+import type { UserSortBy } from './userSortBy';
 
 export type UsersFindAllParams = {
 /**
- * Page number (1-indexed)
+ * Page number (1-indexed).
  * @minimum 1
  */
 page?: number;
 /**
- * Number of items per page
+ * Items per page (capped at 100 to bound DB cost).
  * @minimum 1
+ * @maximum 100
  */
 limit?: number;
 /**
- * Case-insensitive search by user email.
+ * Sort direction.
+ */
+sortOrder?: SortOrder;
+/**
+ * Case-insensitive substring search on user email (and doctor specialty/medicalId on /users/doctors).
  */
 q?: string;
+/**
+ * Filter by user role. Only honored on the generic /users endpoint; ignored on /users/patients and /users/doctors which fix the role server-side.
+ */
+role?: Role;
+/**
+ * Filter by createdAt >= createdFromDate (ISO 8601).
+ */
+createdFromDate?: string;
+/**
+ * Filter by createdAt <= createdToDate (ISO 8601).
+ */
+createdToDate?: string;
+/**
+ * Filter by UI theme preference.
+ */
+themePreference?: ThemePreference;
+/**
+ * Field to sort by (whitelist).
+ */
+sortBy?: UserSortBy;
 };
