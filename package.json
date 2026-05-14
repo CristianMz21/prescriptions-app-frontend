@@ -6,7 +6,8 @@
     "onlyBuiltDependencies": [
       "esbuild",
       "sharp",
-      "unrs-resolver"
+      "unrs-resolver",
+      "msw"
     ]
   },
   "scripts": {
