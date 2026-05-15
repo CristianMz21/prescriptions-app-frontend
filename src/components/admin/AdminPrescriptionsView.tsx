@@ -98,7 +98,9 @@ export function AdminPrescriptionsView() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => void refetch()}
+              onClick={() => {
+                refetch().catch(() => undefined);
+              }}
             >
               Retry
             </Button>

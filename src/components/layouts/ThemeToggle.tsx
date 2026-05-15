@@ -48,9 +48,9 @@ export function ThemeToggle({ initial }: ThemeToggleProps) {
 
   const { mutate, isPending } = useUsersUpdateMyTheme({
     mutation: {
-      onSuccess: () => {
+      onSuccess: async () => {
         notify.success("Theme updated");
-        void queryClient.invalidateQueries({ queryKey: qk.auth.profile() });
+        await queryClient.invalidateQueries({ queryKey: qk.auth.profile() });
       },
       onError: (err: ErrorResponseDto | Error) =>
         notify.apiError(err, "Could not save theme"),

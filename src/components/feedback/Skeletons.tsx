@@ -42,11 +42,13 @@ export function PrescriptionTableSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
+type PrescriptionCardListSkeletonProps = Readonly<{
+  items?: number;
+}>;
+
 export function PrescriptionCardListSkeleton({
   items = 3,
-}: {
-  items?: number;
-}) {
+}: PrescriptionCardListSkeletonProps) {
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
       {Array.from({ length: items }).map((_, i) => (

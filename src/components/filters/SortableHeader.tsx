@@ -4,13 +4,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TableHead } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-interface SortableHeaderProps {
+type SortableHeaderProps = Readonly<{
   children: React.ReactNode;
   sortBy: string;
   currentSortBy?: string;
   currentSortOrder?: "asc" | "desc";
   onSort?: (field: string, order: "asc" | "desc") => void;
-}
+}>;
 
 export function SortableHeader({
   children,
@@ -48,11 +48,11 @@ export function SortableHeader({
   );
 }
 
-interface UrlSortableHeaderProps {
+type UrlSortableHeaderProps = Readonly<{
   children: React.ReactNode;
   sortBy: string;
   className?: string;
-}
+}>;
 
 export function UrlSortableHeader({
   children,

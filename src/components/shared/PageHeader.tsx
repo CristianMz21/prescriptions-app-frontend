@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-interface PageHeaderProps {
+type PageHeaderProps = Readonly<{
   title: string;
   description?: string;
   actions?: ReactNode;
   className?: string;
-}
+}>;
 
 export function PageHeader({
   title,

@@ -59,7 +59,9 @@ export function PrescriptionCardList() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => void refetch()}
+            onClick={() => {
+              refetch().catch(() => undefined);
+            }}
           >
             Retry
           </Button>

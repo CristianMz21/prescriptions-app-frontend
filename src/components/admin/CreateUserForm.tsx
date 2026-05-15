@@ -72,11 +72,13 @@ export function CreateUserForm() {
 
   const createMutation = useUsersCreate({
     mutation: {
-      onSuccess: (user: UserResponseDto) => {
+      onSuccess: async (user: UserResponseDto) => {
         notify.success("User created", `${user.email} (${user.role})`);
-        void queryClient.invalidateQueries({ queryKey: qk.users.all() });
-        void queryClient.invalidateQueries({ queryKey: qk.users.patients() });
-        void queryClient.invalidateQueries({ queryKey: qk.users.doctors() });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: qk.users.all() }),
+          queryClient.invalidateQueries({ queryKey: qk.users.patients() }),
+          queryClient.invalidateQueries({ queryKey: qk.users.doctors() }),
+        ]);
         router.push(routes.admin.users);
       },
       onError: (err: ErrorResponseDto | Error) =>

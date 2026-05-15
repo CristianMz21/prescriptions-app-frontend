@@ -1,5 +1,5 @@
 import { test, expect } from "./fixtures";
-import { seedPrescription } from "./data";
+import { backendLogin, BACKEND_URL, SEED, seedPrescription } from "./data";
 
 const readIntegerMetric = async (
   card: ReturnType<import("@playwright/test").Page["locator"]>,
@@ -9,6 +9,19 @@ const readIntegerMetric = async (
   expect(Number.isInteger(n), `expected integer, got "${text}"`).toBe(true);
   return n;
 };
+
+interface PrescriptionApiItem {
+  name: string;
+}
+
+interface PrescriptionApiRow {
+  id: string;
+  items: PrescriptionApiItem[];
+}
+
+interface PrescriptionListApi {
+  data: PrescriptionApiRow[];
+}
 
 test.describe("Admin metrics dashboard", () => {
   test.beforeEach(async ({ loginAs }) => {
@@ -110,11 +123,14 @@ test.describe("Admin metrics dashboard", () => {
     ).not.toBeVisible();
   });
 
-  // Cross-stack metric correctness: capture the Total Prescriptions count, mint
-  // a new RX directly against the backend, reload the admin dashboard, and
-  // assert the visible total is exactly +1. Catches a class of bugs where the
-  // metric query and the underlying truth drift apart.
-  test("metrics: Total Prescriptions increments by exactly 1 after backend creates an RX", async ({
+  // Cross-stack metric correctness under parallel workers: capture Total
+  // Prescriptions, mint a uniquely-named RX directly against the backend,
+  // reload, and assert (a) the total grew by at least 1 (parallel workers
+  // may mint additional RXs concurrently — `>=` is the deterministic
+  // assertion) and (b) the specific RX we minted is in the admin's
+  // backend list. Together these prove the dashboard metric query and
+  // the underlying DB are in sync without relying on test isolation.
+  test("metrics: Total Prescriptions reflects an admin-list-visible new RX", async ({
     page,
     apiRequest,
   }) => {
@@ -124,14 +140,32 @@ test.describe("Admin metrics dashboard", () => {
     await expect(totalCard).toBeVisible();
     const before = await readIntegerMetric(totalCard);
 
-    // Mint a new prescription on the backend (doctor session) — no UI involved.
-    await seedPrescription(apiRequest, { medName: `MetricCheck-${Date.now()}` });
+    // Mint a uniquely-named prescription on the backend — no UI involved.
+    const medName = `MetricCheck-${globalThis.crypto.randomUUID()}`;
+    const created = await seedPrescription(apiRequest, { medName });
 
     // Force the admin metrics page to re-query.
     await page.reload();
     await expect(totalCard).toBeVisible();
     const after = await readIntegerMetric(totalCard);
 
-    expect(after).toBe(before + 1);
+    // Lower bound only — concurrent workers may mint more, but never fewer.
+    expect(after).toBeGreaterThanOrEqual(before + 1);
+
+    // Deterministic per-RX check: the admin-side backend list must contain
+    // exactly this RX, by id and by the unique med name we used.
+    await backendLogin({
+      apiRequest,
+      email: SEED.admin.email,
+      password: SEED.admin.password,
+    });
+    const listRes = await apiRequest.get(
+      `${BACKEND_URL}/admin/prescriptions?q=${encodeURIComponent(medName)}&limit=10`,
+    );
+    expect(listRes.status()).toBe(200);
+    const list = (await listRes.json()) as PrescriptionListApi;
+    const hit = list.data.find((p) => p.id === created.id);
+    expect(hit, `RX ${created.id} (med ${medName}) missing from admin list`).toBeDefined();
+    expect(hit?.items.some((i) => i.name === medName)).toBe(true);
   });
 });

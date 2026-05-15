@@ -1,9 +1,9 @@
 import { Card } from "@/components/ui/card";
 import type { MetricsByDayItemDto } from "@/lib/api/generated/schemas";
 
-interface VolumeTrendsChartProps {
+type VolumeTrendsChartProps = Readonly<{
   byDay: MetricsByDayItemDto[];
-}
+}>;
 
 export function VolumeTrendsChart({ byDay }: VolumeTrendsChartProps) {
   const rawSeries = (byDay ?? [])

@@ -12,9 +12,11 @@ const SIZE_CLASS: Record<IconSizeToken, string> = {
   xl: "size-7",
 };
 
-interface AppIconProps extends AppIconBaseProps {
-  name: AppIconName;
-}
+type AppIconProps = Readonly<
+  AppIconBaseProps & {
+    name: AppIconName;
+  }
+>;
 
 export function AppIcon({
   name,

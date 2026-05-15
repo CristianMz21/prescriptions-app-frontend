@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import type { SelectRootChangeEventDetails } from "@base-ui/react/select";
 
-export interface EnumFilterProps {
+export type EnumFilterProps = Readonly<{
   label: string;
   value?: string;
   options: readonly string[];
@@ -22,7 +22,7 @@ export interface EnumFilterProps {
   allOption?: string;
   debounceMs?: number;
   placeholder?: string;
-}
+}>;
 
 export function EnumFilter({
   label,

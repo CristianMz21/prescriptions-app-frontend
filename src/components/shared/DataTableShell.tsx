@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-interface DataTableShellProps {
+type DataTableShellProps = Readonly<{
   children: ReactNode;
   className?: string;
-}
+}>;
 
 export function DataTableShell({ children, className }: DataTableShellProps) {
   return (

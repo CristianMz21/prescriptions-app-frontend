@@ -2,9 +2,11 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { HTMLAttributes } from "react";
 
-interface PageShellProps extends HTMLAttributes<HTMLElement> {
-  children: ReactNode;
-}
+type PageShellProps = Readonly<
+  HTMLAttributes<HTMLElement> & {
+    children: ReactNode;
+  }
+>;
 
 export function PageShell({ children, className, ...props }: PageShellProps) {
   return (

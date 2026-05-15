@@ -26,10 +26,12 @@ const LAZY_ICONS: Record<LazyIconName, ComponentType<AppIconBaseProps>> = {
   ),
 };
 
-interface LazyAppIconProps extends AppIconBaseProps {
-  name: LazyIconName | AppIconName;
-  fallbackName?: AppIconName;
-}
+type LazyAppIconProps = Readonly<
+  AppIconBaseProps & {
+    name: LazyIconName | AppIconName;
+    fallbackName?: AppIconName;
+  }
+>;
 
 export function LazyAppIcon({
   name,

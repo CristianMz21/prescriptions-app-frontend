@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
-interface ConfirmDialogProps {
+type ConfirmDialogProps = Readonly<{
   trigger: ReactNode;
   title: string;
   description?: string;
@@ -17,7 +17,7 @@ interface ConfirmDialogProps {
   destructive?: boolean;
   onConfirm: () => void | Promise<void>;
   disabled?: boolean;
-}
+}>;
 
 export function ConfirmDialog({
   trigger,
@@ -65,7 +65,9 @@ export function ConfirmDialog({
               type="button"
               size="sm"
               variant={destructive ? "destructive" : "default"}
-              onClick={() => void handleConfirm()}
+              onClick={() => {
+                handleConfirm().catch(() => undefined);
+              }}
               disabled={submitting}
             >
               {submitting ? "Working..." : confirmLabel}

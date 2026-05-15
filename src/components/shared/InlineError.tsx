@@ -1,8 +1,8 @@
 import { AppIcon } from "@/components/icons/AppIcon";
 
-interface InlineErrorProps {
+type InlineErrorProps = Readonly<{
   message?: string;
-}
+}>;
 
 export function InlineError({ message }: InlineErrorProps) {
   if (!message) return null;

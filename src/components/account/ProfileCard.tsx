@@ -50,10 +50,10 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
 
   const updateMe = useUsersUpdateMe({
     mutation: {
-      onSuccess: () => {
+      onSuccess: async () => {
         notify.success("Profile updated");
         setIsEditing(false);
-        void queryClient.invalidateQueries({ queryKey: qk.auth.profile() });
+        await queryClient.invalidateQueries({ queryKey: qk.auth.profile() });
       },
       onError: (err) => notify.apiError(err, "Failed to update profile"),
     },

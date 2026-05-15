@@ -14,12 +14,12 @@ import {
 import { useState, useEffect } from "react";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 
-interface SearchInputProps {
+type SearchInputProps = Readonly<{
   id: string;
   placeholder: string;
   value: string;
   onChange: (next: string) => void;
-}
+}>;
 
 function SearchInput({ id, placeholder, value, onChange }: SearchInputProps) {
   return (
@@ -53,12 +53,12 @@ export interface PrescriptionFilterValues {
   doctorEmail?: string;
 }
 
-interface PrescriptionFiltersBarProps {
+type PrescriptionFiltersBarProps = Readonly<{
   values: PrescriptionFilterValues;
   onChange: (patch: Partial<PrescriptionFilterValues>) => void;
   onClear: () => void;
   role?: "ADMIN" | "DOCTOR" | "PATIENT";
-}
+}>;
 
 export function PrescriptionFiltersBar({
   values,

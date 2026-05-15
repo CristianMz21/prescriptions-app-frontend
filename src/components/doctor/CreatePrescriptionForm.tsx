@@ -38,7 +38,10 @@ const createEmptyItem = (): PrescriptionItemFormState => ({
   quantity: undefined,
   unit: "",
   instructions: "",
-  localId: Math.random().toString(36).slice(2, 11),
+  // Stable React key for client-side form rows. Using crypto.randomUUID()
+  // closes Sonar S2245 (weak PRNG hotspot) — Math.random() is fine for UI
+  // keys but the global rule prefers the CSPRNG everywhere.
+  localId: globalThis.crypto.randomUUID(),
 });
 
 const UNIT_OPTIONS = [
@@ -116,9 +119,9 @@ export function CreatePrescriptionForm() {
 
   const createMutation = usePrescriptionsCreate({
     mutation: {
-      onSuccess: () => {
+      onSuccess: async () => {
         notify.success("Prescription issued", "The prescription was created.");
-        void queryClient.invalidateQueries();
+        await queryClient.invalidateQueries();
         router.push(routes.doctor.prescriptions);
       },
       onError: (err: ApiError) => {

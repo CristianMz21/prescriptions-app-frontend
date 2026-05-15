@@ -11,14 +11,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { sortOrderOptions, type SortOrder } from "@/lib/config/sort-config";
 
-interface SortControlProps<T extends string> {
+type SortControlProps<T extends string> = Readonly<{
   sortByValue?: string;
   sortOrderValue?: SortOrder;
   sortOptions: readonly T[];
   optionLabels?: Record<string, string>;
   onSortByChange: (value: T | undefined) => void;
   onSortOrderChange: (value: SortOrder | undefined) => void;
-}
+}>;
 
 export function SortControl<T extends string>({
   sortByValue,

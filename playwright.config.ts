@@ -24,10 +24,14 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  // Next.js dev mode cold-compiles routes on first access. More than 2 workers
-  // causes parallel cold-compilation pile-ups and hydration/login timeouts.
-  // Keep this deterministic instead of maximizing local parallelism.
-  workers: process.env.CI ? 1 : 2,
+  // Local dev uses `next dev` which cold-compiles routes on first access —
+  // more than 2 workers causes parallel cold-compilation pile-ups and
+  // hydration/login timeouts. CI uses `next build && next start` (production
+  // server, no cold-compile), so 2 workers there is safe and roughly halves
+  // E2E wall-time. State-mutating tests (admin metrics, doctor create,
+  // patient consume) use unique med names + per-RX backend GETs to remain
+  // deterministic under parallelism.
+  workers: 2,
   reporter: [["list"], ["html", { open: "never" }]],
   globalSetup: "./e2e/global-setup.ts",
   use: {

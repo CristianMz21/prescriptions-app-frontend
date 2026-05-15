@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-interface FilterBarProps {
+type FilterBarProps = Readonly<{
   children: React.ReactNode;
   activeCount?: number;
   className?: string;
-}
+}>;
 
 export function FilterBar({
   children,
