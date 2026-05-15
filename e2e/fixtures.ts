@@ -108,7 +108,7 @@ export const test = base.extend<AppFixtures>({
       await submitButton.click();
 
       await page.waitForURL(
-        /\/(admin\/metrics|doctor\/prescriptions|patient\/prescriptions)$/,
+        /\/(admin\/metrics|doctor\/prescriptions|patient\/prescriptions)(?:\?.*)?$/,
       );
       const profileResult = await profileResponse;
       expect(profileResult.status()).toBe(200);
@@ -132,7 +132,10 @@ export const test = base.extend<AppFixtures>({
       // logged this role out and rotated the refresh token), the frontend
       // middleware bounces to /login. Detect that and fall back.
       try {
-        await page.waitForURL(new RegExp(`${landingPath}$`), {
+        // Allow an optional query string — landing routes append `?page=1`
+        // for paginated lists. Tying the regex to `$` alone fails on the
+        // first navigation after a fresh cookie hydration.
+        await page.waitForURL(new RegExp(`${landingPath}(?:\\?.*)?$`), {
           timeout: 5_000,
         });
         return cached.profile;
