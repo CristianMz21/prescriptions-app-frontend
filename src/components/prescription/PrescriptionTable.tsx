@@ -51,6 +51,10 @@ export function PrescriptionTable({
               rx.status === "PENDING" &&
               expiryDate &&
               new Date(expiryDate) < now;
+            const expiryDateStr = expiryDate
+              ? new Date(expiryDate).toLocaleDateString()
+              : "—";
+            const createdDateStr = new Date(rx.createdAt).toLocaleDateString();
 
             const patientName =
               patientNameByEmail?.get(
@@ -93,7 +97,7 @@ export function PrescriptionTable({
                       Date
                     </p>
                     <p className="tabular-nums text-on-surface">
-                      {new Date(rx.createdAt).toLocaleDateString()}
+                      {createdDateStr}
                     </p>
                   </div>
                   <div className="col-span-2">
@@ -111,9 +115,7 @@ export function PrescriptionTable({
                     <p
                       className={`tabular-nums ${isExpired ? "font-semibold text-error" : "text-on-surface"}`}
                     >
-                      {expiryDate
-                        ? new Date(expiryDate).toLocaleDateString()
-                        : "—"}
+                      {expiryDateStr}
                     </p>
                   </div>
                 </div>

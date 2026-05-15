@@ -5,6 +5,7 @@ import {
   getPrescriptionExpiry,
   getUserDisplayName,
 } from "@/lib/prescription-ui";
+import { formatDate } from "@/lib/utils";
 
 interface PrescriptionCardProps {
   prescription: PrescriptionResponseDto;
@@ -150,11 +151,7 @@ export function PrescriptionCard({
                 Date Issued
               </span>
               <span className="text-sm text-on-surface tabular-nums">
-                {new Date(rx.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {formatDate(rx.createdAt)}
               </span>
             </div>
             {expiryDate && (
@@ -165,11 +162,7 @@ export function PrescriptionCard({
                 <span
                   className={`text-sm tabular-nums ${isExpired ? "text-error font-bold" : "text-on-surface"}`}
                 >
-                  {new Date(expiryDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {formatDate(expiryDate)}
                 </span>
               </div>
             )}

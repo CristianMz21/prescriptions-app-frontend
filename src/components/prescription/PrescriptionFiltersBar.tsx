@@ -46,9 +46,10 @@ export function PrescriptionFiltersBar({
   const debouncedQ = useDebouncedValue(qLocal, 400);
 
   useEffect(() => {
-    if (debouncedQ !== values.q) {
-      onChange({ q: debouncedQ || undefined });
-    }
+    const nextQ = debouncedQ.trim() || undefined;
+    const currentQ = values.q?.trim() || undefined;
+    if (nextQ === currentQ) return;
+    onChange({ q: nextQ });
   }, [debouncedQ, onChange, values.q]);
 
   if (role === "PATIENT") {

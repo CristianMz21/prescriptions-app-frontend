@@ -5,6 +5,7 @@ import {
   getPrescriptionExpiry,
   getUserDisplayName,
 } from "@/lib/prescription-ui";
+import { formatDate } from "@/lib/utils";
 
 interface PrescriptionDetailPanelProps {
   prescription: PrescriptionResponseDto;
