@@ -1,6 +1,16 @@
 import { test, expect } from "./fixtures";
 
-const PRESCRIPTIONS_REQUEST_PATTERN = "**/prescriptions*";
+const ALL_REQUESTS_PATTERN = "**/*";
+const PRESCRIPTIONS_API_PATHS = new Set([
+  "/api/backend/prescriptions",
+  "/prescriptions",
+]);
+
+function isPrescriptionsApiGetRequest(requestUrl: string, method: string) {
+  if (method !== "GET") return false;
+  const url = new URL(requestUrl);
+  return PRESCRIPTIONS_API_PATHS.has(url.pathname);
+}
 
 test.describe("UI behavior under backend failure / empty data", () => {
   test("doctor list: 500 from /prescriptions surfaces ErrorState", async ({
@@ -10,8 +20,9 @@ test.describe("UI behavior under backend failure / empty data", () => {
   }) => {
     await loginAs("doctor");
 
-    await context.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
-      if (route.request().method() === "GET") {
+    await context.route(ALL_REQUESTS_PATTERN, (route) => {
+      const request = route.request();
+      if (isPrescriptionsApiGetRequest(request.url(), request.method())) {
         return route.fulfill({
           status: 500,
           contentType: "application/json",
@@ -28,7 +39,7 @@ test.describe("UI behavior under backend failure / empty data", () => {
       await expect(isolatedPage.getByText(/forced failure/i)).toBeVisible();
     } finally {
       await isolatedPage.close();
-      await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
+      await context.unroute(ALL_REQUESTS_PATTERN);
       await page.bringToFront();
     }
   });
@@ -40,8 +51,9 @@ test.describe("UI behavior under backend failure / empty data", () => {
   }) => {
     await loginAs("patient");
 
-    await context.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
-      if (route.request().method() === "GET") {
+    await context.route(ALL_REQUESTS_PATTERN, (route) => {
+      const request = route.request();
+      if (isPrescriptionsApiGetRequest(request.url(), request.method())) {
         return route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -57,11 +69,13 @@ test.describe("UI behavior under backend failure / empty data", () => {
     const isolatedPage = await context.newPage();
     try {
       await isolatedPage.goto("/patient/prescriptions");
-      await expect(isolatedPage.getByText("No prescriptions found")).toBeVisible();
+      await expect(
+        isolatedPage.getByText("No prescriptions found"),
+      ).toBeVisible();
       await expect(isolatedPage.getByTestId("prescription-card")).toHaveCount(0);
     } finally {
       await isolatedPage.close();
-      await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
+      await context.unroute(ALL_REQUESTS_PATTERN);
       await page.bringToFront();
     }
   });
