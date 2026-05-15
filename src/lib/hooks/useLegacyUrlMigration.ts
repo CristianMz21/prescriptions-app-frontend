@@ -26,11 +26,13 @@ export function useLegacyUrlMigration() {
     const next = new URLSearchParams(params.toString());
 
     if (hasLegacyFrom) {
-      next.set("fromDate", params.get("from")!);
+      const val = params.get("from");
+      if (val) next.set("fromDate", val);
       next.delete("from");
     }
     if (hasLegacyTo) {
-      next.set("toDate", params.get("to")!);
+      const val = params.get("to");
+      if (val) next.set("toDate", val);
       next.delete("to");
     }
 

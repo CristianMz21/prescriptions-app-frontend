@@ -5,7 +5,7 @@ export function MetricCardsSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
       {Array.from({ length: 4 }).map((_, i) => (
-        <Card key={i} className="card-glass p-6 gap-4">
+        <Card key={`metric-skeleton-${i}`} className="card-glass p-6 gap-4">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-12 w-32" />
           <Skeleton className="h-3 w-16" />
@@ -27,7 +27,7 @@ export function PrescriptionTableSkeleton({ rows = 5 }: { rows?: number }) {
       </div>
       {Array.from({ length: rows }).map((_, i) => (
         <div
-          key={i}
+          key={`table-row-skeleton-${i}`}
           className="px-4 py-4 border-b border-outline-variant/20 flex gap-6 items-center"
         >
           <Skeleton className="h-3 flex-1" />
@@ -50,7 +50,7 @@ export function PrescriptionCardListSkeleton({
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
       {Array.from({ length: items }).map((_, i) => (
-        <Card key={i} className="glass-panel p-6 gap-4">
+        <Card key={`card-skeleton-${i}`} className="glass-panel p-6 gap-4">
           <div className="flex justify-between items-start border-b border-outline-variant/30 pb-4">
             <div className="flex flex-col gap-2 w-1/3">
               <Skeleton className="h-3 w-16" />

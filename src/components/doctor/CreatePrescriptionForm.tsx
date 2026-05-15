@@ -405,7 +405,7 @@ export function CreatePrescriptionForm() {
           <div className="space-y-4">
             {items.map((item, index) => (
               <MedicationItemRow
-                key={index}
+                key={`med-item-${index}-${item.name}`}
                 index={index}
                 item={item}
                 onChange={(field, value) => updateItem(index, field, value)}

@@ -116,12 +116,12 @@ export function LoginFormCard() {
       </form>
 
       <div className="mt-6 flex flex-col items-start gap-3 border-t border-outline-variant/30 pt-5 text-xs font-semibold uppercase tracking-wider text-on-surface-variant sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <a className="transition-colors hover:text-primary" href="#">
+        <span className="transition-colors hover:text-primary cursor-default">
           Forgot Password
-        </a>
-        <a className="transition-colors hover:text-primary" href="#">
+        </span>
+        <span className="transition-colors hover:text-primary cursor-default">
           Request Access
-        </a>
+        </span>
       </div>
     </div>
   );

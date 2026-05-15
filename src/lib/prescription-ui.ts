@@ -17,8 +17,5 @@ export function getUserDisplayName(user?: { email?: string; name?: string }) {
 export function getPrescriptionExpiry(
   prescription: PrescriptionResponseDto,
 ): string | null {
-  const maybeExpiry = (
-    prescription as PrescriptionResponseDto & { expiryDate?: string | null }
-  ).expiryDate;
-  return maybeExpiry ?? null;
+  return prescription.expiryDate ?? null;
 }

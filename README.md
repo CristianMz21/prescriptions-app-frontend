@@ -60,6 +60,22 @@ src/
 | --------------------- | --------------- | ----------------------- |
 | `NEXT_PUBLIC_API_URL` | Backend API URL | `http://127.0.0.1:3000` |
 
+For Vercel deployment with Render backend, set:
+
+```bash
+NEXT_PUBLIC_API_URL=/backend
+```
+
+This project proxies `/backend/*` to:
+`https://prescriptions-app-backend.onrender.com/*` via `next.config.ts` rewrites.
+
+## Vercel Deploy
+
+1. Import this repo into Vercel.
+2. Set env var `NEXT_PUBLIC_API_URL=/backend` in Production/Preview.
+3. Deploy.
+4. Validate login/session and authenticated routes.
+
 ## Architecture
 
 This frontend consumes a NestJS backend API via an OpenAPI-generated client. See the root `ARCHITECTURE.md` for full system design.

@@ -30,6 +30,9 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
 import { UrlSortableHeader } from "@/components/filters/SortableHeader";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { DataTableShell } from "@/components/shared/DataTableShell";
 
 const FILTER_KEYS = [
   "q",
@@ -72,13 +75,11 @@ export function DoctorsTable() {
   const meta = data?.meta;
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-primary">Doctors</h2>
-        <p className="text-base text-on-surface-variant mt-1">
-          All practitioners with prescribing privileges.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Doctors"
+        description="All practitioners with prescribing privileges."
+      />
 
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
@@ -197,7 +198,7 @@ export function DoctorsTable() {
       {doctors.length === 0 && !isLoading && !error ? (
         <EmptyState icon="hospital" title="No doctors match these filters" />
       ) : (
-        <Card className="card-glass overflow-hidden p-0 gap-0">
+        <DataTableShell className="p-0 gap-0">
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
@@ -221,11 +222,11 @@ export function DoctorsTable() {
                   className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
                 >
                   <TableCell className="text-sm">
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-primary">
+                    <div className="flex min-w-0 flex-col">
+                      <span className="max-w-[14rem] truncate font-semibold text-primary">
                         {u.name}
                       </span>
-                      <span className="text-xs text-on-surface-variant font-mono">
+                      <span className="max-w-[16rem] truncate font-mono text-xs text-on-surface-variant">
                         {u.email}
                       </span>
                     </div>
@@ -278,8 +279,8 @@ export function DoctorsTable() {
               </div>
             </div>
           ) : null}
-        </Card>
+        </DataTableShell>
       )}
-    </div>
+    </PageShell>
   );
 }

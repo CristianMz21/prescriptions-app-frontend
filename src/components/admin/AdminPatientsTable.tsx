@@ -241,44 +241,50 @@ export function AdminPatientsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {patients.map((u) => {
-                const birthDate = u.patient?.birthDate;
-                const age = birthDate
-                  ? new Date().getFullYear() - new Date(birthDate).getFullYear()
-                  : null;
-                return (
-                  <TableRow
-                    key={u.id}
-                    data-testid="patient-row"
-                    className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
-                  >
-                    <TableCell className="text-sm">
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-primary">
-                          {u.name}
-                        </span>
-                        <span className="text-xs text-on-surface-variant font-mono">
-                          {u.email}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-on-surface tabular-nums">
-                      {u.phone || "—"}
-                    </TableCell>
-                    <TableCell className="text-sm tabular-nums">
-                      {birthDate
-                        ? new Date(birthDate).toLocaleDateString()
-                        : "—"}
-                    </TableCell>
-                    <TableCell className="text-sm tabular-nums text-on-surface-variant">
-                      {age !== null ? `${age}` : "—"}
-                    </TableCell>
-                    <TableCell className="text-sm tabular-nums text-on-surface-variant">
-                      {new Date(u.createdAt).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {(() => {
+                const currentYear = new Date().getFullYear();
+                return patients.map((u) => {
+                  const birthDate = u.patient?.birthDate;
+                  const age = birthDate
+                    ? currentYear - new Date(birthDate).getFullYear()
+                    : null;
+                  const birthDateStr = birthDate
+                    ? new Date(birthDate).toLocaleDateString()
+                    : "—";
+                  const createdDateStr = new Date(u.createdAt).toLocaleDateString();
+
+                  return (
+                    <TableRow
+                      key={u.id}
+                      data-testid="patient-row"
+                      className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
+                    >
+                      <TableCell className="text-sm">
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-primary">
+                            {u.name}
+                          </span>
+                          <span className="text-xs text-on-surface-variant font-mono">
+                            {u.email}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-on-surface tabular-nums">
+                        {u.phone || "—"}
+                      </TableCell>
+                      <TableCell className="text-sm tabular-nums">
+                        {birthDateStr}
+                      </TableCell>
+                      <TableCell className="text-sm tabular-nums text-on-surface-variant">
+                        {age !== null ? `${age}` : "—"}
+                      </TableCell>
+                      <TableCell className="text-sm tabular-nums text-on-surface-variant">
+                        {createdDateStr}
+                      </TableCell>
+                    </TableRow>
+                  );
+                });
+              })()}
             </TableBody>
           </Table>
 

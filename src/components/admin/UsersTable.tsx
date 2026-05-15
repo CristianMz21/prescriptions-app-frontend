@@ -34,6 +34,9 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { DataTableShell } from "@/components/shared/DataTableShell";
 
 const FILTER_KEYS = [
   "q",
@@ -71,19 +74,17 @@ export function UsersTable() {
   const meta = data?.meta;
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-3xl font-bold text-primary">Users</h2>
-          <p className="text-base text-on-surface-variant mt-1">
-            Every account in the system, paginated.
-          </p>
-        </div>
-        <Link href={routes.admin.newUser} className={buttonVariants()}>
-          <span className="material-symbols-outlined text-lg">person_add</span>
-          New User
-        </Link>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Users"
+        description="Every account in the system, paginated."
+        actions={
+          <Link href={routes.admin.newUser} className={buttonVariants()}>
+            <span className="material-symbols-outlined text-lg">person_add</span>
+            New User
+          </Link>
+        }
+      />
 
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
@@ -231,7 +232,7 @@ export function UsersTable() {
       {users.length === 0 && !isLoading && !error ? (
         <EmptyState icon="users" title="No users match these filters" />
       ) : (
-        <Card className="card-glass overflow-hidden p-0 gap-0">
+        <DataTableShell className="p-0 gap-0">
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
@@ -246,38 +247,41 @@ export function UsersTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
-                <TableRow
-                  key={user.id}
-                  data-testid="user-row"
-                  className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
-                >
-                  <TableCell className="text-sm">
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-primary">
-                        {user.name}
-                      </span>
-                      <span className="text-xs text-on-surface-variant font-mono">
-                        {user.email}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm text-on-surface tabular-nums">
-                    {user.phone || "—"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="uppercase tracking-wider text-[0.7rem]"
-                    >
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm tabular-nums text-on-surface-variant">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {users.map((user) => {
+                const createdDate = new Date(user.createdAt).toLocaleDateString();
+                return (
+                  <TableRow
+                    key={user.id}
+                    data-testid="user-row"
+                    className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
+                  >
+                    <TableCell className="text-sm">
+                      <div className="flex min-w-0 flex-col">
+                        <span className="max-w-[14rem] truncate font-semibold text-primary">
+                          {user.name}
+                        </span>
+                        <span className="max-w-[16rem] truncate font-mono text-xs text-on-surface-variant">
+                          {user.email}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-on-surface tabular-nums">
+                      {user.phone || "—"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className="uppercase tracking-wider text-[0.7rem]"
+                      >
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm tabular-nums text-on-surface-variant">
+                      {createdDate}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
 
@@ -315,8 +319,8 @@ export function UsersTable() {
               </div>
             </div>
           ) : null}
-        </Card>
+        </DataTableShell>
       )}
-    </div>
+    </PageShell>
   );
 }

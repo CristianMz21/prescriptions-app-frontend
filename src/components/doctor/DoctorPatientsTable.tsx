@@ -73,17 +73,19 @@ export function DoctorPatientsTable() {
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Search</Label>
+            <Label htmlFor="patient-search" className="label-uppercase">Search</Label>
             <Input
+              id="patient-search"
               type="search"
-              placeholder="Email search"
+              placeholder="Name or email"
               value={values.q ?? ""}
               onChange={(e) => setFilters({ q: e.target.value || undefined })}
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Birth Date From</Label>
+            <Label htmlFor="birth-date-from" className="label-uppercase">Birth Date From</Label>
             <Input
+              id="birth-date-from"
               type="date"
               value={values.birthDateFromDate ?? ""}
               onChange={(e) =>
@@ -92,17 +94,18 @@ export function DoctorPatientsTable() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Search</Label>
+            <Label htmlFor="birth-date-to" className="label-uppercase">Birth Date To</Label>
             <Input
-              type="search"
-              placeholder="Name or email"
-              value={values.q ?? ""}
-              onChange={(e) => setFilters({ q: e.target.value || undefined })}
+              id="birth-date-to"
+              type="date"
+              value={values.birthDateToDate ?? ""}
+              onChange={(e) =>
+                setFilters({ birthDateToDate: e.target.value || undefined })
+              }
             />
           </div>
-          ...
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Sort By</Label>
+            <Label htmlFor="sort-by" className="label-uppercase">Sort By</Label>
             <Select
               value={values.sortBy ?? "__NONE__"}
               onValueChange={(v) =>
@@ -113,7 +116,7 @@ export function DoctorPatientsTable() {
                 })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger id="sort-by">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -177,6 +180,10 @@ export function DoctorPatientsTable() {
             <TableBody>
               {patients.map((u) => {
                 const birthDate = u.patient?.birthDate;
+                const birthDateStr = birthDate
+                  ? new Date(birthDate).toLocaleDateString()
+                  : "—";
+                const createdDateStr = new Date(u.createdAt).toLocaleDateString();
                 return (
                   <TableRow
                     key={u.id}
@@ -197,12 +204,10 @@ export function DoctorPatientsTable() {
                       {u.phone || "—"}
                     </TableCell>
                     <TableCell className="text-sm tabular-nums">
-                      {birthDate
-                        ? new Date(birthDate).toLocaleDateString()
-                        : "—"}
+                      {birthDateStr}
                     </TableCell>
                     <TableCell className="text-sm tabular-nums text-on-surface-variant">
-                      {new Date(u.createdAt).toLocaleDateString()}
+                      {createdDateStr}
                     </TableCell>
                   </TableRow>
                 );

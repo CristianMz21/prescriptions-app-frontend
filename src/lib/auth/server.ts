@@ -93,7 +93,6 @@ async function attemptRefresh(): Promise<boolean> {
           "Content-Type": "application/json",
           ...(cookieHeader ? { Cookie: cookieHeader } : {}),
         },
-        validateStatus: () => true,
       },
     );
     if (res.status >= 200 && res.status < 300) {
@@ -120,7 +119,9 @@ async function rawRequest<T>(
       ...(config.headers ?? {}),
       ...(cookieHeader ? { Cookie: cookieHeader } : {}),
     },
-    validateStatus: () => true,
+    // Allow 401 so serverApiRequest can attempt refresh.
+    // Throw on other non-2xx to follow standard Axios reliability patterns.
+    validateStatus: (status) => (status >= 200 && status < 300) || status === 401,
   });
 }
 
