@@ -39,7 +39,24 @@ export async function POST(
   const loginUrl = new URL("/login", request.url);
 
   // Explicit auth check — no `redirect()` to fight with.
+  // TEMP DIAGNOSTIC: log incoming cookies + auth outcome so we can see
+  // exactly why the patient consume E2E lands on /login. Remove once
+  // the root cause is identified and fixed (or moved to a structured
+  // logger). The Cookie header is logged with sensitive values masked.
+  const incomingCookie = request.headers.get("cookie") ?? "(none)";
+  const maskedCookie = incomingCookie.replace(
+    /=([^;]+)/g,
+    (_, v) => `=<${v.length}b>`,
+  );
+  console.error(
+    `[consume-route] POST /patient/prescriptions/${id}/consume; cookies: ${maskedCookie}`,
+  );
   const auth = await getAuth();
+  console.error(
+    `[consume-route] getAuth result: ${
+      auth ? `role=${auth.role} id=${auth.id}` : "null"
+    }`,
+  );
   if (!auth) {
     return NextResponse.redirect(loginUrl, { status: 303 });
   }
