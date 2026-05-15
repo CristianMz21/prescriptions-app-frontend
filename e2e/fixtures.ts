@@ -97,14 +97,18 @@ export const test = base.extend<AppFixtures>({
       const profileResult = await profileResponse;
       expect(profileResult.status()).toBe(200);
       const profile = (await profileResult.json()) as UserProfileResponseDto;
-      
+
       // Verify role-based visual elements to confirm state
       if (profile.role === "ADMIN") {
         await expect(page.getByTestId("metrics-overview")).toBeVisible();
       } else if (profile.role === "DOCTOR") {
-        await expect(page.getByRole("heading", { name: /active prescriptions/i })).toBeVisible();
+        await expect(
+          page.getByRole("heading", { name: /active prescriptions/i }),
+        ).toBeVisible();
       } else if (profile.role === "PATIENT") {
-        await expect(page.getByRole("heading", { name: /my prescriptions/i })).toBeVisible();
+        await expect(
+          page.getByRole("heading", { name: /my prescriptions/i }),
+        ).toBeVisible();
       }
 
       return profile;
@@ -115,7 +119,9 @@ export const test = base.extend<AppFixtures>({
   createPrescriptionUI: async ({ page }, fixtureUse) => {
     const fn = async (options: CreatePrescriptionOptions) => {
       await page.goto("/doctor/prescriptions/new");
-      await expect(page.getByRole("heading", { name: /issue new prescription/i })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: /issue new prescription/i }),
+      ).toBeVisible();
 
       // Patient Selection
       const combobox = page.getByRole("combobox", { name: /patient/i });
@@ -123,8 +129,11 @@ export const test = base.extend<AppFixtures>({
       await page.getByRole("option", { name: options.patientEmail }).click();
 
       // Medication Details
-      await page.getByLabel("Medication name").first().fill(options.medicationName);
-      
+      await page
+        .getByLabel("Medication name")
+        .first()
+        .fill(options.medicationName);
+
       if (options.unit) {
         const unitSelect = page.getByLabel(/unit/i).first();
         await unitSelect.click();
@@ -136,11 +145,17 @@ export const test = base.extend<AppFixtures>({
       }
 
       if (options.quantity) {
-        await page.getByLabel("Dispense quantity").first().fill(options.quantity);
+        await page
+          .getByLabel("Dispense quantity")
+          .first()
+          .fill(options.quantity);
       }
 
       if (options.instructions) {
-        await page.getByLabel(/Patient instructions/i).first().fill(options.instructions);
+        await page
+          .getByLabel(/Patient instructions/i)
+          .first()
+          .fill(options.instructions);
       }
 
       const createResponse = page.waitForResponse(
@@ -148,11 +163,11 @@ export const test = base.extend<AppFixtures>({
           res.url().endsWith("/prescriptions") &&
           res.request().method() === "POST",
       );
-      
+
       await page.getByRole("button", { name: /issue prescription/i }).click();
       const res = await createResponse;
       expect(res.status()).toBe(201);
-      
+
       await page.waitForURL(/\/doctor\/prescriptions$/);
     };
     await fixtureUse(fn);

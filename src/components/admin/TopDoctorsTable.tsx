@@ -17,8 +17,8 @@ export function TopDoctorsTable({ doctors }: TopDoctorsTableProps) {
   if (!doctors || doctors.length === 0) return null;
 
   return (
-    <Card className="card-glass mt-6 p-0 gap-0 overflow-hidden">
-      <div className="p-6 border-b border-outline-variant/30">
+    <Card className="card-glass p-0 gap-0 overflow-hidden rounded-2xl border border-outline-variant/30">
+      <div className="px-6 py-5 border-b border-outline-variant/30">
         <h3 className="text-xl font-semibold text-primary">Top Doctors</h3>
       </div>
       <Table>

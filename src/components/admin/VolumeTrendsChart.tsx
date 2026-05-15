@@ -51,7 +51,9 @@ export function VolumeTrendsChart({ byDay }: VolumeTrendsChartProps) {
                 <div
                   key={point.date}
                   className="flex-1 rounded-t bg-primary/80 hover:bg-primary transition-colors"
-                  style={{ height: `${Math.max(3, (point.count / max) * 100)}%` }}
+                  style={{
+                    height: `${Math.max(3, (point.count / max) * 100)}%`,
+                  }}
                   title={`${point.date}: ${point.count}`}
                 />
               ))}

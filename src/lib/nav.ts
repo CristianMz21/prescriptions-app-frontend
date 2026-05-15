@@ -33,7 +33,13 @@ export const navigationByRole: Record<Role, NavItem[]> = {
     },
     { href: routes.doctor.patients, label: "Patients", icon: "person" },
     ...(isDoctorAnalyticsEnabled()
-      ? [{ href: routes.doctor.analytics, label: "Analytics", icon: "monitoring" }]
+      ? [
+          {
+            href: routes.doctor.analytics,
+            label: "Analytics",
+            icon: "monitoring",
+          },
+        ]
       : []),
     { href: routes.doctor.profile, label: "Profile", icon: "account_circle" },
   ],

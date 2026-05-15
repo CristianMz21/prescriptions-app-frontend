@@ -59,7 +59,10 @@ export function DoctorPrescriptionList() {
           : undefined,
   };
   const { data, isLoading, error } = usePrescriptionsFindAll(params);
-  const { data: patientsData } = useUsersFindAllPatients({ page: 1, limit: 100 });
+  const { data: patientsData } = useUsersFindAllPatients({
+    page: 1,
+    limit: 100,
+  });
   const patientNameByEmail = useMemo(() => {
     const entries: Array<[string, string]> =
       (patientsData?.data as UserEntity[] | undefined)?.map((patient) => [

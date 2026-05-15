@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/table";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { PrescriptionStatusBadge } from "./PrescriptionStatusBadge";
-import { getPrescriptionExpiry, getUserDisplayName } from "@/lib/prescription-ui";
+import {
+  getPrescriptionExpiry,
+  getUserDisplayName,
+} from "@/lib/prescription-ui";
 
 interface Pagination {
   page: number;
@@ -105,7 +108,9 @@ export function PrescriptionTable({
                     {rx.items?.map((item) => (
                       <span key={item.id} className="block last:mb-0 mb-0.5">
                         {item.name}{" "}
-                        {item.quantity ? `(${item.quantity})` : "(Cantidad no especificada)"}
+                        {item.quantity
+                          ? `(${item.quantity})`
+                          : "(Cantidad no especificada)"}
                       </span>
                     )) || "N/A"}
                   </TableCell>
@@ -119,30 +124,34 @@ export function PrescriptionTable({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className={`text-sm tabular-nums py-3.5 min-w-[120px] ${isExpired ? "text-error font-semibold" : "text-on-surface-variant"}`}>
-                    {expiryDate ? new Date(expiryDate).toLocaleDateString() : "—"}
+                  <TableCell
+                    className={`text-sm tabular-nums py-3.5 min-w-[120px] ${isExpired ? "text-error font-semibold" : "text-on-surface-variant"}`}
+                  >
+                    {expiryDate
+                      ? new Date(expiryDate).toLocaleDateString()
+                      : "—"}
                   </TableCell>
                   <TableCell className="text-sm tabular-nums text-on-surface-variant py-3.5 min-w-[110px]">
                     {new Date(rx.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right py-3.5 pr-4 min-w-[80px]">
-                  <Link
-                    href={getDetailHref(rx.id)}
-                    aria-label={`View ${rx.code}`}
-                    className={buttonVariants({
-                      variant: "ghost",
-                      size: "icon-sm",
-                    })}
-                  >
-                    <span className="material-symbols-outlined text-xl">
-                      visibility
-                    </span>
-                  </Link>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
+                    <Link
+                      href={getDetailHref(rx.id)}
+                      aria-label={`View ${rx.code}`}
+                      className={buttonVariants({
+                        variant: "ghost",
+                        size: "icon-sm",
+                      })}
+                    >
+                      <span className="material-symbols-outlined text-xl">
+                        visibility
+                      </span>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
         </Table>
       </div>
 

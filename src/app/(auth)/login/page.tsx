@@ -20,7 +20,9 @@ export default function LoginPage() {
         <LoginFormCard />
 
         <footer className="mt-6 flex items-center justify-center gap-2 opacity-60 sm:mt-8">
-          <span className="material-symbols-outlined text-sm text-primary">lock</span>
+          <span className="material-symbols-outlined text-sm text-primary">
+            lock
+          </span>
           <span className="text-[0.7rem] font-semibold uppercase tracking-widest text-on-surface-variant sm:text-xs">
             End-to-End Encrypted Session
           </span>

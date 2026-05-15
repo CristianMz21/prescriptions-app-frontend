@@ -56,7 +56,9 @@ export function PrescriptionFiltersBar({
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
           <div className="md:col-span-8 flex flex-col gap-1.5">
-            <Label htmlFor="search-patient" className="label-uppercase">Search</Label>
+            <Label htmlFor="search-patient" className="label-uppercase">
+              Search
+            </Label>
             <Input
               id="search-patient"
               type="search"
@@ -80,7 +82,9 @@ export function PrescriptionFiltersBar({
       <Card className="card-glass p-4 md:p-5 mb-4 rounded-2xl border border-outline-variant/30">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5 items-end">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="search-doctor" className="label-uppercase">Search</Label>
+            <Label htmlFor="search-doctor" className="label-uppercase">
+              Search
+            </Label>
             <Input
               id="search-doctor"
               type="search"
@@ -90,7 +94,9 @@ export function PrescriptionFiltersBar({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="status-doctor" className="label-uppercase">Status</Label>
+            <Label htmlFor="status-doctor" className="label-uppercase">
+              Status
+            </Label>
             <Select
               value={values.status ?? "__ALL__"}
               onValueChange={(v) =>
@@ -206,7 +212,9 @@ export function PrescriptionFiltersBar({
     <Card className="card-glass p-4 mb-4">
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="search-admin" className="label-uppercase">Search</Label>
+          <Label htmlFor="search-admin" className="label-uppercase">
+            Search
+          </Label>
           <Input
             id="search-admin"
             type="search"
@@ -217,7 +225,9 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="status-admin" className="label-uppercase">Status</Label>
+          <Label htmlFor="status-admin" className="label-uppercase">
+            Status
+          </Label>
           <Select
             value={values.status ?? "__ALL__"}
             onValueChange={(v) =>

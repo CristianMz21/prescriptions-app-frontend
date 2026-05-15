@@ -88,7 +88,9 @@ export function UsersTable() {
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="user-search" className="label-uppercase">Search</Label>
+            <Label htmlFor="user-search" className="label-uppercase">
+              Search
+            </Label>
             <Input
               id="user-search"
               type="search"

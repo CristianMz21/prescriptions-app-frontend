@@ -32,6 +32,8 @@ test.describe("Profile editing", () => {
     // Verify UI updates
     await expect(page.getByRole("heading", { name: newName })).toBeVisible();
     await expect(page.getByText(newPhone)).toBeVisible();
-    await expect(page.getByRole("button", { name: /save changes/i })).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: /save changes/i }),
+    ).toHaveCount(0);
   });
 });

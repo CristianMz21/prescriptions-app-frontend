@@ -71,10 +71,12 @@ test.describe("Admin onboarding (P1 — usersControllerCreate)", () => {
     // Filters bar present.
     await expect(page.getByLabel(/search/i)).toBeVisible();
     await expect(page.getByLabel(/status/i)).toBeVisible();
-    
-    // Verify "New Prescription" button is HIDDEN for admins 
+
+    // Verify "New Prescription" button is HIDDEN for admins
     // (only doctors should see it)
-    await expect(page.getByRole("link", { name: /new prescription/i })).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /new prescription/i }),
+    ).not.toBeVisible();
   });
 
   test("admin sees prescription details but cannot consume", async ({
@@ -83,14 +85,16 @@ test.describe("Admin onboarding (P1 — usersControllerCreate)", () => {
   }) => {
     await loginAs("admin");
     await page.goto("/admin/prescriptions");
-    
+
     const rows = page.getByTestId("prescription-row");
     await expect(rows.first()).toBeVisible();
     await rows.first().getByRole("link", { name: /view/i }).click();
-    
+
     await expect(page.getByText("RX Number")).toBeVisible();
     // Admin should see details but NOT the consume button
-    await expect(page.getByRole("button", { name: /mark as consumed/i })).not.toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /mark as consumed/i }),
+    ).not.toBeVisible();
   });
 
   test("admin doctors page lists ≥ 1 doctor row", async ({ loginAs, page }) => {

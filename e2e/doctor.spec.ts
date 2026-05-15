@@ -74,7 +74,7 @@ test.describe("Doctor prescription flows", () => {
     await loginAs("doctor");
     const rows = page.getByTestId("prescription-row");
     await rows.first().getByRole("link", { name: /view/i }).click();
-    
+
     const downloadButton = page.getByRole("button", { name: /download pdf/i });
     await expect(downloadButton).toBeVisible();
   });
@@ -86,9 +86,11 @@ test.describe("Doctor prescription flows", () => {
     await loginAs("doctor");
     const rows = page.getByTestId("prescription-row");
     await rows.first().getByRole("link", { name: /view/i }).click();
-    
+
     // Verify "Mark as consumed" button is NOT present for doctors
-    await expect(page.getByRole("button", { name: /mark as consumed/i })).not.toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /mark as consumed/i }),
+    ).not.toBeVisible();
   });
 
   test("validation: missing patient blocks submission with visible error", async ({

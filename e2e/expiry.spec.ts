@@ -26,10 +26,14 @@ test.describe("Prescription Expiry UX", () => {
     await expect(page.getByText("Expired", { exact: true })).toBeVisible();
 
     // Verify "Mark as consumed" button is HIDDEN
-    await expect(page.getByRole("button", { name: /mark as consumed/i })).toHaveCount(0);
-    
+    await expect(
+      page.getByRole("button", { name: /mark as consumed/i }),
+    ).toHaveCount(0);
+
     // Verify descriptive text
-    await expect(page.getByText(/actions unavailable for expired prescriptions/i)).toBeVisible();
+    await expect(
+      page.getByText(/actions unavailable for expired prescriptions/i),
+    ).toBeVisible();
   });
 
   test("a valid prescription (no expiry) shows actions", async ({
@@ -42,7 +46,9 @@ test.describe("Prescription Expiry UX", () => {
     await page.goto(`/patient/prescriptions/${fresh.id}`);
 
     await expect(page.getByText(/expired/i)).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /mark as consumed/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /mark as consumed/i }),
+    ).toBeVisible();
   });
 
   test("a prescription with future expiry shows actions", async ({
@@ -59,7 +65,9 @@ test.describe("Prescription Expiry UX", () => {
     await page.goto(`/patient/prescriptions/${validRx.id}`);
 
     await expect(page.getByText(/expired/i)).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /mark as consumed/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /mark as consumed/i }),
+    ).toBeVisible();
     await expect(page.getByText(/valid until/i)).toBeVisible();
   });
 });

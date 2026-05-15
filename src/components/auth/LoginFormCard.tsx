@@ -38,7 +38,11 @@ export function LoginFormCard() {
 
   return (
     <div className="card-glass w-full rounded-xl p-5 shadow-2xl sm:p-8">
-      <form className="flex flex-col gap-5 sm:gap-6" onSubmit={handleSubmit} noValidate>
+      <form
+        className="flex flex-col gap-5 sm:gap-6"
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <div className="flex flex-col gap-2">
           <Label htmlFor="email" className="label-uppercase">
             Operator Identity
@@ -84,7 +88,11 @@ export function LoginFormCard() {
 
         <div aria-live="polite" className="min-h-5">
           {error ? (
-            <p className="flex items-center gap-2 text-sm text-error" role="alert" data-testid="login-error">
+            <p
+              className="flex items-center gap-2 text-sm text-error"
+              role="alert"
+              data-testid="login-error"
+            >
               <span className="material-symbols-outlined text-sm">error</span>
               <span>{error}</span>
             </p>
@@ -93,10 +101,14 @@ export function LoginFormCard() {
 
         <Button type="submit" disabled={isLoading} className="mt-1 h-11 w-full">
           {isLoading ? (
-            <span className="material-symbols-outlined animate-spin">progress_activity</span>
+            <span className="material-symbols-outlined animate-spin">
+              progress_activity
+            </span>
           ) : (
             <>
-              <span className="font-bold uppercase tracking-widest">Sign In</span>
+              <span className="font-bold uppercase tracking-widest">
+                Sign In
+              </span>
               <span className="material-symbols-outlined text-lg">login</span>
             </>
           )}

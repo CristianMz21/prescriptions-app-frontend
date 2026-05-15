@@ -35,7 +35,10 @@ export function StatusDistribution({ metrics }: StatusDistributionProps) {
             </span>
           </div>
           <div className="h-2 rounded-full bg-surface-variant/30 overflow-hidden">
-            <div className="h-full bg-primary" style={{ width: `${consumedPct}%` }} />
+            <div
+              className="h-full bg-primary"
+              style={{ width: `${consumedPct}%` }}
+            />
           </div>
           <div className="flex justify-between items-center text-xs font-semibold">
             <div className="flex items-center gap-2">

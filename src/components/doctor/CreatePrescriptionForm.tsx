@@ -168,10 +168,11 @@ export function CreatePrescriptionForm() {
   };
 
   const isSubmitting = createMutation.isPending || isResolvingPatient;
+  const selectedPatient = patients.find((p) => p.id === selectedUserId);
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
+    <div className="mx-auto max-w-5xl px-3 md:px-6 lg:px-8 py-4 md:py-6">
+      <div className="mb-6 md:mb-8">
         <Link
           href={routes.doctor.prescriptions}
           className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors text-xs font-semibold uppercase tracking-wider w-fit mb-4"
@@ -187,15 +188,20 @@ export function CreatePrescriptionForm() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-8">
-        <Card className="card-glass p-6 gap-0">
-          <h3 className="text-xl font-semibold text-primary mb-6 flex items-center gap-2 border-b border-outline-variant/50 pb-2">
-            <span className="material-symbols-outlined text-on-surface-variant">
-              person_search
-            </span>
-            Patient Selection
-          </h3>
-          <div className="flex flex-col gap-2">
+      <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+        <Card className="card-glass p-4 md:p-6 gap-0 rounded-2xl border border-outline-variant/30 shadow-sm">
+          <div className="mb-6 border-b border-outline-variant/50 pb-3">
+            <h3 className="text-xl font-semibold text-primary flex items-center gap-2">
+              <span className="material-symbols-outlined text-on-surface-variant">
+                person_search
+              </span>
+              Patient Selection
+            </h3>
+            <p className="text-xs text-on-surface-variant mt-1">
+              Search by name or email and select the patient before issuing.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2.5 rounded-xl border border-outline-variant/25 bg-surface-container-lowest/30 p-3 md:p-4">
             <Label htmlFor="patient" className="label-uppercase">
               Patient
             </Label>
@@ -209,7 +215,7 @@ export function CreatePrescriptionForm() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search patient by email..."
-                className="pl-10 py-3 text-base"
+                className="pl-10 py-3 text-base border-outline-variant/60 focus-visible:ring-1 focus-visible:ring-primary/60"
                 autoComplete="off"
               />
               {isSearching && (
@@ -223,7 +229,10 @@ export function CreatePrescriptionForm() {
               onValueChange={(value) => setSelectedUserId(value ?? "")}
               disabled={isSearching}
             >
-              <SelectTrigger id="patient" className="w-full">
+              <SelectTrigger
+                id="patient"
+                className="w-full border-outline-variant/60"
+              >
                 <SelectValue
                   placeholder={
                     isSearching ? "Searching..." : "Select a patient..."
@@ -247,12 +256,25 @@ export function CreatePrescriptionForm() {
                 ) : (
                   patients.map((patient) => (
                     <SelectItem key={patient.id} value={patient.id}>
-                      {patient.email}
+                      {patient.name} — {patient.email}
                     </SelectItem>
                   ))
                 )}
               </SelectContent>
             </Select>
+            {selectedPatient ? (
+              <div className="rounded-md border border-primary/25 bg-primary/10 px-3 py-2 text-xs text-primary">
+                Selected:{" "}
+                <span className="font-semibold">{selectedPatient.name}</span>{" "}
+                <span className="text-on-surface-variant">
+                  ({selectedPatient.email})
+                </span>
+              </div>
+            ) : (
+              <p className="text-xs text-on-surface-variant">
+                Tip: type at least 3 letters for faster patient lookup.
+              </p>
+            )}
             {patientsData?.meta &&
               patientsData.data.length === 0 &&
               debouncedSearch.trim().length > 0 && (
@@ -263,8 +285,8 @@ export function CreatePrescriptionForm() {
           </div>
         </Card>
 
-        <Card className="card-glass p-6 gap-0">
-          <div className="flex justify-between items-end border-b border-outline-variant/50 pb-2 mb-6">
+        <Card className="card-glass p-4 md:p-6 gap-0 rounded-2xl border border-outline-variant/30">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 border-b border-outline-variant/50 pb-2 mb-6">
             <h3 className="text-xl font-semibold text-primary flex items-center gap-2">
               <span className="material-symbols-outlined text-on-surface-variant">
                 vaccines
@@ -276,6 +298,7 @@ export function CreatePrescriptionForm() {
               variant="ghost"
               size="sm"
               onClick={handleAddItem}
+              className="w-full sm:w-auto"
             >
               <span className="material-symbols-outlined text-sm">add</span>
               Add Item
@@ -296,7 +319,7 @@ export function CreatePrescriptionForm() {
           </div>
         </Card>
 
-        <Card className="card-glass p-6 gap-0">
+        <Card className="card-glass p-4 md:p-6 gap-0 rounded-2xl border border-outline-variant/30">
           <h3 className="text-xl font-semibold text-primary mb-6 flex items-center gap-2 border-b border-outline-variant/50 pb-2">
             <span className="material-symbols-outlined text-on-surface-variant">
               note_alt
@@ -304,7 +327,7 @@ export function CreatePrescriptionForm() {
             Clinical Notes &amp; Authorization
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6 mb-6">
             <div className="flex flex-col gap-2">
               <Label htmlFor="notes" className="label-uppercase">
                 Internal Notes (not printed on script)
@@ -345,14 +368,20 @@ export function CreatePrescriptionForm() {
             </div>
           ) : null}
 
-          <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8 pt-6 border-t border-outline-variant/30">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-8 pt-6 border-t border-outline-variant/30">
             <Link
               href={routes.doctor.prescriptions}
-              className={buttonVariants({ variant: "outline" })}
+              className={
+                buttonVariants({ variant: "outline" }) + " w-full sm:w-auto"
+              }
             >
               Cancel
             </Link>
-            <Button type="submit" disabled={isSubmitting || !selectedUserId}>
+            <Button
+              type="submit"
+              disabled={isSubmitting || !selectedUserId}
+              className="w-full sm:w-auto"
+            >
               {isSubmitting ? (
                 <>
                   <span className="material-symbols-outlined animate-spin">
@@ -399,7 +428,7 @@ function MedicationItemRow({
   return (
     <div
       data-testid="medication-item"
-      className="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 relative group"
+      className="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 md:p-4 relative group"
     >
       <Button
         type="button"
@@ -413,7 +442,7 @@ function MedicationItemRow({
         <span className="material-symbols-outlined">close</span>
       </Button>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 pr-8">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 mb-4 pr-8">
         <div className="md:col-span-4 flex flex-col gap-1.5">
           <Label htmlFor={ids.name} className="label-uppercase">
             Medication name
@@ -426,9 +455,15 @@ function MedicationItemRow({
             required
           />
         </div>
-        <div className="md:col-span-2 flex flex-col gap-1.5">
-          <Label htmlFor={ids.unit} className="label-uppercase flex justify-between">
-            Unit <span className="text-[0.6rem] text-primary lowercase font-normal">(required)</span>
+        <div className="md:col-span-3 lg:col-span-2 flex flex-col gap-1.5">
+          <Label
+            htmlFor={ids.unit}
+            className="label-uppercase flex justify-between"
+          >
+            Unit{" "}
+            <span className="text-[0.6rem] text-primary lowercase font-normal">
+              (required)
+            </span>
           </Label>
           <Select
             value={item.unit || "__NONE__"}
@@ -436,7 +471,10 @@ function MedicationItemRow({
               onChange("unit", v === "__NONE__" ? "" : (v ?? ""))
             }
           >
-            <SelectTrigger id={ids.unit} className={!item.unit ? "border-primary/50" : ""}>
+            <SelectTrigger
+              id={ids.unit}
+              className={!item.unit ? "border-primary/50" : ""}
+            >
               <SelectValue placeholder="Select…" />
             </SelectTrigger>
             <SelectContent>
@@ -449,7 +487,7 @@ function MedicationItemRow({
             </SelectContent>
           </Select>
         </div>
-        <div className="md:col-span-3 flex flex-col gap-1.5">
+        <div className="md:col-span-5 lg:col-span-3 flex flex-col gap-1.5">
           <Label htmlFor={ids.dosage} className="label-uppercase">
             Dosage
           </Label>
@@ -460,7 +498,7 @@ function MedicationItemRow({
             placeholder="e.g., 500mg"
           />
         </div>
-        <div className="md:col-span-3 flex flex-col gap-1.5">
+        <div className="md:col-span-4 lg:col-span-3 flex flex-col gap-1.5">
           <Label htmlFor={ids.quantity} className="label-uppercase">
             Dispense quantity
           </Label>

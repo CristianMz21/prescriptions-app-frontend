@@ -167,7 +167,11 @@ export function CreateUserForm() {
             />
           </Field>
 
-          <Field id="phone" label="Phone (optional)" error={errors.phone?.message}>
+          <Field
+            id="phone"
+            label="Phone (optional)"
+            error={errors.phone?.message}
+          >
             <Input
               id="phone"
               type="tel"

@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import type { PrescriptionResponseDto } from "@/lib/api/generated/schemas";
 import { PrescriptionStatusBadge } from "./PrescriptionStatusBadge";
-import { getPrescriptionExpiry, getUserDisplayName } from "@/lib/prescription-ui";
+import {
+  getPrescriptionExpiry,
+  getUserDisplayName,
+} from "@/lib/prescription-ui";
 
 interface PrescriptionDetailPanelProps {
   prescription: PrescriptionResponseDto;
@@ -14,24 +17,33 @@ export function PrescriptionDetailPanel({
 }: PrescriptionDetailPanelProps) {
   const isPending = rx.status === "PENDING";
   const expiryDate = getPrescriptionExpiry(rx);
-  const isExpired = isPending && expiryDate && new Date(expiryDate) < new Date();
-  
+  const isExpired =
+    isPending && expiryDate && new Date(expiryDate) < new Date();
+
   const lead = rx.items?.[0];
   const extras = rx.items?.slice(1) ?? [];
 
   return (
     <>
-      <div className={`glass-panel rounded-xl p-6 relative group overflow-hidden mb-8 ${isExpired ? "opacity-90" : ""}`}>
+      <div
+        className={`glass-panel rounded-xl p-6 relative group overflow-hidden mb-8 ${isExpired ? "opacity-90" : ""}`}
+      >
         <div
           className={`absolute left-0 top-0 bottom-0 w-1 ${
-            isExpired ? "bg-error" : isPending ? "bg-surface-variant" : "bg-primary"
+            isExpired
+              ? "bg-error"
+              : isPending
+                ? "bg-surface-variant"
+                : "bg-primary"
           }`}
         />
 
         <div className="flex flex-col gap-6 pl-2">
           <div className="flex justify-between items-start border-b border-outline-variant/30 pb-4">
             <div className="flex flex-col gap-1">
-              <span className="label-uppercase tracking-widest text-[0.65rem] text-on-surface-variant">RX Number</span>
+              <span className="label-uppercase tracking-widest text-[0.65rem] text-on-surface-variant">
+                RX Number
+              </span>
               <span className="text-lg font-bold text-primary font-mono tracking-wider">
                 {rx.code}
               </span>
@@ -71,11 +83,9 @@ export function PrescriptionDetailPanel({
                     <span className="material-symbols-outlined text-base text-on-surface-variant">
                       inventory_2
                     </span>
-                    {lead.quantity ? (
-                      `Quantity: ${lead.quantity}`
-                    ) : (
-                      "Quantity not specified"
-                    )}
+                    {lead.quantity
+                      ? `Quantity: ${lead.quantity}`
+                      : "Quantity not specified"}
                   </div>
                 </div>
               </div>
@@ -118,7 +128,9 @@ export function PrescriptionDetailPanel({
                     <span className="label-uppercase tracking-widest text-[0.6rem] text-on-surface-variant">
                       Valid Until
                     </span>
-                    <span className={`text-base tabular-nums ${isExpired ? "text-error font-bold" : "text-on-surface"}`}>
+                    <span
+                      className={`text-base tabular-nums ${isExpired ? "text-error font-bold" : "text-on-surface"}`}
+                    >
                       {new Date(expiryDate).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -160,7 +172,9 @@ export function PrescriptionDetailPanel({
             </div>
           ) : isExpired ? (
             <div className="flex justify-end items-center pt-4 mt-2 border-t border-outline-variant/20">
-               <span className="text-xs text-error/60 italic font-medium">Actions unavailable for expired prescriptions</span>
+              <span className="text-xs text-error/60 italic font-medium">
+                Actions unavailable for expired prescriptions
+              </span>
             </div>
           ) : null}
         </div>
@@ -189,19 +203,19 @@ export function PrescriptionDetailPanel({
                     ) : null}
                   </div>
                   <span className="text-xs font-bold text-on-surface-variant bg-surface-variant/20 px-2 py-1 rounded">
-                    {item.quantity ? (
-                      `${item.quantity}`
-                    ) : (
-                      "Quantity not specified"
-                    )}
+                    {item.quantity
+                      ? `${item.quantity}`
+                      : "Quantity not specified"}
                   </span>
                 </div>
                 {item.instructions ? (
                   <div className="bg-surface-variant/10 rounded p-3 mt-2">
-                     <span className="label-uppercase text-[0.55rem] block mb-1">Instructions</span>
-                     <p className="text-sm text-on-surface">
-                        {item.instructions}
-                     </p>
+                    <span className="label-uppercase text-[0.55rem] block mb-1">
+                      Instructions
+                    </span>
+                    <p className="text-sm text-on-surface">
+                      {item.instructions}
+                    </p>
                   </div>
                 ) : null}
               </div>

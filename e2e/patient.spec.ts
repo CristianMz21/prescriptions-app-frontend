@@ -119,14 +119,16 @@ test.describe("Patient prescription flows", () => {
 
     // Assert initial state of detail view
     await expect(page.getByText(medName)).toBeVisible();
-    await expect(page.getByRole("button", { name: /mark as consumed/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /mark as consumed/i }),
+    ).toBeVisible();
 
     // The Mark-as-Consumed button is a popover trigger; the actual form
     // submit lives behind a confirmation step (so the patient can supply an
     // optional reason). Open the popover, then submit.
     await page.getByRole("button", { name: /mark as consumed/i }).click();
     await page.getByRole("button", { name: /confirm/i }).click();
-    
+
     await expect(page.getByTestId("status-badge")).toHaveAttribute(
       "data-status",
       "CONSUMED",

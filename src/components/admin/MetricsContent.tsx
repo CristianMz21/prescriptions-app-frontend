@@ -21,9 +21,9 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
     return (
       <div
         data-testid="metrics-overview"
-        className="max-w-[1440px] mx-auto w-full"
+        className="max-w-[1440px] mx-auto w-full px-1 md:px-2 lg:px-3"
       >
-        <header className="mb-8">
+        <header className="mb-10">
           <h2 className="text-3xl font-bold text-primary tracking-tight">
             System Overview
           </h2>
@@ -41,9 +41,9 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
   return (
     <div
       data-testid="metrics-overview"
-      className="max-w-[1440px] mx-auto w-full"
+      className="max-w-[1440px] mx-auto w-full px-1 md:px-2 lg:px-3 space-y-7"
     >
-      <header className="mb-8">
+      <header className="mb-2">
         <h2 className="text-3xl font-bold text-primary tracking-tight">
           System Overview
         </h2>
@@ -54,12 +54,13 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
 
       <MetricsGrid metrics={metrics} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
         <VolumeTrendsChart byDay={metrics.byDay} />
         <StatusDistribution metrics={metrics} />
       </div>
-
-      <TopDoctorsTable doctors={metrics.topDoctors} />
+      <div className="pt-1">
+        <TopDoctorsTable doctors={metrics.topDoctors} />
+      </div>
     </div>
   );
 }

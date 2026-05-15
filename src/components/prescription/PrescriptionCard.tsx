@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import type { PrescriptionResponseDto } from "@/lib/api/generated/schemas";
 import { PrescriptionStatusBadge } from "./PrescriptionStatusBadge";
-import { getPrescriptionExpiry, getUserDisplayName } from "@/lib/prescription-ui";
+import {
+  getPrescriptionExpiry,
+  getUserDisplayName,
+} from "@/lib/prescription-ui";
 
 interface PrescriptionCardProps {
   prescription: PrescriptionResponseDto;
@@ -14,8 +17,9 @@ export function PrescriptionCard({
 }: PrescriptionCardProps) {
   const isPending = rx.status === "PENDING";
   const expiryDate = getPrescriptionExpiry(rx);
-  const isExpired = isPending && expiryDate && new Date(expiryDate) < new Date();
-  
+  const isExpired =
+    isPending && expiryDate && new Date(expiryDate) < new Date();
+
   const lead = rx.items?.[0];
   const extraCount = Math.max(0, (rx.items?.length ?? 0) - 1);
 
@@ -32,8 +36,8 @@ export function PrescriptionCard({
           isExpired
             ? "bg-error"
             : isPending
-            ? "bg-surface-variant group-hover:bg-primary"
-            : "bg-surface-variant"
+              ? "bg-surface-variant group-hover:bg-primary"
+              : "bg-surface-variant"
         }`}
       />
 
@@ -71,7 +75,9 @@ export function PrescriptionCard({
                     {lead.quantity ? (
                       `×${lead.quantity}`
                     ) : (
-                      <span className="italic text-[0.7rem]">Qty: Not specified</span>
+                      <span className="italic text-[0.7rem]">
+                        Qty: Not specified
+                      </span>
                     )}
                   </span>
                   {extraCount > 0 ? (
@@ -100,7 +106,9 @@ export function PrescriptionCard({
                           className="flex justify-between items-center py-1 border-b border-outline-variant/10 last:border-0"
                         >
                           <span>
-                            <span className="font-medium text-primary">{item.name}</span>
+                            <span className="font-medium text-primary">
+                              {item.name}
+                            </span>
                             {item.dosage ? (
                               <span className="text-on-surface-variant ml-1">
                                 {item.dosage}
@@ -108,11 +116,9 @@ export function PrescriptionCard({
                             ) : null}
                           </span>
                           <span className="text-on-surface-variant tabular-nums text-xs">
-                            {item.quantity ? (
-                              `×${item.quantity}`
-                            ) : (
-                              "Qty: Not specified"
-                            )}
+                            {item.quantity
+                              ? `×${item.quantity}`
+                              : "Qty: Not specified"}
                           </span>
                         </li>
                       ))}
@@ -156,7 +162,9 @@ export function PrescriptionCard({
                 <span className="label-uppercase tracking-widest text-[0.6rem] text-on-surface-variant">
                   Valid Until
                 </span>
-                <span className={`text-sm tabular-nums ${isExpired ? "text-error font-bold" : "text-on-surface"}`}>
+                <span
+                  className={`text-sm tabular-nums ${isExpired ? "text-error font-bold" : "text-on-surface"}`}
+                >
                   {new Date(expiryDate).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -174,7 +182,9 @@ export function PrescriptionCard({
           </div>
         ) : isExpired ? (
           <div className="flex justify-end items-center pt-4 mt-2 border-t border-outline-variant/20">
-             <span className="text-xs text-error/60 italic">Actions unavailable for expired prescriptions</span>
+            <span className="text-xs text-error/60 italic">
+              Actions unavailable for expired prescriptions
+            </span>
           </div>
         ) : null}
       </div>

@@ -91,8 +91,12 @@ test.describe("Admin metrics dashboard", () => {
     ).toBeVisible();
   });
 
-  test("admin dashboard does not show doctor-only actions", async ({ page }) => {
+  test("admin dashboard does not show doctor-only actions", async ({
+    page,
+  }) => {
     // Admin should see dashboard metrics but NOT the button to create a prescription
-    await expect(page.getByRole("link", { name: /new prescription/i })).not.toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /new prescription/i }),
+    ).not.toBeVisible();
   });
 });

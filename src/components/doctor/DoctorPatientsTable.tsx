@@ -81,7 +81,6 @@ export function DoctorPatientsTable() {
               onChange={(e) => setFilters({ q: e.target.value || undefined })}
             />
           </div>
-
           <div className="flex flex-col gap-1.5">
             <Label className="label-uppercase">Birth Date From</Label>
             <Input
@@ -92,42 +91,39 @@ export function DoctorPatientsTable() {
               }
             />
           </div>
-<div className="flex flex-col gap-1.5">
-  <Label className="label-uppercase">Search</Label>
-  <Input
-    type="search"
-    placeholder="Name or email"
-    value={values.q ?? ""}
-    onChange={(e) => setFilters({ q: e.target.value || undefined })}
-  />
-</div>
-
-...
-
-<div className="flex flex-col gap-1.5">
-  <Label className="label-uppercase">Sort By</Label>
-  <Select
-    value={values.sortBy ?? "__NONE__"}
-    onValueChange={(v) =>
-      setFilters({
-        sortBy: v === "__NONE__" ? undefined : (v ?? undefined),
-        sortOrder:
-          v !== "__NONE__" ? (values.sortOrder ?? "asc") : undefined,
-      })
-    }
-  >
-    <SelectTrigger>
-      <SelectValue />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="__NONE__">— None —</SelectItem>
-      <SelectItem value="createdAt">Created</SelectItem>
-      <SelectItem value="name">Name</SelectItem>
-      <SelectItem value="email">Email</SelectItem>
-    </SelectContent>
-  </Select>
-</div>
-
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Search</Label>
+            <Input
+              type="search"
+              placeholder="Name or email"
+              value={values.q ?? ""}
+              onChange={(e) => setFilters({ q: e.target.value || undefined })}
+            />
+          </div>
+          ...
+          <div className="flex flex-col gap-1.5">
+            <Label className="label-uppercase">Sort By</Label>
+            <Select
+              value={values.sortBy ?? "__NONE__"}
+              onValueChange={(v) =>
+                setFilters({
+                  sortBy: v === "__NONE__" ? undefined : (v ?? undefined),
+                  sortOrder:
+                    v !== "__NONE__" ? (values.sortOrder ?? "asc") : undefined,
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__NONE__">— None —</SelectItem>
+                <SelectItem value="createdAt">Created</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="flex flex-col gap-1.5">
             <Label className="label-uppercase">Order</Label>
             <div className="flex gap-1">
@@ -148,7 +144,6 @@ export function DoctorPatientsTable() {
               ))}
             </div>
           </div>
-
           <div className="flex items-end">
             <Button type="button" variant="outline" onClick={clear}>
               Clear

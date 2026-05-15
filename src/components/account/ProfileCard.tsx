@@ -123,7 +123,9 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
                 className={errors.name ? "border-error" : ""}
               />
               {errors.name && (
-                <span className="text-xs text-error">{errors.name.message}</span>
+                <span className="text-xs text-error">
+                  {errors.name.message}
+                </span>
               )}
             </div>
             <div className="flex flex-col gap-1.5">
@@ -138,7 +140,9 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
                 className={errors.phone ? "border-error" : ""}
               />
               {errors.phone && (
-                <span className="text-xs text-error">{errors.phone.message}</span>
+                <span className="text-xs text-error">
+                  {errors.phone.message}
+                </span>
               )}
             </div>
           </div>
@@ -152,11 +156,7 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              size="sm"
-              disabled={isSubmitting || !isDirty}
-            >
+            <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
               {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
