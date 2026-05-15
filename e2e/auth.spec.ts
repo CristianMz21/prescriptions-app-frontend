@@ -66,7 +66,9 @@ test.describe("Auth & route guards", () => {
     apiRequest,
   }) => {
     await loginAs("doctor");
-    await expect(page).toHaveURL(/\/doctor\/prescriptions$/);
+    // The doctor's landing route appends `?page=1` for the list pagination.
+    // Allow an optional query string so the assertion isn't tied to URL params.
+    await expect(page).toHaveURL(/\/doctor\/prescriptions(?:\?.*)?$/);
 
     // Verify presence of authenticated elements
     await expect(page.getByTestId("sidebar-logout")).toBeVisible();
@@ -124,7 +126,7 @@ test.describe("Auth & route guards", () => {
     loginAs,
   }) => {
     await loginAs("doctor");
-    await expect(page).toHaveURL(/\/doctor\/prescriptions$/);
+    await expect(page).toHaveURL(/\/doctor\/prescriptions(?:\?.*)?$/);
 
     // Drop only the access cookie. The refresh cookie is unchanged.
     const before = await page.context().cookies();
@@ -159,7 +161,7 @@ test.describe("Auth & route guards", () => {
     expect(refreshRes.status()).toBe(200);
 
     // After rotation we must be on the protected page, NOT redirected to /login.
-    await expect(page).toHaveURL(/\/doctor\/prescriptions$/);
+    await expect(page).toHaveURL(/\/doctor\/prescriptions(?:\?.*)?$/);
 
     // And the access cookie is restored.
     const afterRefresh = await page.context().cookies();

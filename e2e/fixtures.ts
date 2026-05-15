@@ -178,10 +178,20 @@ export const test = base.extend<AppFixtures>({
         page.getByRole("heading", { name: /issue new prescription/i }),
       ).toBeVisible();
 
-      // Patient Selection
-      const combobox = page.getByRole("combobox", { name: /patient/i });
-      await combobox.click();
-      await page.getByRole("option", { name: options.patientEmail }).click();
+      // Patient Selection — UI is an autocomplete textbox (was a combobox).
+      // Type at least 2 characters of the email's local part, then pick the
+      // matching suggestion from the live list.
+      const patientSearch = page.getByRole("textbox", {
+        name: /search by patient/i,
+      });
+      await patientSearch.click();
+      const localPart = options.patientEmail.split("@")[0];
+      await patientSearch.fill(localPart);
+      // Pick the suggestion matching the full email.
+      await page
+        .getByRole("option", { name: options.patientEmail })
+        .first()
+        .click();
 
       // Medication Details
       await page

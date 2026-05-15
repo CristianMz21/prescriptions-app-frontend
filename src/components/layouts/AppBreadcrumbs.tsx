@@ -38,6 +38,7 @@ export function AppBreadcrumbs() {
     >
       <Link
         href="/"
+        aria-label="Home"
         className="hover:text-on-surface transition-colors inline-flex items-center"
       >
         <AppIcon name="home" size="xs" />
