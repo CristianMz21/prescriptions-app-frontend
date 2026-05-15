@@ -16,7 +16,6 @@ env:
   PNPM_VERSION: "11.1.1"
   BACKEND_PORT: 3000
   FRONTEND_PORT: 3001
-  POSTGRES_CONTAINER: postgres:16
 
 jobs:
   e2e:
@@ -25,7 +24,7 @@ jobs:
 
     services:
       postgres:
-        image: ${{ env.POSTGRES_CONTAINER }}
+        image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
