@@ -53,8 +53,11 @@ jobs:
             "${BACKEND_OPENAPI_URL}"
           test -s ../../backend/openapi.json
 
+      - name: Harden OpenAPI schema
+        run: python3 scripts/harden-schema.py ../../backend/openapi.json
+
       - name: Regenerate API client
-        run: pnpm run api:gen
+        run: pnpm api:refresh
 
       - name: Fail if generated client is stale
         run: |

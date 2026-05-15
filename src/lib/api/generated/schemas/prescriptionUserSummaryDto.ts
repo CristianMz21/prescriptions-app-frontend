@@ -12,7 +12,7 @@ export interface PrescriptionUserSummaryDto {
   id: string;
   email: string;
   role: Role;
-  /** Full display name. Required. */
+  /** Full display name. */
   name: string;
   /**
      * Optional contact phone.

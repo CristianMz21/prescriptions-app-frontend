@@ -48,42 +48,7 @@ jobs:
           path: backend
 
       - name: Harden OpenAPI schema
-        run: |
-          python3 -c '
-          import json
-          import os
-          path = "backend/openapi.json"
-          if not os.path.exists(path):
-              print(f"Spec not found at {path}, skipping hardening")
-              exit(0)
-          with open(path, "r") as f:
-              spec = json.load(f)
-          schemas = spec["components"]["schemas"]
-          if "PrescriptionResponseDto" in schemas:
-              props = schemas["PrescriptionResponseDto"]["properties"]
-              if "expiryDate" not in props:
-                  props["expiryDate"] = {"type": "string", "format": "date", "nullable": True}
-          if "PrescriptionItemResponseDto" in schemas:
-              props = schemas["PrescriptionItemResponseDto"]["properties"]
-              if "unit" not in props:
-                  props["unit"] = {"type": "string", "maxLength": 32}
-              req = schemas["PrescriptionItemResponseDto"].get("required", [])
-              if "unit" not in req:
-                  req.append("unit")
-                  schemas["PrescriptionItemResponseDto"]["required"] = req
-          if "PrescriptionUserSummaryDto" in schemas:
-              props = schemas["PrescriptionUserSummaryDto"]["properties"]
-              if "name" not in props:
-                  props["name"] = {"type": "string"}
-              if "phone" not in props:
-                  props["phone"] = {"type": "string", "nullable": True}
-              req = schemas["PrescriptionUserSummaryDto"].get("required", [])
-              if "name" not in req:
-                  req.append("name")
-                  schemas["PrescriptionUserSummaryDto"]["required"] = req
-          with open(path, "w") as f:
-              json.dump(spec, f, indent=2)
-          '
+        run: python3 scripts/harden-schema.py backend/openapi.json
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4

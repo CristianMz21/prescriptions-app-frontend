@@ -16,7 +16,7 @@ export function AppShell({ role, children }: AppShellProps) {
       </div>
       <div className="flex-1 flex flex-col md:ml-64">
         <MobileTopBar role={role} />
-        <main className="flex-1 p-4 md:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-7 lg:p-10">{children}</main>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "22"
+  NODE_VERSION: "24"
   PNPM_VERSION: "11.1.1"
 
 permissions:
@@ -39,10 +39,23 @@ jobs:
           cache: pnpm
 
       - name: Approve build scripts
-        run: pnpm approve-builds esbuild@0.21.5 esbuild@0.27.7 msw@2.14.6 sharp@0.34.5 unrs-resolver@1.11.1
+        run: pnpm approve-builds --all
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Fetch backend OpenAPI schema
+        run: |
+          mkdir -p ../../backend
+          curl --fail --silent --show-error \
+            -o ../../backend/openapi.json \
+            "https://raw.githubusercontent.com/CristianMz21/prescriptions-app-backend/main/openapi.json"
+
+      - name: Harden OpenAPI schema
+        run: python3 scripts/harden-schema.py ../../backend/openapi.json
+
+      - name: Regenerate API client
+        run: pnpm api:refresh
 
       - name: Restore Next.js cache
         uses: actions/cache@v4
