@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -54,7 +54,6 @@ export function CreateUserForm() {
     control,
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -85,7 +84,7 @@ export function CreateUserForm() {
     },
   });
 
-  const role = watch("role");
+  const role = useWatch({ control, name: "role" });
 
   const onSubmit = (values: FormValues) => {
     createMutation.mutate({

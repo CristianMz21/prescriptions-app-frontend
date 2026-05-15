@@ -117,11 +117,7 @@ export function PrescriptionDetailPanel({
                     Date Issued
                   </span>
                   <span className="text-base text-on-surface tabular-nums">
-                    {new Date(rx.createdAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
+                    {formatDate(rx.createdAt)}
                   </span>
                 </div>
                 {expiryDate && (
@@ -132,11 +128,7 @@ export function PrescriptionDetailPanel({
                     <span
                       className={`text-base tabular-nums ${isExpired ? "text-error font-bold" : "text-on-surface"}`}
                     >
-                      {new Date(expiryDate).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {formatDate(expiryDate)}
                     </span>
                   </div>
                 )}
@@ -146,11 +138,7 @@ export function PrescriptionDetailPanel({
                       Consumed On
                     </span>
                     <span className="text-base text-primary tabular-nums font-semibold">
-                      {new Date(rx.consumedAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {formatDate(rx.consumedAt)}
                     </span>
                   </div>
                 ) : null}

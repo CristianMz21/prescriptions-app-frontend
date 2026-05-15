@@ -251,7 +251,9 @@ export function AdminPatientsTable() {
                   const birthDateStr = birthDate
                     ? new Date(birthDate).toLocaleDateString()
                     : "—";
-                  const createdDateStr = new Date(u.createdAt).toLocaleDateString();
+                  const createdDateStr = new Date(
+                    u.createdAt,
+                  ).toLocaleDateString();
 
                   return (
                     <TableRow

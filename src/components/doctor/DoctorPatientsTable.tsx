@@ -73,7 +73,9 @@ export function DoctorPatientsTable() {
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="patient-search" className="label-uppercase">Search</Label>
+            <Label htmlFor="patient-search" className="label-uppercase">
+              Search
+            </Label>
             <Input
               id="patient-search"
               type="search"
@@ -83,7 +85,9 @@ export function DoctorPatientsTable() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="birth-date-from" className="label-uppercase">Birth Date From</Label>
+            <Label htmlFor="birth-date-from" className="label-uppercase">
+              Birth Date From
+            </Label>
             <Input
               id="birth-date-from"
               type="date"
@@ -94,7 +98,9 @@ export function DoctorPatientsTable() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="birth-date-to" className="label-uppercase">Birth Date To</Label>
+            <Label htmlFor="birth-date-to" className="label-uppercase">
+              Birth Date To
+            </Label>
             <Input
               id="birth-date-to"
               type="date"
@@ -105,7 +111,9 @@ export function DoctorPatientsTable() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="sort-by" className="label-uppercase">Sort By</Label>
+            <Label htmlFor="sort-by" className="label-uppercase">
+              Sort By
+            </Label>
             <Select
               value={values.sortBy ?? "__NONE__"}
               onValueChange={(v) =>
@@ -183,7 +191,9 @@ export function DoctorPatientsTable() {
                 const birthDateStr = birthDate
                   ? new Date(birthDate).toLocaleDateString()
                   : "—";
-                const createdDateStr = new Date(u.createdAt).toLocaleDateString();
+                const createdDateStr = new Date(
+                  u.createdAt,
+                ).toLocaleDateString();
                 return (
                   <TableRow
                     key={u.id}

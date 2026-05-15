@@ -80,7 +80,9 @@ export function UsersTable() {
         description="Every account in the system, paginated."
         actions={
           <Link href={routes.admin.newUser} className={buttonVariants()}>
-            <span className="material-symbols-outlined text-lg">person_add</span>
+            <span className="material-symbols-outlined text-lg">
+              person_add
+            </span>
             New User
           </Link>
         }
@@ -248,7 +250,9 @@ export function UsersTable() {
             </TableHeader>
             <TableBody>
               {users.map((user) => {
-                const createdDate = new Date(user.createdAt).toLocaleDateString();
+                const createdDate = new Date(
+                  user.createdAt,
+                ).toLocaleDateString();
                 return (
                   <TableRow
                     key={user.id}

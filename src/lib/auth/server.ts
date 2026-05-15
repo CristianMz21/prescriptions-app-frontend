@@ -121,7 +121,8 @@ async function rawRequest<T>(
     },
     // Allow 401 so serverApiRequest can attempt refresh.
     // Throw on other non-2xx to follow standard Axios reliability patterns.
-    validateStatus: (status) => (status >= 200 && status < 300) || status === 401,
+    validateStatus: (status) =>
+      (status >= 200 && status < 300) || status === 401,
   });
 }
 
