@@ -170,6 +170,36 @@ describe("proxy route handler", () => {
     expect(await res.text()).toBe('{"message":"Unauthorized"}');
   });
 
+  it("strips hop-by-hop body framing from the response (content-encoding, content-length, transfer-encoding)", async () => {
+    // Simulate a compressed upstream: Node `fetch` would have already
+    // decoded the body, but the response headers still claim `gzip`.
+    // Forwarding those headers makes the browser double-decompress.
+    const headers = new Headers();
+    headers.set("content-type", "application/json");
+    headers.set("content-encoding", "gzip");
+    headers.set("content-length", "999");
+    headers.set("transfer-encoding", "chunked");
+    fetchMock.mockResolvedValueOnce(
+      new Response('{"ok":true}', { status: 200, headers }),
+    );
+
+    const { GET } = await import("./route");
+    const req = makeRequest({
+      method: "GET",
+      url: "http://localhost:3001/api/backend/auth/profile",
+    });
+
+    const res = await GET(req, {
+      params: Promise.resolve({ path: ["auth", "profile"] }),
+    });
+
+    expect(res.headers.get("content-encoding")).toBeNull();
+    expect(res.headers.get("content-length")).toBeNull();
+    expect(res.headers.get("transfer-encoding")).toBeNull();
+    // content-type still surfaces for downstream parsers.
+    expect(res.headers.get("content-type")).toBe("application/json");
+  });
+
   it("appends the request's search params to the upstream URL", async () => {
     fetchMock.mockResolvedValueOnce(makeUpstream({ status: 200, body: "[]" }));
 
