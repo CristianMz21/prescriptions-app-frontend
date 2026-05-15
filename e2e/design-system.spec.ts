@@ -83,10 +83,13 @@ test.describe("RX-OS design-system invariants", () => {
     page,
   }) => {
     await loginAs("doctor");
-    // Wait for the table to populate before counting badges (the prior
-    // assertion races React Query's first response).
-    await expect(page.getByTestId("status-badge").first()).toBeVisible();
-    const badges = page.getByTestId("status-badge");
+    // PrescriptionStatusBadge is rendered in both the mobile card variant
+    // (md:hidden) and the desktop TableRow (hidden md:block). At the test
+    // viewport (1280×800) the mobile copies are present in the DOM but
+    // visually hidden — scope to visible nodes so the color audit runs on
+    // the badges the user actually sees.
+    const badges = page.locator('[data-testid="status-badge"]:visible');
+    await expect(badges.first()).toBeVisible();
     const count = await badges.count();
     expect(count).toBeGreaterThanOrEqual(1);
     for (let i = 0; i < count; i += 1) {
