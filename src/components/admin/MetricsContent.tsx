@@ -55,7 +55,7 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
       <MetricsGrid metrics={metrics} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <VolumeTrendsChart />
+        <VolumeTrendsChart byDay={metrics.byDay} />
         <StatusDistribution metrics={metrics} />
       </div>
 

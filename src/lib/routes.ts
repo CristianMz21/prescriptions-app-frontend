@@ -12,6 +12,7 @@ export const routes = {
   },
   doctor: {
     prescriptions: "/doctor/prescriptions",
+    detail: (id: string) => `/doctor/prescriptions/${id}`,
     newPrescription: "/doctor/prescriptions/new",
     patients: "/doctor/patients",
     profile: "/doctor/profile",

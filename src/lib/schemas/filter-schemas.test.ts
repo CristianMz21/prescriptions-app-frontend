@@ -86,8 +86,8 @@ describe("adminPrescriptionFilterSchema", () => {
       q: "amoxicillin",
       sortBy: "createdAt",
       sortOrder: "desc",
-      patientEmail: "patient@test.com",
-      doctorEmail: "doctor@test.com",
+      patientEmail: "patient@clinic.com",
+      doctorEmail: "doctor@clinic.com",
     };
     const result = adminPrescriptionFilterSchema.safeParse(valid);
     expect(result.success).toBe(true);

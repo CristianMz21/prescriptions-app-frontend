@@ -1,5 +1,6 @@
 import type { Role } from "@/lib/api/generated/schemas";
 import { routes } from "./routes";
+import { isDoctorAnalyticsEnabled } from "./features";
 
 export interface NavItem {
   href: string;
@@ -31,7 +32,9 @@ export const navigationByRole: Record<Role, NavItem[]> = {
       icon: "add_circle",
     },
     { href: routes.doctor.patients, label: "Patients", icon: "person" },
-    { href: routes.doctor.analytics, label: "Analytics", icon: "monitoring" },
+    ...(isDoctorAnalyticsEnabled()
+      ? [{ href: routes.doctor.analytics, label: "Analytics", icon: "monitoring" }]
+      : []),
     { href: routes.doctor.profile, label: "Profile", icon: "account_circle" },
   ],
   PATIENT: [

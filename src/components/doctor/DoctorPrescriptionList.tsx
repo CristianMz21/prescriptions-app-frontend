@@ -113,7 +113,7 @@ export function DoctorPrescriptionList() {
             return (
               <PrescriptionTable
                 prescriptions={prescriptions}
-                getDetailHref={(id) => `${routes.doctor.prescriptions}/${id}`}
+                getDetailHref={routes.doctor.detail}
                 meta={data?.meta}
                 onPageChange={setPage}
                 patientNameByEmail={patientNameByEmail}

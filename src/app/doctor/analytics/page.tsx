@@ -1,17 +1,35 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { usePrescriptionsFindAll } from "@/lib/api/generated/prescriptionManagementAPI";
 import type { PrescriptionResponseDto } from "@/lib/api/generated/schemas";
 import { MetricCard } from "@/components/admin/MetricCard";
 import { ErrorState } from "@/components/feedback/ErrorState";
 import { MetricCardsSkeleton } from "@/components/feedback/Skeletons";
+import { isDoctorAnalyticsEnabled } from "@/lib/features";
+import { routes } from "@/lib/routes";
 
 export default function DoctorAnalyticsPage() {
+  const router = useRouter();
   const { user } = useAuth();
+  const enabled = isDoctorAnalyticsEnabled();
+
+  useEffect(() => {
+    if (!enabled) {
+      router.replace(routes.doctor.prescriptions);
+    }
+  }, [enabled, router]);
+
   // The backend already scopes /prescriptions to the calling doctor; we
   // aggregate locally to compute per-doctor stats without admin metrics.
-  const { data, isLoading, error } = usePrescriptionsFindAll({ limit: 200 });
+  const { data, isLoading, error } = usePrescriptionsFindAll(
+    { limit: 100 },
+    { query: { enabled } },
+  );
+
+  if (!enabled) return null;
 
   return (
     <div>
@@ -20,7 +38,7 @@ export default function DoctorAnalyticsPage() {
           My Activity
         </h2>
         <p className="text-base text-on-surface-variant mt-2">
-          Activity scoped to {user?.email ?? "you"} — last 200 issued scripts.
+          Activity scoped to {user?.email ?? "you"} — last 100 issued scripts.
         </p>
       </div>
 
