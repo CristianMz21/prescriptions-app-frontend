@@ -5,12 +5,6 @@ const BROWSER_API_PROXY_BASE_URL = "/api/backend";
 const runtimeBaseUrl =
   typeof window === "undefined" ? API_BASE_URL : BROWSER_API_PROXY_BASE_URL;
 
-if (!runtimeBaseUrl && typeof window !== "undefined") {
-  console.warn(
-    "NEXT_PUBLIC_API_URL is not defined. API requests will fail.",
-  );
-}
-
 export const apiClient = axios.create({
   baseURL: runtimeBaseUrl,
   withCredentials: true,
