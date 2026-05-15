@@ -3,11 +3,25 @@ import {
   expect,
   request,
   type APIRequestContext,
+  type BrowserContext,
   type ConsoleMessage,
+  type Cookie,
   type Page,
 } from "@playwright/test";
 import type { UserProfileResponseDto } from "../src/lib/api/generated/schemas";
-import { BACKEND_URL, SEED, type SeededRole } from "./data";
+import { BACKEND_URL, LANDING_PATH, SEED, type SeededRole } from "./data";
+
+// Module-level cache: once a worker has performed a UI login for a role we
+// keep the resulting cookies + profile in memory. Subsequent `loginAs(role)`
+// calls in the same worker skip the bcrypt-bound UI flow entirely and just
+// hydrate the page context with the cached cookies, then navigate to the
+// role's landing page. Bcrypt cost drops from N logins per worker to 1 per
+// (role, worker) pair — a ~10x wall-time improvement for the suite.
+interface CachedSession {
+  cookies: Cookie[];
+  profile: UserProfileResponseDto;
+}
+const sessionCache = new Map<SeededRole, CachedSession>();
 
 interface ConsoleErrorCollector {
   errors: string[];
@@ -66,7 +80,9 @@ export const test = base.extend<AppFixtures>({
   },
 
   loginAs: async ({ page }, fixtureUse) => {
-    const fn = async (role: SeededRole): Promise<UserProfileResponseDto> => {
+    const performUiLogin = async (
+      role: SeededRole,
+    ): Promise<UserProfileResponseDto> => {
       const creds = SEED[role];
 
       const profileResponse = page.waitForResponse(
@@ -98,7 +114,46 @@ export const test = base.extend<AppFixtures>({
       expect(profileResult.status()).toBe(200);
       const profile = (await profileResult.json()) as UserProfileResponseDto;
 
-      // Verify role-based visual elements to confirm state
+      // Cache cookies + profile so the next call for this role in the same
+      // worker skips bcrypt entirely.
+      const cookies = await page.context().cookies();
+      sessionCache.set(role, { cookies, profile });
+      return profile;
+    };
+
+    const hydrateFromCache = async (
+      context: BrowserContext,
+      cached: CachedSession,
+    ): Promise<UserProfileResponseDto | null> => {
+      await context.addCookies(cached.cookies);
+      const landingPath = LANDING_PATH[cached.profile.role];
+      await page.goto(landingPath);
+      // If the cookies were invalidated server-side (e.g. an earlier test
+      // logged this role out and rotated the refresh token), the frontend
+      // middleware bounces to /login. Detect that and fall back.
+      try {
+        await page.waitForURL(new RegExp(`${landingPath}$`), {
+          timeout: 5_000,
+        });
+        return cached.profile;
+      } catch {
+        sessionCache.delete(cached.profile.role as SeededRole);
+        return null;
+      }
+    };
+
+    const fn = async (role: SeededRole): Promise<UserProfileResponseDto> => {
+      const cached = sessionCache.get(role);
+      let profile: UserProfileResponseDto | null = null;
+      if (cached) {
+        profile = await hydrateFromCache(page.context(), cached);
+      }
+      if (!profile) {
+        profile = await performUiLogin(role);
+      }
+
+      // Verify role-based visual elements to confirm state regardless of
+      // login path — same assertions for both branches.
       if (profile.role === "ADMIN") {
         await expect(page.getByTestId("metrics-overview")).toBeVisible();
       } else if (profile.role === "DOCTOR") {
