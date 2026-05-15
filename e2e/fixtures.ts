@@ -133,18 +133,18 @@ export const test = base.extend<AppFixtures>({
         page.getByRole("heading", { name: /issue new prescription/i }),
       ).toBeVisible();
 
-      // Patient Selection — UI is an autocomplete textbox (was a combobox).
-      // Type at least 2 characters of the email's local part, then pick the
-      // matching suggestion from the live list.
+      // Patient Selection — autocomplete textbox with <button> suggestions.
+      // Type the full email so the suggestion list narrows to one result
+      // (typing only the local part can collide with other test-created
+      // patients whose emails share the prefix, e.g. e2e-patient-<ts>).
       const patientSearch = page.getByRole("textbox", {
         name: /search by patient/i,
       });
       await patientSearch.click();
-      const localPart = options.patientEmail.split("@")[0];
-      await patientSearch.fill(localPart);
-      // Pick the suggestion matching the full email.
+      await patientSearch.fill(options.patientEmail);
+      // Suggestions are rendered as <button> elements containing the email.
       await page
-        .getByRole("option", { name: options.patientEmail })
+        .getByRole("button", { name: new RegExp(options.patientEmail, "i") })
         .first()
         .click();
 
