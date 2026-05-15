@@ -46,27 +46,38 @@ export function PrescriptionFiltersBar({
   const debouncedQ = useDebouncedValue(qLocal, 400);
 
   useEffect(() => {
-    const nextQ = debouncedQ.trim() || undefined;
-    const currentQ = values.q?.trim() || undefined;
-    if (nextQ === currentQ) return;
-    onChange({ q: nextQ });
+    if (debouncedQ !== values.q) {
+      onChange({ q: debouncedQ || undefined });
+    }
   }, [debouncedQ, onChange, values.q]);
+
+  const SearchInput = ({
+    id,
+    placeholder,
+  }: {
+    id: string;
+    placeholder: string;
+  }) => (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={id} className="label-uppercase">
+        Search
+      </Label>
+      <Input
+        id={id}
+        type="search"
+        placeholder={placeholder}
+        value={qLocal}
+        onChange={(e) => setQLocal(e.target.value)}
+      />
+    </div>
+  );
 
   if (role === "PATIENT") {
     return (
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-          <div className="md:col-span-8 flex flex-col gap-1.5">
-            <Label htmlFor="search-patient" className="label-uppercase">
-              Search
-            </Label>
-            <Input
-              id="search-patient"
-              type="search"
-              placeholder="Medication or notes"
-              value={qLocal}
-              onChange={(e) => setQLocal(e.target.value)}
-            />
+          <div className="md:col-span-8">
+            <SearchInput id="search-patient" placeholder="Medication or notes" />
           </div>
           <div className="md:col-span-4 flex">
             <Button type="button" variant="outline" onClick={onClear}>
@@ -82,18 +93,8 @@ export function PrescriptionFiltersBar({
     return (
       <Card className="card-glass p-4 md:p-5 mb-4 rounded-2xl border border-outline-variant/30">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5 items-end">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="search-doctor" className="label-uppercase">
-              Search
-            </Label>
-            <Input
-              id="search-doctor"
-              type="search"
-              placeholder="Notes, medication"
-              value={qLocal}
-              onChange={(e) => setQLocal(e.target.value)}
-            />
-          </div>
+          <SearchInput id="search-doctor" placeholder="Notes, medication" />
+
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="status-doctor" className="label-uppercase">
               Status
@@ -117,8 +118,11 @@ export function PrescriptionFiltersBar({
             </Select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">From</Label>
+            <Label htmlFor="from-doctor" className="label-uppercase">
+              From
+            </Label>
             <Input
+              id="from-doctor"
               type="date"
               value={values.fromDate ?? ""}
               onChange={(e) =>
@@ -127,8 +131,11 @@ export function PrescriptionFiltersBar({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">To</Label>
+            <Label htmlFor="to-doctor" className="label-uppercase">
+              To
+            </Label>
             <Input
+              id="to-doctor"
               type="date"
               value={values.toDate ?? ""}
               onChange={(e) =>
@@ -137,7 +144,9 @@ export function PrescriptionFiltersBar({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Sort</Label>
+            <Label htmlFor="sort-doctor" className="label-uppercase">
+              Sort
+            </Label>
             <Select
               value={values.sortBy ?? "__NONE__"}
               onValueChange={(v) =>
@@ -148,7 +157,7 @@ export function PrescriptionFiltersBar({
                 })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger id="sort-doctor">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -160,7 +169,9 @@ export function PrescriptionFiltersBar({
             </Select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Notes</Label>
+            <Label htmlFor="has-notes-doctor" className="label-uppercase">
+              Notes
+            </Label>
             <Select
               value={values.hasNotes ?? "__ALL__"}
               onValueChange={(v) =>
@@ -169,7 +180,7 @@ export function PrescriptionFiltersBar({
                 })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger id="has-notes-doctor">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -178,26 +189,6 @@ export function PrescriptionFiltersBar({
                 <SelectItem value="false">No notes</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Order</Label>
-            <div className="flex gap-2">
-              {(["asc", "desc"] as const).map((o) => (
-                <Button
-                  key={o}
-                  type="button"
-                  variant={values.sortOrder === o ? "default" : "outline"}
-                  size="sm"
-                  onClick={() =>
-                    onChange({
-                      sortOrder: values.sortOrder === o ? undefined : o,
-                    })
-                  }
-                >
-                  {o === "asc" ? "↑" : "↓"}
-                </Button>
-              ))}
-            </div>
           </div>
           <div className="md:col-span-1 flex items-end">
             <Button type="button" variant="outline" onClick={onClear}>
@@ -212,18 +203,7 @@ export function PrescriptionFiltersBar({
   return (
     <Card className="card-glass p-4 mb-4">
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="search-admin" className="label-uppercase">
-            Search
-          </Label>
-          <Input
-            id="search-admin"
-            type="search"
-            placeholder="Notes, medication"
-            value={qLocal}
-            onChange={(e) => setQLocal(e.target.value)}
-          />
-        </div>
+        <SearchInput id="search-admin" placeholder="Notes, medication" />
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="status-admin" className="label-uppercase">
@@ -249,8 +229,11 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">RX Code</Label>
+          <Label htmlFor="code-admin" className="label-uppercase">
+            RX Code
+          </Label>
           <Input
+            id="code-admin"
             type="search"
             placeholder="e.g. RX-AB"
             value={values.code ?? ""}
@@ -259,8 +242,11 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">From</Label>
+          <Label htmlFor="from-admin" className="label-uppercase">
+            From
+          </Label>
           <Input
+            id="from-admin"
             type="date"
             value={values.fromDate ?? ""}
             onChange={(e) =>
@@ -270,8 +256,11 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">To</Label>
+          <Label htmlFor="to-admin" className="label-uppercase">
+            To
+          </Label>
           <Input
+            id="to-admin"
             type="date"
             value={values.toDate ?? ""}
             onChange={(e) => onChange({ toDate: e.target.value || undefined })}
@@ -279,8 +268,11 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">Consumed From</Label>
+          <Label htmlFor="consumed-from-admin" className="label-uppercase">
+            Consumed From
+          </Label>
           <Input
+            id="consumed-from-admin"
             type="date"
             value={values.consumedFromDate ?? ""}
             onChange={(e) =>
@@ -292,8 +284,11 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">Consumed To</Label>
+          <Label htmlFor="consumed-to-admin" className="label-uppercase">
+            Consumed To
+          </Label>
           <Input
+            id="consumed-to-admin"
             type="date"
             value={values.consumedToDate ?? ""}
             onChange={(e) =>
@@ -303,8 +298,11 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">Patient Email</Label>
+          <Label htmlFor="patient-email-admin" className="label-uppercase">
+            Patient Email
+          </Label>
           <Input
+            id="patient-email-admin"
             type="search"
             placeholder="patient@email"
             value={values.patientEmail ?? ""}
@@ -315,8 +313,11 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">Doctor Email</Label>
+          <Label htmlFor="doctor-email-admin" className="label-uppercase">
+            Doctor Email
+          </Label>
           <Input
+            id="doctor-email-admin"
             type="search"
             placeholder="doctor@email"
             value={values.doctorEmail ?? ""}
@@ -327,7 +328,9 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">Sort By</Label>
+          <Label htmlFor="sort-admin" className="label-uppercase">
+            Sort By
+          </Label>
           <Select
             value={values.sortBy ?? "__NONE__"}
             onValueChange={(v) =>
@@ -338,7 +341,7 @@ export function PrescriptionFiltersBar({
               })
             }
           >
-            <SelectTrigger>
+            <SelectTrigger id="sort-admin">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -352,7 +355,9 @@ export function PrescriptionFiltersBar({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">Has Notes</Label>
+          <Label htmlFor="has-notes-admin" className="label-uppercase">
+            Has Notes
+          </Label>
           <Select
             value={values.hasNotes ?? "__ALL__"}
             onValueChange={(v) =>
@@ -361,7 +366,7 @@ export function PrescriptionFiltersBar({
               })
             }
           >
-            <SelectTrigger>
+            <SelectTrigger id="has-notes-admin">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -370,27 +375,6 @@ export function PrescriptionFiltersBar({
               <SelectItem value="false">No notes</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label className="label-uppercase">Order</Label>
-          <div className="flex gap-1">
-            {(["asc", "desc"] as const).map((o) => (
-              <Button
-                key={o}
-                type="button"
-                variant={values.sortOrder === o ? "default" : "outline"}
-                size="sm"
-                onClick={() =>
-                  onChange({
-                    sortOrder: values.sortOrder === o ? undefined : o,
-                  })
-                }
-              >
-                {o === "asc" ? "↑ Asc" : "↓ Desc"}
-              </Button>
-            ))}
-          </div>
         </div>
 
         <div className="flex items-end">

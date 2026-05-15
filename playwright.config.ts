@@ -28,7 +28,7 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   globalSetup: "./e2e/global-setup.ts",
   use: {
-    baseURL: "http://localhost:3001",
+    baseURL: "http://127.0.0.1:3001",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: { mode: "on", size: { width: 1280, height: 800 } },
@@ -45,14 +45,14 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm exec next dev -H localhost -p 3001",
-    url: "http://localhost:3001/login",
+    command: "pnpm exec next dev -H 127.0.0.1 -p 3001",
+    url: "http://127.0.0.1:3001/login",
     reuseExistingServer: true,
     timeout: 120_000,
     stdout: "ignore",
     stderr: "pipe",
     env: {
-      NEXT_PUBLIC_API_URL: "http://localhost:3000",
+      NEXT_PUBLIC_API_URL: "http://127.0.0.1:3000",
     },
   },
 });
