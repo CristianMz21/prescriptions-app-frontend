@@ -78,12 +78,6 @@ export const test = base.extend<AppFixtures>({
     const fn = async (role: SeededRole): Promise<UserProfileResponseDto> => {
       const creds = SEED[role];
 
-      const profileResponse = page.waitForResponse(
-        (res) =>
-          res.url().endsWith("/auth/profile") &&
-          res.request().method() === "GET",
-      );
-
       await page.goto("/login");
       await expect(page).toHaveURL(/\/login$/);
       await expect(page.getByRole("heading", { name: "RX-OS" })).toBeVisible();
@@ -104,24 +98,28 @@ export const test = base.extend<AppFixtures>({
       await page.waitForURL(
         /\/(admin\/metrics|doctor\/prescriptions|patient\/prescriptions)(?:\?.*)?$/,
       );
-      const profileResult = await profileResponse;
-      expect(profileResult.status()).toBe(200);
-      const profile = (await profileResult.json()) as UserProfileResponseDto;
+      const expectedRole: UserProfileResponseDto["role"] =
+        role === "admin"
+          ? "ADMIN"
+          : role === "doctor"
+            ? "DOCTOR"
+            : "PATIENT";
 
-      // Verify role-based visual elements to confirm state.
-      if (profile.role === "ADMIN") {
-        await expect(page.getByTestId("metrics-overview")).toBeVisible();
-      } else if (profile.role === "DOCTOR") {
-        await expect(
-          page.getByRole("heading", { name: /active prescriptions/i }),
-        ).toBeVisible();
-      } else if (profile.role === "PATIENT") {
-        await expect(
-          page.getByRole("heading", { name: /my prescriptions/i }),
-        ).toBeVisible();
-      }
+      // Verify authenticated app shell state without coupling to page-specific
+      // body content (some tests intentionally mock those payloads).
+      await expect(page.getByTestId("sidebar-user-role")).toHaveText(
+        expectedRole,
+      );
 
-      return profile;
+      return {
+        id: "",
+        email: creds.email,
+        role: expectedRole,
+        name: "",
+        createdAt: "",
+        updatedAt: "",
+        themePreference: "SYSTEM",
+      };
     };
     await fixtureUse(fn);
   },

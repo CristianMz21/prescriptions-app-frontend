@@ -1,15 +1,28 @@
 import { test, expect } from "./fixtures";
-import { BACKEND_URL } from "./data";
+
+const ALL_REQUESTS_PATTERN = "**/*";
+const PRESCRIPTIONS_API_PATHS = new Set([
+  "/api/backend/prescriptions",
+  "/prescriptions",
+]);
+
+function isPrescriptionsApiGetRequest(requestUrl: string, method: string) {
+  if (method !== "GET") return false;
+  const url = new URL(requestUrl);
+  return PRESCRIPTIONS_API_PATHS.has(url.pathname);
+}
 
 test.describe("UI behavior under backend failure / empty data", () => {
   test("doctor list: 500 from /prescriptions surfaces ErrorState", async ({
     loginAs,
     page,
+    context,
   }) => {
     await loginAs("doctor");
-    // Mock the next list fetch only — login already passed.
-    await page.route(`${BACKEND_URL}/prescriptions*`, (route) => {
-      if (route.request().method() === "GET") {
+
+    await context.route(ALL_REQUESTS_PATTERN, (route) => {
+      const request = route.request();
+      if (isPrescriptionsApiGetRequest(request.url(), request.method())) {
         return route.fulfill({
           status: 500,
           contentType: "application/json",
@@ -18,18 +31,29 @@ test.describe("UI behavior under backend failure / empty data", () => {
       }
       return route.continue();
     });
-    await page.goto("/doctor/prescriptions");
-    await expect(page.getByTestId("error-state")).toBeVisible();
-    await expect(page.getByText(/forced failure/i)).toBeVisible();
+
+    const isolatedPage = await context.newPage();
+    try {
+      await isolatedPage.goto("/doctor/prescriptions");
+      await expect(isolatedPage.getByTestId("error-state")).toBeVisible();
+      await expect(isolatedPage.getByText(/forced failure/i)).toBeVisible();
+    } finally {
+      await isolatedPage.close();
+      await context.unroute(ALL_REQUESTS_PATTERN);
+      await page.bringToFront();
+    }
   });
 
   test('patient list: empty array → EmptyState "No prescriptions found"', async ({
     loginAs,
     page,
+    context,
   }) => {
     await loginAs("patient");
-    await page.route(`${BACKEND_URL}/prescriptions*`, (route) => {
-      if (route.request().method() === "GET") {
+
+    await context.route(ALL_REQUESTS_PATTERN, (route) => {
+      const request = route.request();
+      if (isPrescriptionsApiGetRequest(request.url(), request.method())) {
         return route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -41,9 +65,19 @@ test.describe("UI behavior under backend failure / empty data", () => {
       }
       return route.continue();
     });
-    await page.goto("/patient/prescriptions");
-    await expect(page.getByText("No prescriptions found")).toBeVisible();
-    await expect(page.getByTestId("prescription-card")).toHaveCount(0);
+
+    const isolatedPage = await context.newPage();
+    try {
+      await isolatedPage.goto("/patient/prescriptions");
+      await expect(
+        isolatedPage.getByText("No prescriptions found"),
+      ).toBeVisible();
+      await expect(isolatedPage.getByTestId("prescription-card")).toHaveCount(0);
+    } finally {
+      await isolatedPage.close();
+      await context.unroute(ALL_REQUESTS_PATTERN);
+      await page.bringToFront();
+    }
   });
 
   test("patient detail: nonexistent id → ErrorState", async ({
