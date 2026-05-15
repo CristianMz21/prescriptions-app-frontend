@@ -42,9 +42,14 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     try {
       await authLogin({ email, password });
       const profile = await authGetProfile();
+      const redirectPath = getRedirectPath(profile.role);
       startTransition(() => {
         setUser(profile);
-        router.push(getRedirectPath(profile.role));
+        if (typeof window !== "undefined") {
+          window.location.assign(redirectPath);
+          return;
+        }
+        router.push(redirectPath);
       });
     } finally {
       setIsLoading(false);
