@@ -1,3 +1,5 @@
+import { AppIcon } from "@/components/icons/AppIcon";
+
 interface LoadingStateProps {
   label?: string;
   className?: string;
@@ -13,9 +15,7 @@ export function LoadingState({ label, className }: LoadingStateProps) {
       role="status"
       aria-live="polite"
     >
-      <span className="material-symbols-outlined animate-spin text-4xl text-primary">
-        progress_activity
-      </span>
+      <AppIcon name="loader2" className="animate-spin text-primary" size="xl" />
       {label ? (
         <span className="text-xs font-semibold uppercase tracking-widest">
           {label}

@@ -14,15 +14,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { qk } from "@/lib/api/queryKeys";
 import { notify } from "@/lib/notifications";
+import type { AppIconName } from "@/config/icon-registry";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface ThemeToggleProps {
   initial: ThemePreference;
 }
 
-const META: Record<ThemePreference, { label: string; icon: string }> = {
-  SYSTEM: { label: "System", icon: "desktop_windows" },
-  LIGHT: { label: "Light", icon: "light_mode" },
-  DARK: { label: "Dark", icon: "dark_mode" },
+const META: Record<ThemePreference, { label: string; icon: AppIconName }> = {
+  SYSTEM: { label: "System", icon: "monitor" },
+  LIGHT: { label: "Light", icon: "sun" },
+  DARK: { label: "Dark", icon: "moon" },
 };
 
 function applyHtmlClass(pref: ThemePreference) {
@@ -68,9 +70,7 @@ export function ThemeToggle({ initial }: ThemeToggleProps) {
       <DropdownMenuTrigger
         render={
           <Button variant="outline" size="sm" disabled={isPending}>
-            <span className="material-symbols-outlined text-base">
-              {current.icon}
-            </span>
+            <AppIcon name={current.icon} size="sm" />
             {current.label}
           </Button>
         }
@@ -82,9 +82,7 @@ export function ThemeToggle({ initial }: ThemeToggleProps) {
             onClick={() => choose(opt)}
             className="flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-base">
-              {META[opt].icon}
-            </span>
+            <AppIcon name={META[opt].icon} size="sm" />
             {META[opt].label}
           </DropdownMenuItem>
         ))}

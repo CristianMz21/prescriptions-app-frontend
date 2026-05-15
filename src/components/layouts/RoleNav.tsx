@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { NavItem } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface RoleNavProps {
   items: NavItem[];
@@ -28,14 +29,14 @@ export function RoleNav({ items }: RoleNavProps) {
                 : "text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30",
             )}
           >
-            <span
-              className="material-symbols-outlined text-xl"
-              style={{
-                fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-              }}
-            >
-              {item.icon}
-            </span>
+            <AppIcon
+              name={item.icon}
+              size="md"
+              className={cn(
+                "transition-colors",
+                isActive ? "text-primary" : "text-on-surface-variant",
+              )}
+            />
             <span className="text-sm font-medium">{item.label}</span>
           </Link>
         );

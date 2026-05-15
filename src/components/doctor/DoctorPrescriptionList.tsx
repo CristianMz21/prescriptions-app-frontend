@@ -119,7 +119,7 @@ export function DoctorPrescriptionList() {
               (data?.data as PrescriptionResponseDto[] | undefined) ?? [];
             if (prescriptions.length === 0) {
               return (
-                <EmptyState icon="medication" title="No prescriptions found" />
+                <EmptyState icon="pill" title="No prescriptions found" />
               );
             }
             return (

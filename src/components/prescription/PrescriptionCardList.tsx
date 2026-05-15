@@ -13,6 +13,7 @@ import { routes } from "@/lib/routes";
 import { PrescriptionCard } from "./PrescriptionCard";
 import { PdfDownloadButton } from "./PdfDownloadButton";
 import { ConsumePrescriptionButton } from "./ConsumePrescriptionButton";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 export function PrescriptionCardList() {
   const { data, isLoading, error, refetch } = usePrescriptionsFindAll();
@@ -63,7 +64,7 @@ export function PrescriptionCardList() {
     );
 
   if (prescriptions.length === 0) {
-    return <EmptyState icon="medication" title="No prescriptions found" />;
+    return <EmptyState icon="pill" title="No prescriptions found" />;
   }
 
   return (
@@ -107,10 +108,7 @@ export function PrescriptionCardList() {
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState
-          icon="medication"
-          title="No prescriptions match your filters"
-        />
+        <EmptyState icon="pill" title="No prescriptions match your filters" />
       ) : null}
 
       {filtered.map((rx) => (
@@ -123,9 +121,7 @@ export function PrescriptionCardList() {
                 href={routes.patient.detail(rx.id)}
                 className={buttonVariants({ variant: "outline" })}
               >
-                <span className="material-symbols-outlined text-lg">
-                  visibility
-                </span>
+                <AppIcon name="eye" size="sm" />
                 View Details
               </Link>
               <PdfDownloadButton prescriptionId={rx.id} />

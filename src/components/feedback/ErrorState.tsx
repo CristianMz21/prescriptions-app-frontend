@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface ErrorStateProps {
   message: string;
@@ -16,7 +17,7 @@ export function ErrorState({ message, action, className }: ErrorStateProps) {
       role="alert"
       data-testid="error-state"
     >
-      <span className="material-symbols-outlined text-4xl">error</span>
+      <AppIcon name="shieldAlert" size="xl" className="text-error" />
       <p className="text-sm">{message}</p>
       {action}
     </div>

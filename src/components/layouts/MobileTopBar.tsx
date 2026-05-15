@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { RoleNav } from "./RoleNav";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { ThemeToggle } from "./ThemeToggle";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface MobileTopBarProps {
   role: Role;
@@ -30,7 +31,7 @@ export function MobileTopBar({ role }: MobileTopBarProps) {
               size="icon-sm"
               aria-label="Open navigation"
             >
-              <span className="material-symbols-outlined text-lg">menu</span>
+              <AppIcon name="menu" size="sm" />
             </Button>
           }
         />
@@ -65,7 +66,7 @@ export function MobileTopBar({ role }: MobileTopBarProps) {
               onClick={() => void logout()}
               className="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors w-full text-left text-sm font-medium"
             >
-              <span className="material-symbols-outlined text-xl">logout</span>
+              <AppIcon name="logOut" size="md" />
               Sign Out
             </button>
           </div>

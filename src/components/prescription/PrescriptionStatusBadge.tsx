@@ -2,6 +2,7 @@ import type { PrescriptionStatus } from "@/lib/api/generated/schemas";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { STATUS_META } from "./prescriptionStatusMeta";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface PrescriptionStatusBadgeProps {
   status: PrescriptionStatus;
@@ -24,12 +25,7 @@ export function PrescriptionStatusBadge({
         className,
       )}
     >
-      <span
-        className="material-symbols-outlined text-base"
-        style={{ fontVariationSettings: meta.filled ? "'FILL' 1" : "'FILL' 0" }}
-      >
-        {meta.icon}
-      </span>
+      <AppIcon name={meta.icon} size="sm" />
       {meta.label}
     </Badge>
   );

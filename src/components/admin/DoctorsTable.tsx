@@ -196,7 +196,7 @@ export function DoctorsTable() {
 
       {doctors.length === 0 && !isLoading && !error ? (
         <EmptyState
-          icon="local_hospital"
+          icon="hospital"
           title="No doctors match these filters"
         />
       ) : (

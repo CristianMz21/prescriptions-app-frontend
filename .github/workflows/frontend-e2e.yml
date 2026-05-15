@@ -134,8 +134,10 @@ jobs:
       - name: Start frontend
         env:
           NEXT_PUBLIC_API_URL: http://127.0.0.1:${{ env.BACKEND_PORT }}
+          OPENAPI_SPEC_PATH: ../backend/openapi.json
         run: |
           cd frontend
+          pnpm api:refresh
           pnpm build
           pnpm exec next start -p ${{ env.FRONTEND_PORT }} > ../frontend.log 2>&1 &
           echo $! > ../frontend.pid

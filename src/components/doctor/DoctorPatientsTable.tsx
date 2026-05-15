@@ -156,7 +156,7 @@ export function DoctorPatientsTable() {
       {error ? <ErrorState message={error.message} /> : null}
 
       {patients.length === 0 && !isLoading && !error ? (
-        <EmptyState icon="person" title="No patients found" />
+        <EmptyState icon="userRound" title="No patients found" />
       ) : (
         <Card className="card-glass overflow-hidden p-0 gap-0">
           <Table>

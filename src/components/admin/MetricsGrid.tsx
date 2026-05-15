@@ -1,6 +1,7 @@
 import type { MetricsResponseDto } from "@/lib/api/generated/schemas";
 import { Card } from "@/components/ui/card";
 import { MetricCard } from "./MetricCard";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface MetricsGridProps {
   metrics: MetricsResponseDto;
@@ -12,7 +13,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <MetricCard
         label="Total Prescriptions"
         value={metrics.totals.prescriptions}
-        icon="medication"
+        icon="pill"
         footer={
           <>
             <span
@@ -28,7 +29,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <MetricCard
         label="Active Patients"
         value={metrics.totals.patients}
-        icon="group"
+        icon="users"
         footer={
           <>
             <span
@@ -44,7 +45,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <MetricCard
         label="Active Doctors"
         value={metrics.totals.doctors}
-        icon="local_hospital"
+        icon="hospital"
         footer={
           <>
             <span
@@ -64,9 +65,10 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       >
         <div className="flex justify-between items-start mb-4">
           <span className="label-uppercase">Prescription Status</span>
-          <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">
-            analytics
-          </span>
+          <AppIcon
+            name="barChart3"
+            className="text-on-surface-variant group-hover:text-primary transition-colors"
+          />
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">

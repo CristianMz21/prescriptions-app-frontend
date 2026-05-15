@@ -58,22 +58,22 @@ export default function DoctorAnalyticsPage() {
                 <MetricCard
                   label="Issued (recent)"
                   value={total}
-                  icon="medication"
+                  icon="pill"
                 />
                 <MetricCard
                   label="Pending"
                   value={pending}
-                  icon="pending_actions"
+                  icon="clipboardList"
                 />
                 <MetricCard
                   label="Consumed"
                   value={consumed}
-                  icon="check_circle"
+                  icon="checkCircle2"
                 />
                 <MetricCard
                   label="Consumed rate"
                   value={`${consumedPct}%`}
-                  icon="percent"
+                  icon="activity"
                 />
               </div>
             );

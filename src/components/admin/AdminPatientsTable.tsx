@@ -219,7 +219,7 @@ export function AdminPatientsTable() {
       {error ? <ErrorState message={error.message} /> : null}
 
       {patients.length === 0 && !isLoading && !error ? (
-        <EmptyState icon="person" title="No patients match these filters" />
+        <EmptyState icon="userRound" title="No patients match these filters" />
       ) : (
         <Card className="card-glass overflow-hidden p-0 gap-0">
           <Table>

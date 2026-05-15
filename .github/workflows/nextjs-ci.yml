@@ -56,6 +56,8 @@ jobs:
 
       - name: Regenerate API client
         run: pnpm api:refresh
+        env:
+          OPENAPI_SPEC_PATH: ../../backend/openapi.json
 
       - name: Restore Next.js cache
         uses: actions/cache@v4

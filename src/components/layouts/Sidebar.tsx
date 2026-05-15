@@ -5,6 +5,7 @@ import type { Role } from "@/lib/api/generated/schemas";
 import { navigationByRole } from "@/lib/nav";
 import { RoleNav } from "./RoleNav";
 import { ThemeToggle } from "./ThemeToggle";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface SidebarProps {
   role: Role;
@@ -58,7 +59,7 @@ export function Sidebar({ role }: SidebarProps) {
           onClick={() => void logout()}
           className="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors w-full text-left text-sm font-medium"
         >
-          <span className="material-symbols-outlined text-xl">logout</span>
+          <AppIcon name="logOut" size="md" />
           Sign Out
         </button>
       </div>

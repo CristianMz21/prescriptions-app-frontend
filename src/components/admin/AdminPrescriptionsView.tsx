@@ -108,7 +108,7 @@ export function AdminPrescriptionsView() {
             if (prescriptions.length === 0) {
               return (
                 <EmptyState
-                  icon="medication"
+                  icon="pill"
                   title="No prescriptions match these filters"
                 />
               );

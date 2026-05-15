@@ -61,6 +61,8 @@ jobs:
 
       - name: Regenerate API client
         run: cd frontend && pnpm api:refresh
+        env:
+          OPENAPI_SPEC_PATH: ../backend/openapi.json
 
       - name: Fail if generated client is stale
         run: |

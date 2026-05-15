@@ -45,7 +45,7 @@ export default function PatientPrescriptionDetailPage() {
       {isLoading ? <LoadingState label="Loading prescription" /> : null}
       {error ? <ErrorState message={error.message} /> : null}
       {!isLoading && !error && !prescription ? (
-        <EmptyState icon="medication" title="Prescription not found" />
+        <EmptyState icon="pill" title="Prescription not found" />
       ) : null}
 
       {prescription ? (

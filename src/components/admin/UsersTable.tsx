@@ -229,7 +229,7 @@ export function UsersTable() {
       {error ? <ErrorState message={error.message} /> : null}
 
       {users.length === 0 && !isLoading && !error ? (
-        <EmptyState icon="group" title="No users match these filters" />
+        <EmptyState icon="users" title="No users match these filters" />
       ) : (
         <Card className="card-glass overflow-hidden p-0 gap-0">
           <Table>
