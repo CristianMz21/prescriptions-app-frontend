@@ -31,6 +31,8 @@ const schema = z
   .object({
     email: z.string().email("Valid email required"),
     password: z.string().min(6, "Password must be at least 6 characters"),
+    name: z.string().min(1, "Name is required").max(120),
+    phone: z.string().max(32).optional().or(z.literal("")),
     role: z.enum([Role.ADMIN, Role.DOCTOR, Role.PATIENT]),
     specialty: z.string().max(120).optional().or(z.literal("")),
     medicalId: z.string().max(64).optional().or(z.literal("")),
@@ -59,6 +61,8 @@ export function CreateUserForm() {
     defaultValues: {
       email: "",
       password: "",
+      name: "",
+      phone: "",
       role: Role.PATIENT,
       specialty: "",
       medicalId: "",
@@ -88,6 +92,8 @@ export function CreateUserForm() {
       data: {
         email: values.email,
         password: values.password,
+        name: values.name,
+        phone: values.phone || undefined,
         role: values.role,
         specialty:
           values.role === Role.DOCTOR && values.specialty
@@ -148,6 +154,26 @@ export function CreateUserForm() {
               type="password"
               autoComplete="new-password"
               {...register("password")}
+            />
+          </Field>
+
+          <Field id="name" label="Full name" error={errors.name?.message}>
+            <Input
+              id="name"
+              type="text"
+              autoComplete="name"
+              placeholder="e.g., Jane Doe"
+              {...register("name")}
+            />
+          </Field>
+
+          <Field id="phone" label="Phone (optional)" error={errors.phone?.message}>
+            <Input
+              id="phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="+54 11 1234 5678"
+              {...register("phone")}
             />
           </Field>
 

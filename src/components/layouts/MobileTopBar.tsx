@@ -45,13 +45,18 @@ export function MobileTopBar({ role }: MobileTopBarProps) {
           </div>
           <div className="px-6 pt-4 pb-6 border-t border-outline-variant/30 flex flex-col gap-3">
             {user ? (
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-semibold text-on-surface uppercase tracking-wider">
-                  {user.role}
+              <div className="flex flex-col gap-0.5 mb-2">
+                <span className="text-sm font-bold text-primary truncate">
+                  {user.name}
                 </span>
-                <span className="text-xs text-on-surface-variant truncate">
-                  {user.email}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[0.65rem] font-bold text-on-surface-variant uppercase tracking-widest border border-outline-variant/30 px-1.5 rounded">
+                    {user.role}
+                  </span>
+                  <span className="text-[0.65rem] text-on-surface-variant truncate font-mono">
+                    {user.email}
+                  </span>
+                </div>
               </div>
             ) : null}
             {user ? <ThemeToggle initial={user.themePreference} /> : null}

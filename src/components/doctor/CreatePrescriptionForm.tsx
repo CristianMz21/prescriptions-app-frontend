@@ -32,8 +32,22 @@ const EMPTY_ITEM: PrescriptionItemDto = {
   name: "",
   dosage: "",
   quantity: undefined,
+  unit: "",
   instructions: "",
 };
+
+const UNIT_OPTIONS = [
+  "cápsulas",
+  "comprimidos",
+  "tabletas",
+  "ml",
+  "mg",
+  "gotas",
+  "sobres",
+  "ampollas",
+  "parches",
+  "aplicaciones",
+] as const;
 
 const DEBOUNCE_MS = 300;
 const PATIENT_LIMIT = 20;
@@ -43,6 +57,7 @@ export function CreatePrescriptionForm() {
   const queryClient = useQueryClient();
   const [selectedUserId, setSelectedUserId] = useState("");
   const [notes, setNotes] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
   const [items, setItems] = useState<PrescriptionItemDto[]>([
     { ...EMPTY_ITEM },
   ]);
@@ -116,9 +131,11 @@ export function CreatePrescriptionForm() {
       setError("Please select a patient");
       return;
     }
-    const validItems = items.filter((item) => item.name.trim() !== "");
+    const validItems = items.filter(
+      (item) => item.name.trim() !== "" && item.unit.trim() !== "",
+    );
     if (validItems.length === 0) {
-      setError("At least one medication is required");
+      setError("At least one medication with name and unit is required");
       return;
     }
 
@@ -145,6 +162,7 @@ export function CreatePrescriptionForm() {
         patientId: patientProfileId,
         items: validItems,
         notes: notes || undefined,
+        expiryDate: expiryDate || undefined,
       },
     });
   };
@@ -286,17 +304,34 @@ export function CreatePrescriptionForm() {
             Clinical Notes &amp; Authorization
           </h3>
 
-          <div className="flex flex-col gap-2 mb-6">
-            <Label htmlFor="notes" className="label-uppercase">
-              Internal Notes (not printed on script)
-            </Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add diagnosis codes or internal context..."
-              rows={3}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="notes" className="label-uppercase">
+                Internal Notes (not printed on script)
+              </Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add diagnosis codes or internal context..."
+                rows={4}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="expiryDate" className="label-uppercase">
+                Expiry Date (Optional)
+              </Label>
+              <Input
+                id="expiryDate"
+                type="date"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+                className="w-full"
+              />
+              <p className="text-xs text-on-surface-variant">
+                The prescription will be considered invalid after this date.
+              </p>
+            </div>
           </div>
 
           {error ? (
@@ -357,6 +392,7 @@ function MedicationItemRow({
   const ids = {
     name: `med-name-${index}`,
     dosage: `med-dosage-${index}`,
+    unit: `med-unit-${index}`,
     quantity: `med-quantity-${index}`,
     instructions: `med-instructions-${index}`,
   };
@@ -378,7 +414,7 @@ function MedicationItemRow({
       </Button>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 pr-8">
-        <div className="md:col-span-5 flex flex-col gap-1.5">
+        <div className="md:col-span-4 flex flex-col gap-1.5">
           <Label htmlFor={ids.name} className="label-uppercase">
             Medication name
           </Label>
@@ -389,6 +425,29 @@ function MedicationItemRow({
             placeholder="e.g., Amoxicillin"
             required
           />
+        </div>
+        <div className="md:col-span-2 flex flex-col gap-1.5">
+          <Label htmlFor={ids.unit} className="label-uppercase flex justify-between">
+            Unit <span className="text-[0.6rem] text-primary lowercase font-normal">(required)</span>
+          </Label>
+          <Select
+            value={item.unit || "__NONE__"}
+            onValueChange={(v) =>
+              onChange("unit", v === "__NONE__" ? "" : (v ?? ""))
+            }
+          >
+            <SelectTrigger id={ids.unit} className={!item.unit ? "border-primary/50" : ""}>
+              <SelectValue placeholder="Select…" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__NONE__">—</SelectItem>
+              {UNIT_OPTIONS.map((u) => (
+                <SelectItem key={u} value={u}>
+                  {u}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="md:col-span-3 flex flex-col gap-1.5">
           <Label htmlFor={ids.dosage} className="label-uppercase">
@@ -401,7 +460,7 @@ function MedicationItemRow({
             placeholder="e.g., 500mg"
           />
         </div>
-        <div className="md:col-span-4 flex flex-col gap-1.5">
+        <div className="md:col-span-3 flex flex-col gap-1.5">
           <Label htmlFor={ids.quantity} className="label-uppercase">
             Dispense quantity
           </Label>

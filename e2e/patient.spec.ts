@@ -1,5 +1,5 @@
 import { test, expect } from "./fixtures";
-import { seedPrescription } from "./data";
+import { seedPrescription, uniqueMedName } from "./data";
 
 test.describe("Patient prescription flows", () => {
   test("list renders glass cards (not the doctor table)", async ({
@@ -103,7 +103,8 @@ test.describe("Patient prescription flows", () => {
     loginAs,
     apiRequest,
   }) => {
-    const fresh = await seedPrescription(apiRequest);
+    const medName = uniqueMedName();
+    const fresh = await seedPrescription(apiRequest, { medName });
     expect(fresh.status).toBe("PENDING");
 
     await loginAs("patient");
@@ -116,13 +117,16 @@ test.describe("Patient prescription flows", () => {
       "PENDING",
     );
 
+    // Assert initial state of detail view
+    await expect(page.getByText(medName)).toBeVisible();
+    await expect(page.getByRole("button", { name: /mark as consumed/i })).toBeVisible();
+
     // The Mark-as-Consumed button is a popover trigger; the actual form
     // submit lives behind a confirmation step (so the patient can supply an
-    // optional reason). Open the popover, then submit. The form action is a
-    // POST → Next Route Handler → backend PATCH → 303 redirect, so we don't
-    // see the backend PATCH from the browser; we wait for the badge to flip.
+    // optional reason). Open the popover, then submit.
     await page.getByRole("button", { name: /mark as consumed/i }).click();
     await page.getByRole("button", { name: /confirm/i }).click();
+    
     await expect(page.getByTestId("status-badge")).toHaveAttribute(
       "data-status",
       "CONSUMED",
@@ -130,9 +134,14 @@ test.describe("Patient prescription flows", () => {
         timeout: 15_000,
       },
     );
+
+    // Verify "Consumed On" date appears
+    await expect(page.getByText(/consumed on/i)).toBeVisible();
+
+    // Verify consume action is now GONE (permanently disabled/hidden)
     await expect(
       page.getByRole("button", { name: /mark as consumed/i }),
-    ).toHaveCount(0);
+    ).not.toBeVisible();
   });
 
   test("a consumed RX detail does not show the consume button", async ({

@@ -27,7 +27,7 @@ export interface PrescriptionItemResponseDto {
      */
   instructions?: string | null;
   /**
-     * Unit of measure that gives quantity meaning (mg, ml, cápsulas, comprimidos, gotas, ...). Required.
+     * Unit of measure. Required.
      * @maxLength 32
      */
   unit: string;

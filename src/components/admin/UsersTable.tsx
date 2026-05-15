@@ -88,10 +88,11 @@ export function UsersTable() {
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
           <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Search</Label>
+            <Label htmlFor="user-search" className="label-uppercase">Search</Label>
             <Input
+              id="user-search"
               type="search"
-              placeholder="Email search"
+              placeholder="Name or email"
               value={values.q ?? ""}
               onChange={(e) => setFilters({ q: e.target.value || undefined })}
             />
@@ -186,6 +187,7 @@ export function UsersTable() {
               <SelectContent>
                 <SelectItem value="__NONE__">— None —</SelectItem>
                 <SelectItem value="createdAt">Created</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
                 <SelectItem value="role">Role</SelectItem>
               </SelectContent>
@@ -231,7 +233,10 @@ export function UsersTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-                <UrlSortableHeader sortBy="email">Email</UrlSortableHeader>
+                <UrlSortableHeader sortBy="name">User</UrlSortableHeader>
+                <TableCell className="label-uppercase tracking-widest text-[0.65rem] py-3">
+                  Phone
+                </TableCell>
                 <UrlSortableHeader sortBy="role">Role</UrlSortableHeader>
                 <UrlSortableHeader sortBy="createdAt">
                   Created
@@ -245,8 +250,18 @@ export function UsersTable() {
                   data-testid="user-row"
                   className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
                 >
-                  <TableCell className="text-sm text-primary">
-                    {user.email}
+                  <TableCell className="text-sm">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-primary">
+                        {user.name}
+                      </span>
+                      <span className="text-xs text-on-surface-variant font-mono">
+                        {user.email}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-sm text-on-surface tabular-nums">
+                    {user.phone || "—"}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -256,7 +271,7 @@ export function UsersTable() {
                       {user.role}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm tabular-nums">
+                  <TableCell className="text-sm tabular-nums text-on-surface-variant">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </TableCell>
                 </TableRow>

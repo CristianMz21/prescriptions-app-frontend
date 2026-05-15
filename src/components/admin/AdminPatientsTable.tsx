@@ -84,7 +84,7 @@ export function AdminPatientsTable() {
             <Label className="label-uppercase">Search</Label>
             <Input
               type="search"
-              placeholder="Email search"
+              placeholder="Name or email"
               value={values.q ?? ""}
               onChange={(e) => setFilters({ q: e.target.value || undefined })}
             />
@@ -180,6 +180,7 @@ export function AdminPatientsTable() {
               <SelectContent>
                 <SelectItem value="__NONE__">— None —</SelectItem>
                 <SelectItem value="createdAt">Created</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
               </SelectContent>
             </Select>
@@ -224,7 +225,10 @@ export function AdminPatientsTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-                <UrlSortableHeader sortBy="email">Email</UrlSortableHeader>
+                <UrlSortableHeader sortBy="name">Patient</UrlSortableHeader>
+                <TableCell className="label-uppercase tracking-widest text-[0.65rem] py-3">
+                  Phone
+                </TableCell>
                 <TableHead className="uppercase tracking-wider text-xs">
                   Birth Date
                 </TableHead>
@@ -248,18 +252,28 @@ export function AdminPatientsTable() {
                     data-testid="patient-row"
                     className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
                   >
-                    <TableCell className="text-sm text-primary">
-                      {u.email}
+                    <TableCell className="text-sm">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-primary">
+                          {u.name}
+                        </span>
+                        <span className="text-xs text-on-surface-variant font-mono">
+                          {u.email}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-on-surface tabular-nums">
+                      {u.phone || "—"}
                     </TableCell>
                     <TableCell className="text-sm tabular-nums">
                       {birthDate
                         ? new Date(birthDate).toLocaleDateString()
                         : "—"}
                     </TableCell>
-                    <TableCell className="text-sm tabular-nums">
+                    <TableCell className="text-sm tabular-nums text-on-surface-variant">
                       {age !== null ? `${age}` : "—"}
                     </TableCell>
-                    <TableCell className="text-sm tabular-nums">
+                    <TableCell className="text-sm tabular-nums text-on-surface-variant">
                       {new Date(u.createdAt).toLocaleDateString()}
                     </TableCell>
                   </TableRow>

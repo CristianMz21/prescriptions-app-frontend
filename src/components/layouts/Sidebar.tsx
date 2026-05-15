@@ -28,19 +28,27 @@ export function Sidebar({ role }: SidebarProps) {
 
       <div className="px-6 mt-auto pt-4 border-t border-outline-variant/30 flex flex-col gap-3">
         {user ? (
-          <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col gap-0.5 mb-2">
             <span
-              data-testid="sidebar-user-role"
-              className="text-xs font-semibold text-on-surface uppercase tracking-wider"
+              data-testid="sidebar-user-name"
+              className="text-sm font-bold text-primary truncate"
             >
-              {user.role}
+              {user.name}
             </span>
-            <span
-              data-testid="sidebar-user-email"
-              className="text-xs text-on-surface-variant truncate"
-            >
-              {user.email}
-            </span>
+            <div className="flex items-center gap-2">
+              <span
+                data-testid="sidebar-user-role"
+                className="text-[0.65rem] font-bold text-on-surface-variant uppercase tracking-widest border border-outline-variant/30 px-1.5 rounded"
+              >
+                {user.role}
+              </span>
+              <span
+                data-testid="sidebar-user-email"
+                className="text-[0.65rem] text-on-surface-variant truncate font-mono"
+              >
+                {user.email}
+              </span>
+            </div>
           </div>
         ) : null}
         {user ? <ThemeToggle initial={user.themePreference} /> : null}

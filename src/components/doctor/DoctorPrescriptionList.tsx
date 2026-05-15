@@ -5,8 +5,12 @@ import type {
   PrescriptionResponseDto,
   PrescriptionsFindAllParams,
   PrescriptionsFindAllStatus,
+  UserEntity,
 } from "@/lib/api/generated/schemas";
-import { usePrescriptionsFindAll } from "@/lib/api/generated/prescriptionManagementAPI";
+import {
+  usePrescriptionsFindAll,
+  useUsersFindAllPatients,
+} from "@/lib/api/generated/prescriptionManagementAPI";
 import { ErrorState } from "@/components/feedback/ErrorState";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { PrescriptionTableSkeleton } from "@/components/feedback/Skeletons";
@@ -19,6 +23,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { routes } from "@/lib/routes";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
+import { useMemo } from "react";
 
 const FILTER_KEYS = [
   "status",
@@ -54,10 +59,19 @@ export function DoctorPrescriptionList() {
           : undefined,
   };
   const { data, isLoading, error } = usePrescriptionsFindAll(params);
+  const { data: patientsData } = useUsersFindAllPatients({ page: 1, limit: 100 });
+  const patientNameByEmail = useMemo(() => {
+    const entries: Array<[string, string]> =
+      (patientsData?.data as UserEntity[] | undefined)?.map((patient) => [
+        patient.email.toLowerCase(),
+        patient.name,
+      ]) ?? [];
+    return new Map(entries);
+  }, [patientsData?.data]);
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="space-y-5 px-2 md:px-4 lg:px-5">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h2 className="text-3xl font-bold text-primary">
             Active Prescriptions
@@ -102,6 +116,7 @@ export function DoctorPrescriptionList() {
                 getDetailHref={(id) => `${routes.doctor.prescriptions}/${id}`}
                 meta={data?.meta}
                 onPageChange={setPage}
+                patientNameByEmail={patientNameByEmail}
               />
             );
           })()

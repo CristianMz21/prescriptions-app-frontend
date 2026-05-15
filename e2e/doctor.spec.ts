@@ -35,39 +35,21 @@ test.describe("Doctor prescription flows", () => {
   test("end-to-end create flow: pick patient → add med → submit → row appears", async ({
     page,
     loginAs,
+    createPrescriptionUI,
   }) => {
     await loginAs("doctor");
-    await page.getByRole("link", { name: /new prescription/i }).click();
-    await expect(page).toHaveURL(/\/doctor\/prescriptions\/new$/);
-
-    // Open the shadcn Select trigger and wait for the option list to render.
-    const combobox = page.getByRole("combobox");
-    await combobox.click();
-    await expect(page.getByRole("option").first()).toBeVisible();
-    await expect(
-      page.getByRole("option", { name: SEED.patient.email }),
-    ).toBeVisible({ timeout: 10_000 });
-    await page.getByRole("option", { name: SEED.patient.email }).click();
-
     const medName = uniqueMedName();
-    await page.getByLabel("Medication name").first().fill(medName);
-    await page.getByLabel("Dosage").first().fill("100mg");
-    await page.getByLabel("Dispense quantity").first().fill("30");
-    await page
-      .getByLabel(/Patient instructions/i)
-      .first()
-      .fill("Once daily");
 
-    const createResponse = page.waitForResponse(
-      (res) =>
-        res.url().endsWith("/prescriptions") &&
-        res.request().method() === "POST" &&
-        res.status() === 201,
-    );
-    await page.getByRole("button", { name: /issue prescription/i }).click();
-    await createResponse;
+    await createPrescriptionUI({
+      patientEmail: SEED.patient.email,
+      medicationName: medName,
+      unit: "comprimidos",
+      dosage: "100mg",
+      quantity: "30",
+      instructions: "Once daily",
+    });
 
-    await expect(page).toHaveURL(/\/doctor\/prescriptions$/);
+    // Assert row appears in list
     const newRow = page
       .getByTestId("prescription-row")
       .filter({ hasText: medName });
@@ -76,6 +58,37 @@ test.describe("Doctor prescription flows", () => {
       "data-status",
       "PENDING",
     );
+
+    // Verify detail view
+    await newRow.getByRole("link", { name: /view/i }).click();
+    await expect(page.getByText(medName)).toBeVisible();
+    await expect(page.getByText(/100mg/i)).toBeVisible();
+    await expect(page.getByText(/30 comprimidos/i)).toBeVisible();
+    await expect(page.getByText(/Once daily/i)).toBeVisible();
+  });
+
+  test("doctor can download/view prescription PDF", async ({
+    page,
+    loginAs,
+  }) => {
+    await loginAs("doctor");
+    const rows = page.getByTestId("prescription-row");
+    await rows.first().getByRole("link", { name: /view/i }).click();
+    
+    const downloadButton = page.getByRole("button", { name: /download pdf/i });
+    await expect(downloadButton).toBeVisible();
+  });
+
+  test("doctor cannot consume prescriptions (action hidden)", async ({
+    page,
+    loginAs,
+  }) => {
+    await loginAs("doctor");
+    const rows = page.getByTestId("prescription-row");
+    await rows.first().getByRole("link", { name: /view/i }).click();
+    
+    // Verify "Mark as consumed" button is NOT present for doctors
+    await expect(page.getByRole("button", { name: /mark as consumed/i })).not.toBeVisible();
   });
 
   test("validation: missing patient blocks submission with visible error", async ({
@@ -107,7 +120,7 @@ test.describe("Doctor prescription flows", () => {
   }) => {
     await loginAs("doctor");
     await page.goto("/doctor/prescriptions/new");
-    const combobox = page.getByRole("combobox");
+    const combobox = page.getByRole("combobox", { name: /patient/i });
     await combobox.click();
     await expect(page.getByRole("option").first()).toBeVisible();
     await expect(

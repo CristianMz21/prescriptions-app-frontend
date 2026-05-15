@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { PrescriptionResponseDto } from "@/lib/api/generated/schemas";
 import { PrescriptionStatusBadge } from "./PrescriptionStatusBadge";
+import { getPrescriptionExpiry, getUserDisplayName } from "@/lib/prescription-ui";
 
 interface PrescriptionCardProps {
   prescription: PrescriptionResponseDto;
@@ -12,6 +13,9 @@ export function PrescriptionCard({
   actions,
 }: PrescriptionCardProps) {
   const isPending = rx.status === "PENDING";
+  const expiryDate = getPrescriptionExpiry(rx);
+  const isExpired = isPending && expiryDate && new Date(expiryDate) < new Date();
+  
   const lead = rx.items?.[0];
   const extraCount = Math.max(0, (rx.items?.length ?? 0) - 1);
 
@@ -19,11 +23,15 @@ export function PrescriptionCard({
     <div
       data-testid="prescription-card"
       data-rx-code={rx.code}
-      className="glass-panel rounded-xl p-6 relative group overflow-hidden"
+      className={`glass-panel rounded-xl p-6 relative group overflow-hidden ${
+        isExpired ? "opacity-80" : ""
+      }`}
     >
       <div
         className={`absolute left-0 top-0 bottom-0 w-1 ${
-          isPending
+          isExpired
+            ? "bg-error"
+            : isPending
             ? "bg-surface-variant group-hover:bg-primary"
             : "bg-surface-variant"
         }`}
@@ -37,7 +45,14 @@ export function PrescriptionCard({
               {rx.code}
             </span>
           </div>
-          <PrescriptionStatusBadge status={rx.status} />
+          <div className="flex flex-col items-end gap-2">
+            <PrescriptionStatusBadge status={rx.status} />
+            {isExpired && (
+              <span className="text-[0.65rem] font-bold text-error uppercase tracking-widest bg-error/10 px-2 py-0.5 rounded border border-error/20">
+                Expired
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -47,11 +62,18 @@ export function PrescriptionCard({
                 <h3 className="text-xl font-semibold text-primary flex items-center gap-2">
                   {lead.name}
                   {lead.dosage ? (
-                    <span className="text-on-surface-variant">
+                    <span className="text-on-surface-variant font-normal">
                       {" "}
                       {lead.dosage}
                     </span>
                   ) : null}
+                  <span className="text-sm font-medium text-on-surface-variant ml-2 tabular-nums">
+                    {lead.quantity ? (
+                      `×${lead.quantity}`
+                    ) : (
+                      <span className="italic text-[0.7rem]">Qty: Not specified</span>
+                    )}
+                  </span>
                   {extraCount > 0 ? (
                     <span className="text-xs font-semibold text-on-surface-variant border border-outline-variant rounded-full px-2 py-0.5 ml-auto">
                       +{extraCount} more
@@ -75,21 +97,23 @@ export function PrescriptionCard({
                       {rx.items.slice(1).map((item, idx) => (
                         <li
                           key={item.id ?? idx}
-                          className="flex justify-between"
+                          className="flex justify-between items-center py-1 border-b border-outline-variant/10 last:border-0"
                         >
                           <span>
-                            <span className="font-medium">{item.name}</span>
+                            <span className="font-medium text-primary">{item.name}</span>
                             {item.dosage ? (
                               <span className="text-on-surface-variant ml-1">
                                 {item.dosage}
                               </span>
                             ) : null}
                           </span>
-                          {item.quantity ? (
-                            <span className="text-on-surface-variant tabular-nums">
-                              ×{item.quantity}
-                            </span>
-                          ) : null}
+                          <span className="text-on-surface-variant tabular-nums text-xs">
+                            {item.quantity ? (
+                              `×${item.quantity}`
+                            ) : (
+                              "Qty: Not specified"
+                            )}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -102,19 +126,24 @@ export function PrescriptionCard({
           <div className="flex flex-col gap-4 border-l-0 md:border-l border-outline-variant/30 md:pl-8 pt-4 md:pt-0">
             {rx.author ? (
               <div className="flex flex-col gap-1">
-                <span className="label-uppercase tracking-widest">
+                <span className="label-uppercase tracking-widest text-[0.6rem] text-on-surface-variant">
                   Prescribed By
                 </span>
-                <span className="text-base text-on-surface">
-                  {rx.author.signatureText || rx.author.user?.email || "N/A"}
+                <span className="text-sm text-on-surface font-medium">
+                  {getUserDisplayName(
+                    rx.author.user as { email?: string; name?: string },
+                  ) ||
+                    rx.author.signatureText ||
+                    rx.author.user?.email ||
+                    "N/A"}
                 </span>
               </div>
             ) : null}
             <div className="flex flex-col gap-1">
-              <span className="label-uppercase tracking-widest">
+              <span className="label-uppercase tracking-widest text-[0.6rem] text-on-surface-variant">
                 Date Issued
               </span>
-              <span className="text-base text-on-surface tabular-nums">
+              <span className="text-sm text-on-surface tabular-nums">
                 {new Date(rx.createdAt).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
@@ -122,12 +151,30 @@ export function PrescriptionCard({
                 })}
               </span>
             </div>
+            {expiryDate && (
+              <div className="flex flex-col gap-1">
+                <span className="label-uppercase tracking-widest text-[0.6rem] text-on-surface-variant">
+                  Valid Until
+                </span>
+                <span className={`text-sm tabular-nums ${isExpired ? "text-error font-bold" : "text-on-surface"}`}>
+                  {new Date(expiryDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {actions ? (
+        {actions && !isExpired ? (
           <div className="flex justify-end items-center gap-4 pt-4 mt-2 border-t border-outline-variant/20">
             {actions}
+          </div>
+        ) : isExpired ? (
+          <div className="flex justify-end items-center pt-4 mt-2 border-t border-outline-variant/20">
+             <span className="text-xs text-error/60 italic">Actions unavailable for expired prescriptions</span>
           </div>
         ) : null}
       </div>

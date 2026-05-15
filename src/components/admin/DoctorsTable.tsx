@@ -86,7 +86,7 @@ export function DoctorsTable() {
             <Label className="label-uppercase">Search</Label>
             <Input
               type="search"
-              placeholder="Email, specialty, medical ID"
+              placeholder="Name, email, specialty..."
               value={values.q ?? ""}
               onChange={(e) => setFilters({ q: e.target.value || undefined })}
             />
@@ -156,6 +156,7 @@ export function DoctorsTable() {
               <SelectContent>
                 <SelectItem value="__NONE__">— None —</SelectItem>
                 <SelectItem value="createdAt">Created</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
               </SelectContent>
             </Select>
@@ -203,7 +204,7 @@ export function DoctorsTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-                <UrlSortableHeader sortBy="email">Email</UrlSortableHeader>
+                <UrlSortableHeader sortBy="name">Doctor</UrlSortableHeader>
                 <TableHead className="uppercase tracking-wider text-xs">
                   Specialty
                 </TableHead>
@@ -222,8 +223,15 @@ export function DoctorsTable() {
                   data-testid="doctor-row"
                   className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
                 >
-                  <TableCell className="text-sm text-primary">
-                    {u.email}
+                  <TableCell className="text-sm">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-primary">
+                        {u.name}
+                      </span>
+                      <span className="text-xs text-on-surface-variant font-mono">
+                        {u.email}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell className="text-sm">
                     {stringifyOptional(u.doctor?.specialty)}
@@ -231,7 +239,7 @@ export function DoctorsTable() {
                   <TableCell className="text-sm font-mono">
                     {stringifyOptional(u.doctor?.medicalId)}
                   </TableCell>
-                  <TableCell className="text-sm tabular-nums">
+                  <TableCell className="text-sm tabular-nums text-on-surface-variant">
                     {new Date(u.createdAt).toLocaleDateString()}
                   </TableCell>
                 </TableRow>

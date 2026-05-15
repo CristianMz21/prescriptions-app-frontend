@@ -9,9 +9,9 @@ export const BACKEND_URL =
   process.env.E2E_BACKEND_URL ?? "http://localhost:3000";
 
 export const SEED = {
-  admin: { email: "admin@test.com", password: "Password123!" },
-  doctor: { email: "doctor@test.com", password: "Password123!" },
-  patient: { email: "patient@test.com", password: "Password123!" },
+  admin: { email: "admin@clinic.com", password: "Password123!" },
+  doctor: { email: "doctor@clinic.com", password: "Password123!" },
+  patient: { email: "patient@clinic.com", password: "Password123!" },
 } as const;
 
 export type SeededRole = keyof typeof SEED;

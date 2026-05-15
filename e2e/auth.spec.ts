@@ -1,5 +1,5 @@
 import { test, expect } from "./fixtures";
-import { LANDING_PATH, SEED } from "./data";
+import { LANDING_PATH, SEED, type SeededRole } from "./data";
 
 test.describe("Auth & route guards", () => {
   test("unauthenticated / redirects to /login", async ({
@@ -68,6 +68,9 @@ test.describe("Auth & route guards", () => {
     await loginAs("doctor");
     await expect(page).toHaveURL(/\/doctor\/prescriptions$/);
 
+    // Verify presence of authenticated elements
+    await expect(page.getByTestId("sidebar-logout")).toBeVisible();
+
     const logoutResponse = page.waitForResponse(
       (res) =>
         res.url().endsWith("/auth/logout") && res.request().method() === "POST",
@@ -76,6 +79,10 @@ test.describe("Auth & route guards", () => {
     const logoutRes = await logoutResponse;
     expect(logoutRes.status()).toBe(200);
     await expect(page).toHaveURL(/\/login$/);
+
+    // Verify session is cleared: Login page elements visible, authenticated elements hidden
+    await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible();
+    await expect(page.getByTestId("sidebar-logout")).not.toBeVisible();
 
     // Visiting a protected route after logout must redirect — this is the
     // server-side guard, exercised through a fresh navigation.
@@ -88,12 +95,23 @@ test.describe("Auth & route guards", () => {
     expect(profileRes.status()).toBe(401);
   });
 
-  test("cross-role: doctor cookie hitting /admin/metrics redirects to /login", async ({
-    page,
-    loginAs,
-  }) => {
-    await loginAs("doctor");
-    await page.goto("/admin/metrics");
-    await expect(page).toHaveURL(/\/login$/);
-  });
+  const crossRoleScenarios = [
+    { role: "doctor", target: "/admin/metrics" },
+    { role: "patient", target: "/admin/metrics" },
+    { role: "patient", target: "/doctor/prescriptions" },
+    { role: "admin", target: "/doctor/prescriptions" },
+    { role: "admin", target: "/patient/prescriptions" },
+  ] as const;
+
+  for (const { role, target } of crossRoleScenarios) {
+    test(`cross-role: ${role} hitting ${target} redirects to /login`, async ({
+      page,
+      loginAs,
+    }) => {
+      await loginAs(role as SeededRole);
+      await page.goto(target);
+      // Backend/Frontend should identify unauthorized role and boot to login
+      await expect(page).toHaveURL(/\/login$/);
+    });
+  }
 });

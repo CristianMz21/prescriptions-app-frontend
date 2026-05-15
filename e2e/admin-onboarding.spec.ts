@@ -35,6 +35,7 @@ test.describe("Admin onboarding (P1 — usersControllerCreate)", () => {
     const email = `e2e-patient-${Date.now()}@clinic.com`;
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill("Password123!");
+    await page.getByLabel("Full name").fill("E2E Test Patient");
     // PATIENT is the default role; no need to change.
 
     const created = page.waitForResponse(
@@ -68,8 +69,28 @@ test.describe("Admin onboarding (P1 — usersControllerCreate)", () => {
     ).toBeVisible();
 
     // Filters bar present.
-    await expect(page.getByLabel("Search")).toBeVisible();
-    await expect(page.getByLabel("Status")).toBeVisible();
+    await expect(page.getByLabel(/search/i)).toBeVisible();
+    await expect(page.getByLabel(/status/i)).toBeVisible();
+    
+    // Verify "New Prescription" button is HIDDEN for admins 
+    // (only doctors should see it)
+    await expect(page.getByRole("link", { name: /new prescription/i })).not.toBeVisible();
+  });
+
+  test("admin sees prescription details but cannot consume", async ({
+    loginAs,
+    page,
+  }) => {
+    await loginAs("admin");
+    await page.goto("/admin/prescriptions");
+    
+    const rows = page.getByTestId("prescription-row");
+    await expect(rows.first()).toBeVisible();
+    await rows.first().getByRole("link", { name: /view/i }).click();
+    
+    await expect(page.getByText("RX Number")).toBeVisible();
+    // Admin should see details but NOT the consume button
+    await expect(page.getByRole("button", { name: /mark as consumed/i })).not.toBeVisible();
   });
 
   test("admin doctors page lists ≥ 1 doctor row", async ({ loginAs, page }) => {

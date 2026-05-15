@@ -92,40 +92,41 @@ export function DoctorPatientsTable() {
               }
             />
           </div>
+<div className="flex flex-col gap-1.5">
+  <Label className="label-uppercase">Search</Label>
+  <Input
+    type="search"
+    placeholder="Name or email"
+    value={values.q ?? ""}
+    onChange={(e) => setFilters({ q: e.target.value || undefined })}
+  />
+</div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Birth Date To</Label>
-            <Input
-              type="date"
-              value={values.birthDateToDate ?? ""}
-              onChange={(e) =>
-                setFilters({ birthDateToDate: e.target.value || undefined })
-              }
-            />
-          </div>
+...
 
-          <div className="flex flex-col gap-1.5">
-            <Label className="label-uppercase">Sort By</Label>
-            <Select
-              value={values.sortBy ?? "__NONE__"}
-              onValueChange={(v) =>
-                setFilters({
-                  sortBy: v === "__NONE__" ? undefined : (v ?? undefined),
-                  sortOrder:
-                    v !== "__NONE__" ? (values.sortOrder ?? "asc") : undefined,
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__NONE__">— None —</SelectItem>
-                <SelectItem value="createdAt">Created</SelectItem>
-                <SelectItem value="email">Email</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+<div className="flex flex-col gap-1.5">
+  <Label className="label-uppercase">Sort By</Label>
+  <Select
+    value={values.sortBy ?? "__NONE__"}
+    onValueChange={(v) =>
+      setFilters({
+        sortBy: v === "__NONE__" ? undefined : (v ?? undefined),
+        sortOrder:
+          v !== "__NONE__" ? (values.sortOrder ?? "asc") : undefined,
+      })
+    }
+  >
+    <SelectTrigger>
+      <SelectValue />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="__NONE__">— None —</SelectItem>
+      <SelectItem value="createdAt">Created</SelectItem>
+      <SelectItem value="name">Name</SelectItem>
+      <SelectItem value="email">Email</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
 
           <div className="flex flex-col gap-1.5">
             <Label className="label-uppercase">Order</Label>
@@ -166,7 +167,10 @@ export function DoctorPatientsTable() {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-                <UrlSortableHeader sortBy="email">Email</UrlSortableHeader>
+                <UrlSortableHeader sortBy="name">Patient</UrlSortableHeader>
+                <TableCell className="label-uppercase tracking-widest text-[0.65rem] py-3">
+                  Phone
+                </TableCell>
                 <TableHead className="uppercase tracking-wider text-xs">
                   Birth Date
                 </TableHead>
@@ -184,15 +188,25 @@ export function DoctorPatientsTable() {
                     data-testid="patient-row"
                     className="hover:bg-surface-variant/20 transition-colors border-b border-outline-variant/20"
                   >
-                    <TableCell className="text-sm text-primary">
-                      {u.email}
+                    <TableCell className="text-sm">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-primary">
+                          {u.name}
+                        </span>
+                        <span className="text-xs text-on-surface-variant font-mono">
+                          {u.email}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-on-surface tabular-nums">
+                      {u.phone || "—"}
                     </TableCell>
                     <TableCell className="text-sm tabular-nums">
                       {birthDate
                         ? new Date(birthDate).toLocaleDateString()
                         : "—"}
                     </TableCell>
-                    <TableCell className="text-sm tabular-nums">
+                    <TableCell className="text-sm tabular-nums text-on-surface-variant">
                       {new Date(u.createdAt).toLocaleDateString()}
                     </TableCell>
                   </TableRow>
