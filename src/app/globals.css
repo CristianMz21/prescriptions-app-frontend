@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* Tailwind v4 `dark:` variant. The default is media-based
+   (`@media (prefers-color-scheme: dark)`), but the CSS-variable cascade
+   below switches tokens on the `.dark` class. Without this override the
+   two disagree under CI (headless Chromium reports prefers light, SSR
+   adds `.dark` to <html>): tokens resolve to dark values while `dark:`
+   utilities stay light. That mismatch produced 17 false-positive axe
+   color-contrast failures on /doctor/prescriptions/new — keep the
+   variant class-based so tokens and utilities stay in sync. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* RX-OS palette — DARK is the primary identity. The :root values below stay
      dark so SSR (which doesn't apply :root.dark vs no-class until JS hydrates)
