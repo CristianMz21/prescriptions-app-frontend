@@ -70,8 +70,14 @@ export function PrescriptionFiltersBar({
   const debouncedQ = useDebouncedValue(qLocal, 400);
 
   useEffect(() => {
-    if (debouncedQ !== values.q) {
-      onChange({ q: debouncedQ || undefined });
+    // Normalize before comparing: `qLocal` starts as "" while a missing
+    // ?q= URL param surfaces as undefined. Without this, "" !== undefined
+    // fires onChange on every render, which calls setFilters → router.push
+    // → re-render → fires again, looping GET /doctor/prescriptions?page=1
+    // forever.
+    const next = debouncedQ || undefined;
+    if (next !== values.q) {
+      onChange({ q: next });
     }
   }, [debouncedQ, onChange, values.q]);
 
