@@ -78,11 +78,19 @@ export async function POST(
       }
     }
 
+    console.error(
+      `[consume-route] about to PATCH /prescriptions/${id}/consume (reason=${
+        reason ? `<${reason.length}c>` : "none"
+      })`,
+    );
     await serverApiRequest({
       url: `/prescriptions/${id}/consume`,
       method: "PATCH",
       data: reason ? { reason } : {},
     });
+    console.error(
+      `[consume-route] PATCH succeeded, redirecting to detail`,
+    );
 
     detailUrl.searchParams.set("consumed", "1");
     return NextResponse.redirect(detailUrl, { status: 303 });
@@ -90,8 +98,16 @@ export async function POST(
     // Let framework-issued NEXT_REDIRECT digests through unmodified (defensive
     // — `getAuth` swallows redirects already, but downstream code may not).
     if (isRedirectError(err)) {
+      console.error(`[consume-route] re-throwing framework redirect`);
       throw err;
     }
+    console.error(
+      `[consume-route] caught error during consume PATCH: ${
+        err instanceof Error
+          ? `${err.name}: ${err.message}`
+          : String(err)
+      }`,
+    );
     return NextResponse.redirect(errorListUrl, { status: 303 });
   }
 }
