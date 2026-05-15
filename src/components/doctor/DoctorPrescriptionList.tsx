@@ -19,7 +19,7 @@ import {
   PrescriptionFiltersBar,
   type PrescriptionFilterValues,
 } from "@/components/prescription/PrescriptionFiltersBar";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { routes } from "@/lib/routes";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
@@ -58,7 +58,7 @@ export function DoctorPrescriptionList() {
           ? false
           : undefined,
   };
-  const { data, isLoading, error } = usePrescriptionsFindAll(params);
+  const { data, isLoading, error, refetch } = usePrescriptionsFindAll(params);
   const { data: patientsData } = useUsersFindAllPatients({
     page: 1,
     limit: 100,
@@ -103,7 +103,16 @@ export function DoctorPrescriptionList() {
       />
 
       {isLoading ? <PrescriptionTableSkeleton /> : null}
-      {error ? <ErrorState message={error.message} /> : null}
+      {error ? (
+        <ErrorState
+          message={error.message}
+          action={
+            <Button type="button" variant="outline" onClick={() => void refetch()}>
+              Retry
+            </Button>
+          }
+        />
+      ) : null}
       {!isLoading && !error
         ? (() => {
             const prescriptions =

@@ -23,8 +23,8 @@ export default async function DoctorProfilePage() {
     : [];
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
+    <div className="mx-auto max-w-6xl px-3 md:px-6 lg:px-8 py-4 md:py-6">
+      <div className="mb-6 md:mb-8">
         <h2 className="text-3xl font-bold text-primary tracking-tight">
           My Profile
         </h2>

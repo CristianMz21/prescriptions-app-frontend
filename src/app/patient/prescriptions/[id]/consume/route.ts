@@ -30,12 +30,12 @@ export async function POST(
     });
 
     return NextResponse.redirect(
-      new URL(`/patient/prescriptions/${id}`, request.url),
+      new URL(`/patient/prescriptions/${id}?consumed=1`, request.url),
       { status: 303 },
     );
   } catch {
     return NextResponse.redirect(
-      new URL("/patient/prescriptions", request.url),
+      new URL("/patient/prescriptions?consumeError=1", request.url),
       { status: 303 },
     );
   }

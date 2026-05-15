@@ -15,7 +15,7 @@ import { PdfDownloadButton } from "./PdfDownloadButton";
 import { ConsumePrescriptionButton } from "./ConsumePrescriptionButton";
 
 export function PrescriptionCardList() {
-  const { data, isLoading, error } = usePrescriptionsFindAll();
+  const { data, isLoading, error, refetch } = usePrescriptionsFindAll();
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "ALL" | "PENDING" | "CONSUMED"
@@ -50,7 +50,17 @@ export function PrescriptionCardList() {
   ).length;
 
   if (isLoading) return <PrescriptionCardListSkeleton />;
-  if (error) return <ErrorState message={error.message} />;
+  if (error)
+    return (
+      <ErrorState
+        message={error.message}
+        action={
+          <Button type="button" variant="outline" onClick={() => void refetch()}>
+            Retry
+          </Button>
+        }
+      />
+    );
 
   if (prescriptions.length === 0) {
     return <EmptyState icon="medication" title="No prescriptions found" />;

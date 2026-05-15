@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { usePrescriptionsFindOne } from "@/lib/api/generated/prescriptionManagementAPI";
 import { LoadingState } from "@/components/feedback/LoadingState";
 import { ErrorState } from "@/components/feedback/ErrorState";
@@ -10,9 +11,12 @@ import { PrescriptionDetailPanel } from "@/components/prescription/PrescriptionD
 import { PdfDownloadButton } from "@/components/prescription/PdfDownloadButton";
 import { ConsumePrescriptionButton } from "@/components/prescription/ConsumePrescriptionButton";
 import { routes } from "@/lib/routes";
+import { notify } from "@/lib/notifications";
 
 export default function PatientPrescriptionDetailPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const prescriptionId = params.id as string;
 
   const {
@@ -20,6 +24,13 @@ export default function PatientPrescriptionDetailPage() {
     isLoading,
     error,
   } = usePrescriptionsFindOne(prescriptionId);
+
+  useEffect(() => {
+    const consumed = searchParams.get("consumed");
+    if (consumed !== "1") return;
+    notify.success("Prescription consumed", "Status updated successfully.");
+    router.replace(routes.patient.detail(prescriptionId));
+  }, [prescriptionId, router, searchParams]);
 
   return (
     <div className="max-w-3xl mx-auto">

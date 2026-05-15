@@ -25,52 +25,56 @@ jobs:
     name: Generate API client + typecheck + test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout frontend
+        uses: actions/checkout@v4
+        with:
+          path: frontend
 
-      - uses: pnpm/action-setup@v6
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - uses: actions/setup-node@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Approve build scripts
-        run: pnpm approve-builds --all
+        run: cd frontend && pnpm approve-builds --all
 
       - name: Install dependencies
-        run: pnpm install
+        run: cd frontend && pnpm install
 
       - name: Fetch backend OpenAPI schema
-        # The frontend repo expects the schema at ../../backend/openapi.json
-        # (matching the local monorepo layout). In CI we recreate that path by
-        # downloading the published schema from the backend repository.
         run: |
-          mkdir -p ../../backend
+          mkdir -p backend
           curl --fail --silent --show-error \
-            -o ../../backend/openapi.json \
+            -o backend/openapi.json \
             "${BACKEND_OPENAPI_URL}"
-          test -s ../../backend/openapi.json
+          test -s backend/openapi.json
 
       - name: Harden OpenAPI schema
-        run: python3 scripts/harden-schema.py ../../backend/openapi.json
+        run: python3 frontend/scripts/harden-schema.py backend/openapi.json
 
       - name: Regenerate API client
-        run: pnpm api:refresh
+        run: cd frontend && pnpm api:refresh
 
       - name: Fail if generated client is stale
         run: |
+          cd frontend
           if ! git diff --exit-code src/lib/api/generated; then
             echo "::error::Generated API client is stale. Run 'pnpm api:refresh' locally and commit the result."
             exit 1
           fi
 
       - name: Typecheck
-        run: pnpm run typecheck
+        run: cd frontend && pnpm run typecheck
 
       - name: Lint
-        run: pnpm run lint
+        run: cd frontend && pnpm run lint
 
       - name: Test
-        run: pnpm run test
+        run: cd frontend && pnpm run test

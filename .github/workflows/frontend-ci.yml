@@ -104,7 +104,10 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout frontend
+        uses: actions/checkout@v4
+        with:
+          path: frontend
 
       - uses: pnpm/action-setup@v4
         with:
@@ -114,15 +117,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Approve build scripts
-        run: pnpm approve-builds --all
+        run: cd frontend && pnpm approve-builds --all
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: cd frontend && pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        run: cd frontend && pnpm exec playwright install --with-deps chromium
 
       - name: Start backend
         env:
@@ -137,9 +141,9 @@ jobs:
           PORT: 3000
           SEED_DEFAULT_PASSWORD: Password123!
         run: |
-          git clone --depth 1 https://github.com/CristianMz21/prescriptions-app-backend.git ../backend
-          python3 scripts/harden-schema.py ../backend/openapi.json
-          cd ../backend
+          git clone --depth 1 https://github.com/CristianMz21/prescriptions-app-backend.git backend
+          python3 frontend/scripts/harden-schema.py backend/openapi.json
+          cd backend
           pnpm install --frozen-lockfile
           pnpm exec prisma generate
           pnpm exec prisma migrate deploy
@@ -162,9 +166,10 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: http://127.0.0.1:3000
         run: |
+          cd frontend
           pnpm build
-          pnpm exec next start -p 3001 > frontend.log 2>&1 &
-          echo $! > frontend.pid
+          pnpm exec next start -p 3001 > ../frontend.log 2>&1 &
+          echo $! > ../frontend.pid
 
       - name: Wait for frontend
         run: |
@@ -178,7 +183,7 @@ jobs:
           done
 
       - name: Run E2E tests
-        run: pnpm test:e2e
+        run: cd frontend && pnpm test:e2e
         env:
           E2E_BACKEND_URL: http://localhost:3000
           E2E_FRONTEND_URL: http://localhost:3001
@@ -188,7 +193,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-ci
-          path: playwright-report/
+          path: frontend/playwright-report/
           retention-days: 7
 
       - name: Upload logs
@@ -197,6 +202,6 @@ jobs:
         with:
           name: ci-logs
           path: |
-            ../backend.log
+            backend.log
             frontend.log
           retention-days: 7

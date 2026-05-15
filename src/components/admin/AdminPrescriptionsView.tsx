@@ -18,6 +18,7 @@ import { usePagination } from "@/lib/hooks/usePagination";
 import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
 import { routes } from "@/lib/routes";
 import { useLegacyUrlMigration } from "@/lib/hooks/useLegacyUrlMigration";
+import { Button } from "@/components/ui/button";
 
 const FILTER_KEYS = [
   "status",
@@ -63,7 +64,7 @@ export function AdminPrescriptionsView() {
     doctorEmail: values.doctorEmail,
     q: values.q,
   };
-  const { data, isLoading, error } = useAdminListPrescriptions(params);
+  const { data, isLoading, error, refetch } = useAdminListPrescriptions(params);
 
   const handleChange = (patch: Partial<PrescriptionFilterValues>) => {
     setFilters(
@@ -90,7 +91,16 @@ export function AdminPrescriptionsView() {
       />
 
       {isLoading ? <LoadingState label="Loading prescriptions" /> : null}
-      {error ? <ErrorState message={error.message} /> : null}
+      {error ? (
+        <ErrorState
+          message={error.message}
+          action={
+            <Button type="button" variant="outline" onClick={() => void refetch()}>
+              Retry
+            </Button>
+          }
+        />
+      ) : null}
       {!isLoading && !error
         ? (() => {
             const prescriptions =

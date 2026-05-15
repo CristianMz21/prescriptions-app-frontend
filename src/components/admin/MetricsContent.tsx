@@ -8,13 +8,14 @@ import { MetricsGrid } from "./MetricsGrid";
 import { StatusDistribution } from "./StatusDistribution";
 import { VolumeTrendsChart } from "./VolumeTrendsChart";
 import { TopDoctorsTable } from "./TopDoctorsTable";
+import { Button } from "@/components/ui/button";
 
 interface MetricsContentProps {
   live?: boolean;
 }
 
 export function MetricsContent({ live = true }: MetricsContentProps = {}) {
-  const { data: metrics, isLoading, error } = useAdminGetMetrics();
+  const { data: metrics, isLoading, error, refetch } = useAdminGetMetrics();
   useMetricsStream(live);
 
   if (isLoading) {
@@ -35,7 +36,17 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
       </div>
     );
   }
-  if (error) return <ErrorState message={error.message} />;
+  if (error)
+    return (
+      <ErrorState
+        message={error.message}
+        action={
+          <Button type="button" variant="outline" onClick={() => void refetch()}>
+            Retry
+          </Button>
+        }
+      />
+    );
   if (!metrics) return null;
 
   return (

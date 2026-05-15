@@ -73,8 +73,8 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
   };
 
   return (
-    <Card className="card-glass p-6 gap-6 max-w-2xl">
-      <div className="flex items-start justify-between gap-4 border-b border-outline-variant/30 pb-4">
+    <Card className="card-glass p-4 md:p-6 gap-6 max-w-4xl rounded-2xl border border-outline-variant/30">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-outline-variant/30 pb-4">
         <div className="flex flex-col gap-1">
           <span className="label-uppercase tracking-widest text-[0.65rem]">
             Operator Profile
@@ -85,8 +85,26 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
           <span className="text-sm font-mono text-on-surface-variant">
             {user.email}
           </span>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="uppercase tracking-widest text-[0.65rem]"
+            >
+              {user.themePreference}
+            </Badge>
+            <Badge
+              variant="outline"
+              className="uppercase tracking-widest text-[0.65rem]"
+            >
+              Since{" "}
+              {new Date(user.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                year: "numeric",
+              })}
+            </Badge>
+          </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-row sm:flex-col sm:items-end gap-2">
           <Badge
             variant="outline"
             className="uppercase tracking-widest text-[0.7rem]"
@@ -146,23 +164,29 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
               )}
             </div>
           </div>
-          <div className="flex justify-end gap-2 mt-2">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-2">
             <Button
               type="button"
               variant="outline"
               size="sm"
+              className="w-full sm:w-auto"
               onClick={handleCancel}
               disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" size="sm" disabled={isSubmitting || !isDirty}>
+            <Button
+              type="submit"
+              size="sm"
+              className="w-full sm:w-auto"
+              disabled={isSubmitting || !isDirty}
+            >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>
       ) : (
-        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+        <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
           <Field label="Phone number" value={user.phone} />
           <Field
             label="Account ID"
@@ -184,7 +208,7 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
       )}
 
       {actions || isEditing ? (
-        <div className="flex justify-end gap-2 border-t border-outline-variant/30 pt-4">
+        <div className="flex flex-col sm:flex-row sm:justify-end gap-2 border-t border-outline-variant/30 pt-4">
           {!isEditing && actions}
         </div>
       ) : null}

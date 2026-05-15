@@ -15,6 +15,7 @@ import {
 } from "@/lib/api/generated/prescriptionManagementAPI";
 import { ApiError } from "@/lib/api/client";
 import { routes } from "@/lib/routes";
+import { notify } from "@/lib/notifications";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -113,10 +114,12 @@ export function CreatePrescriptionForm() {
   const createMutation = usePrescriptionsCreate({
     mutation: {
       onSuccess: () => {
+        notify.success("Prescription issued", "The prescription was created.");
         void queryClient.invalidateQueries();
         router.push(routes.doctor.prescriptions);
       },
       onError: (err: ApiError) => {
+        notify.apiError(err, "Failed to create prescription");
         setError(err.message || "Failed to create prescription");
       },
     },
