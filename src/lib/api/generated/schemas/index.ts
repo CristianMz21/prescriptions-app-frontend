@@ -45,6 +45,7 @@ export * from './role';
 export * from './sortOrder';
 export * from './themePreference';
 export * from './updateThemeDto';
+export * from './updateUserDto';
 export * from './userEntity';
 export * from './userProfileResponseDto';
 export * from './userResponseDto';

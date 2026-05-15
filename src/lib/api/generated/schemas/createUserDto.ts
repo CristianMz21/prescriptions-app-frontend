@@ -12,6 +12,17 @@ export interface CreateUserDto {
   email: string;
   /** User password (minimum 6 characters) */
   password: string;
+  /**
+     * Full display name (UI). Required.
+     * @minLength 1
+     * @maxLength 120
+     */
+  name: string;
+  /**
+     * Optional contact phone (E.164-ish, free-form up to 32 chars).
+     * @maxLength 32
+     */
+  phone?: string;
   /** User role (ADMIN, DOCTOR, PATIENT) */
   role: Role;
   /** Medical specialty (only applies when role=DOCTOR) */

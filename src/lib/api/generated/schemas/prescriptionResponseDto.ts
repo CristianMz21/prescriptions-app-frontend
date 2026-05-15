@@ -35,6 +35,11 @@ export interface PrescriptionResponseDto {
   consumedAt?: string | null;
   /** Author (Doctor) unique identifier */
   authorId: string;
+  /**
+     * Optional date past which the prescription is considered invalid; independent of consumedAt.
+     * @nullable
+     */
+  expiryDate?: string | null;
   /** Patient unique identifier */
   patientId: string;
   /** Prescribing doctor summary */

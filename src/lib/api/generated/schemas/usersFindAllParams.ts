@@ -27,7 +27,7 @@ limit?: number;
  */
 sortOrder?: SortOrder;
 /**
- * Case-insensitive substring search on user email (and doctor specialty/medicalId on /users/doctors).
+ * Case-insensitive substring search across user.email AND user.name.
  */
 q?: string;
 /**

@@ -15,6 +15,13 @@ export interface UserProfileResponseDto {
   id: string;
   /** User email address */
   email: string;
+  /** Display name shown in the UI. */
+  name: string;
+  /**
+     * Optional contact phone (canonical contact field).
+     * @nullable
+     */
+  phone?: string | null;
   /** User role for RBAC */
   role: Role;
   /** ISO 8601 timestamp when the user was created */

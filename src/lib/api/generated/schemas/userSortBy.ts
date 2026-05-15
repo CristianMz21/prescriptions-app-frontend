@@ -13,5 +13,6 @@ export const UserSortBy = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   email: 'email',
+  name: 'name',
   role: 'role',
 } as const;

@@ -8,6 +8,8 @@
 import type { PrescriptionItemDto } from './prescriptionItemDto';
 
 export interface CreatePrescriptionDto {
+  /** Optional date past which the prescription is considered invalid; independent of consumedAt. */
+  expiryDate?: string;
   /** Patient identifier. Accepts either the Patient profile id (Patient.id) or the related User.id — the server resolves either form. See GET /users/patients which exposes both. */
   patientId: string;
   /**

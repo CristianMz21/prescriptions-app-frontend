@@ -47,7 +47,7 @@ export default defineConfig({
   webServer: {
     command: "pnpm exec next dev -H localhost -p 3001",
     url: "http://localhost:3001/login",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120_000,
     stdout: "ignore",
     stderr: "pipe",
