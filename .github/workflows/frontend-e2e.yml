@@ -61,15 +61,12 @@ jobs:
 
       - name: Approve frontend build scripts
         run: pnpm approve-builds --all
-        working-directory: ./frontend/prescriptions-app
 
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: ./frontend/prescriptions-app
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
-        working-directory: ./frontend/prescriptions-app
 
       - name: Approve backend build scripts
         run: pnpm approve-builds --all
@@ -108,7 +105,6 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: http://127.0.0.1:${{ env.BACKEND_PORT }}
         run: |
-          cd frontend/prescriptions-app
           printf '%s\n' "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" > .env.local
 
       - name: Wait for PostgreSQL
@@ -172,7 +168,6 @@ jobs:
           pnpm exec next dev -H 127.0.0.1 -p ${{ env.FRONTEND_PORT }} > ../frontend.log 2>&1 &
           echo $! > ../frontend.pid
           echo "Frontend PID: $(cat ../frontend.pid)"
-        working-directory: ./frontend/prescriptions-app
 
       - name: Wait for frontend login page
         run: |
@@ -198,11 +193,9 @@ jobs:
             echo "Found credentials references:"
             echo "$CREDENTIALS"
           fi
-        working-directory: ./frontend/prescriptions-app
 
       - name: Run E2E tests
         run: pnpm test:e2e
-        working-directory: ./frontend/prescriptions-app
 
       - name: Upload Playwright report
         if: failure()
@@ -210,8 +203,8 @@ jobs:
         with:
           name: playwright-report-${{ github.run_number }}
           path: |
-            frontend/prescriptions-app/playwright-report/
-            frontend/prescriptions-app/test-results/
+            playwright-report/
+            test-results/
           retention-days: 7
 
       - name: Upload backend logs

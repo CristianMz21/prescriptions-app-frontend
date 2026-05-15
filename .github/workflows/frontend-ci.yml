@@ -165,14 +165,14 @@ jobs:
 
       - name: Start backend
         run: |
-           git clone --depth 1 https://github.com/CristianMz21/prescriptions-app-backend.git ../backend
-           cd ../backend
-           pnpm install --frozen-lockfile
-           pnpm exec prisma generate
-           pnpm exec prisma migrate deploy
-           pnpm exec prisma db seed
-           pnpm start:dev > ../backend.log 2>&1 &
-           echo $! > ../backend.pid
+          git clone --depth 1 https://github.com/CristianMz21/prescriptions-app-backend.git ../backend
+          cd ../backend
+          pnpm install --frozen-lockfile
+          pnpm exec prisma generate
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma db seed
+          pnpm start:dev > ../backend.log 2>&1 &
+          echo $! > ../backend.pid
 
       - name: Wait for backend health
         run: |
