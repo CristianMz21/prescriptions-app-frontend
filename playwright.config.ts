@@ -19,21 +19,21 @@ process.env.E2E_FRONTEND_URL = process.env.E2E_FRONTEND_URL || "http://127.0.0.1
 export default defineConfig({
   testDir: "./e2e",
   testMatch: /.*\.spec\.ts/,
-  // Aggressive but safe budgets — every assertion in this suite resolves in
-  // under a second on a passing run, so the wide budgets were just hiding
-  // flakes. Real failures surface fast; the suite no longer wedges for an
-  // hour on retry storms (observed: run #25902797435 ran 66+ min before
-  // being cancelled at default retries=2 + timeout=90s).
-  timeout: 30_000,
-  expect: { timeout: 5_000 },
-  // Cap the entire suite wall-time. If something pathologically hangs the
-  // job aborts at 15 min instead of burning a full GitHub Actions hour.
-  globalTimeout: 15 * 60 * 1000,
+  // Budgets sized for the actual bottleneck: backend `/auth/login` does
+  // `bcrypt.compare` (~100ms-1s under runner load). actionTimeout=10s
+  // was below the observed login P99 and caused every login-using test
+  // to time out (run #25903226058). Restore the original 90s/20s/60s.
+  timeout: 90_000,
+  expect: { timeout: 15_000 },
+  // Cap the entire suite wall-time. With retries=0 below, a passing
+  // suite finishes in ~5-6 min, a failing suite fails fast. The cap is
+  // a backstop against a runner hang, not the normal wall-time.
+  globalTimeout: 25 * 60 * 1000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  // No retries in CI. Retries hide flakes and triple the wall-time when a
-  // test is broken. Deterministic suites do not need retries; if a real
-  // flake appears, fix it at the root.
+  // No retries. Retries hide flakes and triple wall-time on legit
+  // failures (run #25902797435 wedged 66+ min at retries=2 with one
+  // bad test). Fix flakes at the root, not by re-running.
   retries: 0,
   // Worker count is bounded by backend CPU, not by Next.js. The login flow
   // hits NestJS `/auth/login` which performs a bcrypt.compare (cost ~100ms
@@ -52,11 +52,11 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     // Video only on failure (was: always-on). Per-test always-on recording
-    // was ~50% of wall-time per test on prior CI runs; retain-on-failure
-    // keeps the debugging signal where it matters and halves test time.
+    // adds wall-time overhead and is rarely needed when traces are
+    // retained on failure.
     video: "retain-on-failure",
-    actionTimeout: 10_000,
-    navigationTimeout: 30_000,
+    actionTimeout: 20_000,
+    navigationTimeout: 60_000,
   },
   projects: [
     {
