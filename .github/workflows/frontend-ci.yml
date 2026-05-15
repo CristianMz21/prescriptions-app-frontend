@@ -1,10 +1,15 @@
-name: Frontend CI
+name: CI
 
 on:
   pull_request:
     branches: [main]
+  # Re-run on push to main so SonarCloud re-baselines after each merge.
   push:
     branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: "24"
@@ -12,87 +17,155 @@ env:
   BACKEND_OPENAPI_URL: https://raw.githubusercontent.com/CristianMz21/prescriptions-app-backend/main/openapi.json
 
 jobs:
-  frontend-static-validation:
-    name: Lint + Typecheck + Unit Tests
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
+      # Third-party actions pinned to commit SHAs (Sonar S7637).
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-
       - name: Approve build scripts
         run: pnpm approve-builds --all
-
-      - name: Install dependencies
+      - name: Install dependencies (frozen)
         run: pnpm install --frozen-lockfile
-
-      - name: Fetch backend OpenAPI schema
-        run: |
-          mkdir -p ../../backend
-          curl --fail --silent --show-error \
-            -o ../../backend/openapi.json \
-            "${BACKEND_OPENAPI_URL}"
-
-      - name: Harden OpenAPI schema
-        run: python3 scripts/harden-schema.py ../../backend/openapi.json
-
-      - name: Regenerate Orval client
-        run: pnpm api:refresh
-        env:
-          OPENAPI_SPEC_PATH: ../../backend/openapi.json
-
-      - name: Check generated API drift
-        run: git diff --exit-code src/lib/api/generated
-
-      - name: TypeScript check
-        run: pnpm typecheck
-
       - name: Lint
         run: pnpm lint
 
-      - name: Unit tests
-        run: pnpm test
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
+      - name: Install dependencies (frozen)
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
 
+  unit-coverage:
+    name: Unit Coverage
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
+      - name: Install dependencies (frozen)
+        run: pnpm install --frozen-lockfile
+      - name: Tests with coverage
+        # `pnpm test:coverage` runs vitest with v8 thresholds. The vitest
+        # config enforces 80% branches/functions/lines/statements — drop
+        # below that and the job fails.
+        run: pnpm test:coverage
+      - name: Upload lcov for SonarCloud
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+          if-no-files-found: error
+          retention-days: 7
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
+      - name: Install dependencies (frozen)
+        run: pnpm install --frozen-lockfile
       - name: Build
         run: pnpm build
 
-  forbidden-pattern-scan:
-    name: Security Scan
+  codegen-drift:
+    # Regenerates the Orval client from the backend's HEAD-of-main OpenAPI
+    # spec and fails the build if the committed client is stale. Keeping
+    # the generated client in-repo lets lint/typecheck/test consume it
+    # without re-running Orval in every job.
+    name: Codegen Drift
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Scan for forbidden patterns
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - name: Approve build scripts
+        run: pnpm approve-builds --all
+      - name: Install dependencies (frozen)
+        run: pnpm install --frozen-lockfile
+      - name: Fetch backend OpenAPI schema
         run: |
-          patterns=("@ts-ignore" "eslint-disable" ".skip(" ".only(" "# noqa" "type: ignore")
-          found=0
-          for pattern in "${patterns[@]}"; do
-            matches=$(grep -r --include="*.ts" --include="*.tsx" "$pattern" . --exclude-dir=node_modules --exclude-dir=src/lib/api/generated --exclude-dir=coverage 2>/dev/null || true)
-            if [ -n "$matches" ]; then
-              echo "Found forbidden pattern: $pattern"
-              echo "$matches"
-              found=1
-            fi
-          done
-          if [ $found -eq 1 ]; then
-            echo "ERROR: Forbidden patterns detected. Fix them before merging."
+          mkdir -p ../backend
+          curl --fail --silent --show-error \
+            -o ../backend/openapi.json \
+            "${BACKEND_OPENAPI_URL}"
+          test -s ../backend/openapi.json
+      - name: Harden OpenAPI schema
+        run: python3 scripts/harden-schema.py ../backend/openapi.json
+      - name: Regenerate API client
+        run: pnpm api:refresh
+        env:
+          OPENAPI_SPEC_PATH: ../backend/openapi.json
+      - name: Fail if generated client is stale
+        run: |
+          if ! git diff --exit-code src/lib/api/generated; then
+            echo "::error::Generated API client is stale."
+            echo "::error::Run 'pnpm api:refresh' locally and commit the regenerated client."
             exit 1
           fi
 
-  frontend-e2e:
-    name: Playwright E2E (Build + Start)
+  e2e:
+    name: Playwright E2E
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+    env:
+      BACKEND_PORT: 3000
+      FRONTEND_PORT: 3001
     services:
       postgres:
-        image: postgres:16
+        image: postgres:16-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -104,32 +177,67 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
       - name: Checkout frontend
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           path: frontend
-
-      - uses: pnpm/action-setup@v4
+      - name: Checkout backend (HEAD of main)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: CristianMz21/prescriptions-app-backend
+          ref: main
+          path: backend
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
         with:
           version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
-
-      - name: Approve build scripts
+      - name: Harden backend OpenAPI schema
+        run: python3 frontend/scripts/harden-schema.py backend/openapi.json
+      - name: Approve build scripts (frontend)
         run: cd frontend && pnpm approve-builds --all
-
-      - name: Install dependencies
+      - name: Install frontend dependencies (frozen)
         run: cd frontend && pnpm install --frozen-lockfile
-
-      - name: Install Playwright browsers
+      - name: Install backend dependencies (frozen)
+        run: cd backend && pnpm install --frozen-lockfile
+      - name: Install Playwright chromium (with system deps)
         run: cd frontend && pnpm exec playwright install --with-deps chromium
-
+      - name: Wait for PostgreSQL
+        run: |
+          set -e
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "PostgreSQL ready"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL... ($i/30)"
+            sleep 2
+          done
+          echo "::error::PostgreSQL never became ready"
+          exit 1
+      - name: Reset + migrate + seed (deterministic)
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prescriptions_test?schema=public
+          JWT_ACCESS_SECRET: test-access-secret-for-ci
+          JWT_REFRESH_SECRET: test-refresh-secret-for-ci
+          JWT_ACCESS_TTL: 15m
+          JWT_REFRESH_TTL: 7d
+          FRONTEND_URL: http://localhost:3001
+          APP_ORIGIN: http://localhost:3001
+          NODE_ENV: test
+          SEED_DEFAULT_PASSWORD: Password123!
+        run: |
+          cd backend
+          # `migrate reset --force --skip-seed` drops + re-creates the schema
+          # so every CI run starts from byte-identical DB state. Avoids
+          # flakes caused by leaked migrations between job retries.
+          pnpm exec prisma migrate reset --force --skip-seed
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma db seed
       - name: Start backend
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prescriptions_test?schema=public
@@ -140,72 +248,157 @@ jobs:
           FRONTEND_URL: http://localhost:3001
           APP_ORIGIN: http://localhost:3001
           NODE_ENV: test
-          PORT: 3000
+          PORT: ${{ env.BACKEND_PORT }}
           SEED_DEFAULT_PASSWORD: Password123!
         run: |
-          git clone --depth 1 https://github.com/CristianMz21/prescriptions-app-backend.git backend
-          python3 frontend/scripts/harden-schema.py backend/openapi.json
           cd backend
-          pnpm install --frozen-lockfile
-          pnpm exec prisma generate
-          pnpm exec prisma migrate deploy
-          pnpm exec prisma db seed
           pnpm start:dev > ../backend.log 2>&1 &
           echo $! > ../backend.pid
-
-      - name: Wait for backend health
+      - name: Wait for backend readiness (strict 401 on /auth/profile)
+        # /auth/profile is guarded — we only accept the precise unauth
+        # response (401) as readiness. A 000/404/500 means the server
+        # is not actually serving the route stack yet.
         run: |
-          for i in {1..30}; do
-            if curl -sf http://127.0.0.1:3000/auth/profile > /dev/null 2>&1; then
-              echo "Backend ready"
-              break
+          for i in {1..60}; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:${BACKEND_PORT}/auth/profile || echo "000")
+            if [ "$CODE" = "401" ]; then
+              echo "Backend ready (HTTP $CODE on /auth/profile)"
+              exit 0
             fi
-            echo "Waiting for backend... ($i/30)"
+            echo "Waiting for backend... ($i/60) last code: $CODE"
             sleep 3
           done
-
-      - name: Start frontend
+          echo "::error::Backend never reached HTTP 401 on /auth/profile. Logs:"
+          cat backend.log
+          exit 1
+      - name: Regenerate API client from local backend
         env:
-          NEXT_PUBLIC_API_URL: http://127.0.0.1:3000
           OPENAPI_SPEC_PATH: ../backend/openapi.json
+        run: cd frontend && pnpm api:refresh
+      - name: Build frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:${{ env.BACKEND_PORT }}
+        run: cd frontend && pnpm build
+      - name: Start frontend (production)
+        env:
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:${{ env.BACKEND_PORT }}
         run: |
           cd frontend
-          pnpm api:refresh
-          pnpm build
-          pnpm exec next start -p 3001 > ../frontend.log 2>&1 &
+          pnpm exec next start -p ${{ env.FRONTEND_PORT }} > ../frontend.log 2>&1 &
           echo $! > ../frontend.pid
-
-      - name: Wait for frontend
+      - name: Wait for frontend readiness (strict 200 on /login)
         run: |
-          for i in {1..30}; do
-            if curl -sf http://127.0.0.1:3001/login > /dev/null 2>&1; then
-              echo "Frontend ready"
-              break
+          for i in {1..60}; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${FRONTEND_PORT}/login || echo "000")
+            if [ "$CODE" = "200" ]; then
+              echo "Frontend ready (HTTP $CODE on /login)"
+              exit 0
             fi
-            echo "Waiting for frontend... ($i/30)"
+            echo "Waiting for frontend... ($i/60) last code: $CODE"
             sleep 3
           done
-
-      - name: Run E2E tests
-        run: cd frontend && pnpm test:e2e
+          echo "::error::Frontend never reached HTTP 200 on /login. Logs:"
+          cat frontend.log
+          exit 1
+      - name: Run Playwright E2E
         env:
-          E2E_BACKEND_URL: http://localhost:3000
-          E2E_FRONTEND_URL: http://localhost:3001
-
+          E2E_BACKEND_URL: http://localhost:${{ env.BACKEND_PORT }}
+          E2E_FRONTEND_URL: http://localhost:${{ env.FRONTEND_PORT }}
+        run: cd frontend && pnpm test:e2e
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: playwright-report-ci
+          name: playwright-report
           path: frontend/playwright-report/
           retention-days: 7
-
-      - name: Upload logs
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Upload Playwright traces & test-results
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ci-logs
+          name: playwright-test-results
+          path: frontend/test-results/
+          retention-days: 7
+      - name: Upload server logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: server-logs
           path: |
             backend.log
             frontend.log
           retention-days: 7
+      - name: Cleanup background processes
+        if: always()
+        run: |
+          [ -f backend.pid ] && kill "$(cat backend.pid)" 2>/dev/null || true
+          [ -f frontend.pid ] && kill "$(cat frontend.pid)" 2>/dev/null || true
+
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    needs: unit-coverage
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+      - name: Download coverage artifact
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: coverage-lcov
+          path: coverage
+      - name: SonarCloud Scan (block on Quality Gate)
+        uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >
+            -Dsonar.qualitygate.wait=true
+
+  forbidden-patterns:
+    name: Forbidden Patterns
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Scan for unsafe shortcuts
+        # Banned across the repo (excluding generated client and Next/coverage
+        # build output): .skip(, .only(, @ts-ignore, @ts-expect-error,
+        # eslint-disable, NOSONAR, `as any`, `: any`, `<any>`. Every hit
+        # fails the job. No continue-on-error, no path-based skipping.
+        run: |
+          set -uo pipefail
+          patterns=(
+            '\.skip\('
+            '\.only\('
+            '@ts-ignore'
+            '@ts-expect-error'
+            'eslint-disable'
+            'NOSONAR'
+            '\bas any\b'
+            ': any\b'
+            '<any>'
+          )
+          violations=0
+          for p in "${patterns[@]}"; do
+            if grep -rnE --include='*.ts' --include='*.tsx' "$p" . \
+                 --exclude-dir=node_modules \
+                 --exclude-dir=.next \
+                 --exclude-dir=coverage \
+                 --exclude-dir=playwright-report \
+                 --exclude-dir=test-results \
+                 --exclude-dir=src/lib/api/generated; then
+              echo "::error::Forbidden pattern detected: $p"
+              violations=$((violations + 1))
+            fi
+          done
+          if [ "$violations" -gt 0 ]; then
+            echo "::error::$violations forbidden-pattern category(ies) hit. Fix at root."
+            exit 1
+          fi
+          echo "All forbidden-pattern gates clean."
