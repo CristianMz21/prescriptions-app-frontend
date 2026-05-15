@@ -24,14 +24,16 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  // Local dev uses `next dev` which cold-compiles routes on first access —
-  // more than 2 workers causes parallel cold-compilation pile-ups and
-  // hydration/login timeouts. CI uses `next build && next start` (production
-  // server, no cold-compile), so 2 workers there is safe and roughly halves
-  // E2E wall-time. State-mutating tests (admin metrics, doctor create,
-  // patient consume) use unique med names + per-RX backend GETs to remain
-  // deterministic under parallelism.
-  workers: 2,
+  // Worker count is bounded by backend CPU, not by Next.js. The login flow
+  // hits NestJS `/auth/login` which performs a bcrypt.compare (cost ~100ms
+  // per call). On a 2-vCPU GitHub Actions runner with two Chromium browsers
+  // + two `next start` processes + bcrypt all competing, parallel logins
+  // serialise at the CPU and any 20s `waitForResponse(/auth/login)` times
+  // out (observed: 57/67 tests timed out at workers=2 in run #25900726600).
+  // Local dev (more cores) handles 2 fine. Keep CI at 1 worker — the
+  // suite stays deterministic; tighten this only if backend bcrypt rounds
+  // are lowered for the test fixture or runner CPU count increases.
+  workers: process.env.CI ? 1 : 2,
   reporter: [["list"], ["html", { open: "never" }]],
   globalSetup: "./e2e/global-setup.ts",
   use: {
