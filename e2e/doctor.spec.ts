@@ -79,12 +79,14 @@ test.describe("Doctor prescription flows", () => {
       "PENDING",
     );
 
-    // Verify detail view
+    // Verify detail view. The med name appears multiple times on the
+    // detail page (item heading + sub-line); `.first()` resolves the
+    // strict-mode violation while still proving the page rendered.
     await newRow.getByRole("link", { name: /view/i }).click();
-    await expect(page.getByText(medName)).toBeVisible();
-    await expect(page.getByText(/100mg/i)).toBeVisible();
-    await expect(page.getByText(/30 comprimidos/i)).toBeVisible();
-    await expect(page.getByText(/Once daily/i)).toBeVisible();
+    await expect(page.getByText(medName).first()).toBeVisible();
+    await expect(page.getByText(/100mg/i).first()).toBeVisible();
+    await expect(page.getByText(/30 comprimidos/i).first()).toBeVisible();
+    await expect(page.getByText(/Once daily/i).first()).toBeVisible();
   });
 
   test("doctor can download/view prescription PDF", async ({
@@ -142,13 +144,18 @@ test.describe("Doctor prescription flows", () => {
   }) => {
     await loginAs("doctor");
     await page.goto("/doctor/prescriptions/new");
-    const combobox = page.getByRole("combobox", { name: /patient/i });
-    await combobox.click();
-    await expect(page.getByRole("option").first()).toBeVisible();
-    await expect(
-      page.getByRole("option", { name: SEED.patient.email }),
-    ).toBeVisible({ timeout: 10_000 });
-    await page.getByRole("option", { name: SEED.patient.email }).click();
+    // Patient selector is an autocomplete textbox with <button> suggestions
+    // (previously a combobox/option). Type the full email to narrow to one
+    // match and click the matching button.
+    const patientSearch = page.getByRole("textbox", {
+      name: /search by patient/i,
+    });
+    await patientSearch.click();
+    await patientSearch.fill(SEED.patient.email);
+    await page
+      .getByRole("button", { name: new RegExp(SEED.patient.email, "i") })
+      .first()
+      .click();
     // Leave medication name blank — HTML5 required attribute will block submit
     // before our validation runs, so we assert the field invalidity directly.
     const nameInput = page.getByLabel("Medication name").first();
