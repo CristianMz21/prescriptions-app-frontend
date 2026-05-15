@@ -204,6 +204,11 @@ jobs:
         run: cd frontend && pnpm install --frozen-lockfile
       - name: Install backend dependencies (frozen)
         run: cd backend && pnpm install --frozen-lockfile
+      - name: Generate Prisma client (required before TS compile)
+        # `@prisma/client` ships only stub types until `prisma generate` runs;
+        # without this, the backend's `nest build` errors with `Module
+        # "@prisma/client/default" has no exported member 'Role'` etc.
+        run: cd backend && pnpm exec prisma generate
       - name: Install Playwright chromium (with system deps)
         run: cd frontend && pnpm exec playwright install --with-deps chromium
       - name: Wait for PostgreSQL
