@@ -14,6 +14,30 @@ import {
 import { useState, useEffect } from "react";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 
+interface SearchInputProps {
+  id: string;
+  placeholder: string;
+  value: string;
+  onChange: (next: string) => void;
+}
+
+function SearchInput({ id, placeholder, value, onChange }: SearchInputProps) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={id} className="label-uppercase">
+        Search
+      </Label>
+      <Input
+        id={id}
+        type="search"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+}
+
 export interface PrescriptionFilterValues {
   status?: string;
   fromDate?: string;
@@ -51,33 +75,17 @@ export function PrescriptionFiltersBar({
     }
   }, [debouncedQ, onChange, values.q]);
 
-  const SearchInput = ({
-    id,
-    placeholder,
-  }: {
-    id: string;
-    placeholder: string;
-  }) => (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id} className="label-uppercase">
-        Search
-      </Label>
-      <Input
-        id={id}
-        type="search"
-        placeholder={placeholder}
-        value={qLocal}
-        onChange={(e) => setQLocal(e.target.value)}
-      />
-    </div>
-  );
-
   if (role === "PATIENT") {
     return (
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
           <div className="md:col-span-8">
-            <SearchInput id="search-patient" placeholder="Medication or notes" />
+            <SearchInput
+              id="search-patient"
+              placeholder="Medication or notes"
+              value={qLocal}
+              onChange={setQLocal}
+            />
           </div>
           <div className="md:col-span-4 flex">
             <Button type="button" variant="outline" onClick={onClear}>
@@ -93,7 +101,12 @@ export function PrescriptionFiltersBar({
     return (
       <Card className="card-glass p-4 md:p-5 mb-4 rounded-2xl border border-outline-variant/30">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5 items-end">
-          <SearchInput id="search-doctor" placeholder="Notes, medication" />
+          <SearchInput
+            id="search-doctor"
+            placeholder="Notes, medication"
+            value={qLocal}
+            onChange={setQLocal}
+          />
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="status-doctor" className="label-uppercase">
@@ -203,7 +216,12 @@ export function PrescriptionFiltersBar({
   return (
     <Card className="card-glass p-4 mb-4">
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
-        <SearchInput id="search-admin" placeholder="Notes, medication" />
+        <SearchInput
+          id="search-admin"
+          placeholder="Notes, medication"
+          value={qLocal}
+          onChange={setQLocal}
+        />
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="status-admin" className="label-uppercase">
