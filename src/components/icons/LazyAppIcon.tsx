@@ -41,7 +41,11 @@ export function LazyAppIcon({
   }
   const Loader = LAZY_ICONS[name as LazyIconName];
   return (
-    <Suspense fallback={<AppIcon name={fallbackName} className="animate-spin" {...props} />}>
+    <Suspense
+      fallback={
+        <AppIcon name={fallbackName} className="animate-spin" {...props} />
+      }
+    >
       <Loader {...props} />
     </Suspense>
   );

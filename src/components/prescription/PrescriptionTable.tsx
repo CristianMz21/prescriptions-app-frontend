@@ -16,6 +16,7 @@ import {
   getPrescriptionExpiry,
   getUserDisplayName,
 } from "@/lib/prescription-ui";
+import { DataTableShell } from "@/components/shared/DataTableShell";
 
 interface Pagination {
   page: number;
@@ -39,8 +40,8 @@ export function PrescriptionTable({
   patientNameByEmail,
 }: PrescriptionTableProps) {
   return (
-    <div className="card-glass overflow-hidden shadow-lg rounded-2xl border border-outline-variant/30">
-      <div className="overflow-x-auto px-2 md:px-3 pb-2">
+    <DataTableShell className="shadow-lg">
+      <div className="px-2 md:px-3 pb-2">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
@@ -189,6 +190,6 @@ export function PrescriptionTable({
           </div>
         </div>
       ) : null}
-    </div>
+    </DataTableShell>
   );
 }

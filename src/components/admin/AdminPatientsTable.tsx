@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { useUsersFindAllPatients } from "@/lib/api/generated/prescriptionManagementAPI";
 import type {
   UserEntity,
@@ -70,13 +72,11 @@ export function AdminPatientsTable() {
   const meta = data?.meta;
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-primary">Patients</h2>
-        <p className="text-base text-on-surface-variant mt-1">
-          All patients in the system, filterable by birth date and age range.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Patients"
+        description="All patients in the system, filterable by birth date and age range."
+      />
 
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
@@ -318,6 +318,6 @@ export function AdminPatientsTable() {
           ) : null}
         </Card>
       )}
-    </div>
+    </PageShell>
   );
 }

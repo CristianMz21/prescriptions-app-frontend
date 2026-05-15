@@ -56,7 +56,11 @@ export function PrescriptionCardList() {
       <ErrorState
         message={error.message}
         action={
-          <Button type="button" variant="outline" onClick={() => void refetch()}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => void refetch()}
+          >
             Retry
           </Button>
         }

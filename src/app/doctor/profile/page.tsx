@@ -1,5 +1,7 @@
 import { requireRole } from "@/lib/auth/server";
 import { ProfileCard } from "@/components/account/ProfileCard";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { PageShell } from "@/components/shared/PageShell";
 
 function asDisplayString(value: unknown): string {
   if (value == null) return "—";
@@ -23,16 +25,12 @@ export default async function DoctorProfilePage() {
     : [];
 
   return (
-    <div className="mx-auto max-w-6xl px-3 md:px-6 lg:px-8 py-4 md:py-6">
-      <div className="mb-6 md:mb-8">
-        <h2 className="text-3xl font-bold text-primary tracking-tight">
-          My Profile
-        </h2>
-        <p className="text-base text-on-surface-variant mt-2">
-          Practitioner record on file with the clinic.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="My Profile"
+        description="Practitioner record on file with the clinic."
+      />
       <ProfileCard user={user} extras={extras} />
-    </div>
+    </PageShell>
   );
 }

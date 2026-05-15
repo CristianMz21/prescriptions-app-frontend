@@ -1,5 +1,7 @@
 import { requireRole } from "@/lib/auth/server";
 import { ProfileCard } from "@/components/account/ProfileCard";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { PageShell } from "@/components/shared/PageShell";
 
 export default async function PatientProfilePage() {
   const user = await requireRole(["PATIENT"]);
@@ -18,16 +20,12 @@ export default async function PatientProfilePage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-primary tracking-tight">
-          My Profile
-        </h2>
-        <p className="text-base text-on-surface-variant mt-2">
-          Read-only view of the account the clinic has on file.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="My Profile"
+        description="Read-only view of the account the clinic has on file."
+      />
       <ProfileCard user={user} extras={extras} />
-    </div>
+    </PageShell>
   );
 }

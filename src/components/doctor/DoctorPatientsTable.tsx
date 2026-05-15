@@ -30,6 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const FILTER_KEYS = [
   "q",
@@ -62,13 +64,11 @@ export function DoctorPatientsTable() {
   const meta = data?.meta;
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-primary">Patient Lookup</h2>
-        <p className="text-base text-on-surface-variant mt-1">
-          Find and view patient profiles by email or birth date.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Patient Lookup"
+        description="Find and view patient profiles by email or birth date."
+      />
 
       <Card className="card-glass p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
@@ -246,6 +246,6 @@ export function DoctorPatientsTable() {
           ) : null}
         </Card>
       )}
-    </div>
+    </PageShell>
   );
 }

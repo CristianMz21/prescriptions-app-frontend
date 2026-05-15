@@ -24,6 +24,8 @@ import { routes } from "@/lib/routes";
 import { usePagination } from "@/lib/hooks/usePagination";
 import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
 import { useMemo } from "react";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const FILTER_KEYS = [
   "status",
@@ -73,21 +75,20 @@ export function DoctorPrescriptionList() {
   }, [patientsData?.data]);
 
   return (
-    <div className="space-y-5 px-2 md:px-4 lg:px-5">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div>
-          <h2 className="text-3xl font-bold text-primary">
-            Active Prescriptions
-          </h2>
-          <p className="text-base text-on-surface-variant mt-1">
-            Manage and monitor pending and active scripts.
-          </p>
-        </div>
-        <Link href={routes.doctor.newPrescription} className={buttonVariants()}>
-          <span className="material-symbols-outlined text-lg">add</span>
-          New Prescription
-        </Link>
-      </div>
+    <PageShell className="space-y-5">
+      <PageHeader
+        title="Active Prescriptions"
+        description="Manage and monitor pending and active scripts."
+        actions={
+          <Link
+            href={routes.doctor.newPrescription}
+            className={buttonVariants()}
+          >
+            <span className="material-symbols-outlined text-lg">add</span>
+            New Prescription
+          </Link>
+        }
+      />
 
       <PrescriptionFiltersBar
         values={values}
@@ -107,7 +108,11 @@ export function DoctorPrescriptionList() {
         <ErrorState
           message={error.message}
           action={
-            <Button type="button" variant="outline" onClick={() => void refetch()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void refetch()}
+            >
               Retry
             </Button>
           }
@@ -118,9 +123,7 @@ export function DoctorPrescriptionList() {
             const prescriptions =
               (data?.data as PrescriptionResponseDto[] | undefined) ?? [];
             if (prescriptions.length === 0) {
-              return (
-                <EmptyState icon="pill" title="No prescriptions found" />
-              );
+              return <EmptyState icon="pill" title="No prescriptions found" />;
             }
             return (
               <PrescriptionTable
@@ -133,6 +136,6 @@ export function DoctorPrescriptionList() {
             );
           })()
         : null}
-    </div>
+    </PageShell>
   );
 }

@@ -10,6 +10,8 @@ import { ErrorState } from "@/components/feedback/ErrorState";
 import { MetricCardsSkeleton } from "@/components/feedback/Skeletons";
 import { isDoctorAnalyticsEnabled } from "@/lib/features";
 import { routes } from "@/lib/routes";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 export default function DoctorAnalyticsPage() {
   const router = useRouter();
@@ -32,15 +34,11 @@ export default function DoctorAnalyticsPage() {
   if (!enabled) return null;
 
   return (
-    <div>
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-primary tracking-tight">
-          My Activity
-        </h2>
-        <p className="text-base text-on-surface-variant mt-2">
-          Activity scoped to {user?.email ?? "you"} — last 100 issued scripts.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="My Activity"
+        description={`Activity scoped to ${user?.email ?? "you"} — last 100 issued scripts.`}
+      />
 
       {isLoading ? <MetricCardsSkeleton /> : null}
       {error ? <ErrorState message={error.message} /> : null}
@@ -55,11 +53,7 @@ export default function DoctorAnalyticsPage() {
               total > 0 ? Math.round((consumed / total) * 100) : 0;
             return (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                <MetricCard
-                  label="Issued (recent)"
-                  value={total}
-                  icon="pill"
-                />
+                <MetricCard label="Issued (recent)" value={total} icon="pill" />
                 <MetricCard
                   label="Pending"
                   value={pending}
@@ -79,6 +73,6 @@ export default function DoctorAnalyticsPage() {
             );
           })()
         : null}
-    </div>
+    </PageShell>
   );
 }

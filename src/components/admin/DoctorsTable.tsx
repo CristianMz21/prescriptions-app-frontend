@@ -195,10 +195,7 @@ export function DoctorsTable() {
       {error ? <ErrorState message={error.message} /> : null}
 
       {doctors.length === 0 && !isLoading && !error ? (
-        <EmptyState
-          icon="hospital"
-          title="No doctors match these filters"
-        />
+        <EmptyState icon="hospital" title="No doctors match these filters" />
       ) : (
         <Card className="card-glass overflow-hidden p-0 gap-0">
           <Table>

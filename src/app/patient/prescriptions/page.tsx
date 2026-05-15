@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { PrescriptionCardList } from "@/components/prescription/PrescriptionCardList";
 import { routes } from "@/lib/routes";
 import { notify } from "@/lib/notifications";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 export default function PatientPrescriptionsPage() {
   const searchParams = useSearchParams();
@@ -17,17 +19,12 @@ export default function PatientPrescriptionsPage() {
   }, [router, searchParams]);
 
   return (
-    <div className="mx-auto max-w-6xl px-2 md:px-4">
-      <div className="mb-8 md:mb-10 flex flex-col gap-2">
-        <h2 className="text-3xl font-bold text-primary tracking-tight">
-          My Prescriptions
-        </h2>
-        <p className="text-base text-on-surface-variant max-w-xl">
-          Review your current medications, dosage instructions, and manage
-          consumption records.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="My Prescriptions"
+        description="Review your current medications, dosage instructions, and manage consumption records."
+      />
       <PrescriptionCardList />
-    </div>
+    </PageShell>
   );
 }

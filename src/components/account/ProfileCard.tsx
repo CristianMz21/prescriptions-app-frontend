@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { notify } from "@/lib/notifications";
 import { qk } from "@/lib/api/queryKeys";
+import { InlineError } from "@/components/shared/InlineError";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required").max(120),
@@ -140,11 +141,7 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
                 {...register("name")}
                 className={errors.name ? "border-error" : ""}
               />
-              {errors.name && (
-                <span className="text-xs text-error">
-                  {errors.name.message}
-                </span>
-              )}
+              <InlineError message={errors.name?.message} />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="phone" className="label-uppercase">
@@ -157,11 +154,7 @@ export function ProfileCard({ user, extras = [], actions }: ProfileCardProps) {
                 {...register("phone")}
                 className={errors.phone ? "border-error" : ""}
               />
-              {errors.phone && (
-                <span className="text-xs text-error">
-                  {errors.phone.message}
-                </span>
-              )}
+              <InlineError message={errors.phone?.message} />
             </div>
           </div>
           <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-2">

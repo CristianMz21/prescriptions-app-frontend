@@ -19,6 +19,8 @@ import { useUrlFilters } from "@/lib/hooks/useUrlFilters";
 import { routes } from "@/lib/routes";
 import { useLegacyUrlMigration } from "@/lib/hooks/useLegacyUrlMigration";
 import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const FILTER_KEYS = [
   "status",
@@ -75,13 +77,11 @@ export function AdminPrescriptionsView() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-primary">All Prescriptions</h2>
-        <p className="text-base text-on-surface-variant mt-1">
-          Read-only audit view across every doctor and patient.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="All Prescriptions"
+        description="Read-only audit view across every doctor and patient."
+      />
 
       <PrescriptionFiltersBar
         values={values}
@@ -95,7 +95,11 @@ export function AdminPrescriptionsView() {
         <ErrorState
           message={error.message}
           action={
-            <Button type="button" variant="outline" onClick={() => void refetch()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void refetch()}
+            >
               Retry
             </Button>
           }
@@ -123,6 +127,6 @@ export function AdminPrescriptionsView() {
             );
           })()
         : null}
-    </div>
+    </PageShell>
   );
 }
