@@ -8,10 +8,10 @@ test.describe("UI behavior under backend failure / empty data", () => {
     page,
     context,
   }) => {
-    await loginAs("doctor");
-    // Mock the next list fetch only — login already passed.
+    let mocked = false;
     await context.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
-      if (route.request().method() === "GET") {
+      if (!mocked && route.request().method() === "GET") {
+        mocked = true;
         return route.fulfill({
           status: 500,
           contentType: "application/json",
@@ -20,7 +20,9 @@ test.describe("UI behavior under backend failure / empty data", () => {
       }
       return route.continue();
     });
-    await page.goto("/doctor/prescriptions");
+
+    await loginAs("doctor");
+
     await expect(page.getByTestId("error-state")).toBeVisible();
     await expect(page.getByText(/forced failure/i)).toBeVisible();
     await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
@@ -31,9 +33,10 @@ test.describe("UI behavior under backend failure / empty data", () => {
     page,
     context,
   }) => {
-    await loginAs("patient");
+    let mocked = false;
     await context.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
-      if (route.request().method() === "GET") {
+      if (!mocked && route.request().method() === "GET") {
+        mocked = true;
         return route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -45,7 +48,9 @@ test.describe("UI behavior under backend failure / empty data", () => {
       }
       return route.continue();
     });
-    await page.goto("/patient/prescriptions");
+
+    await loginAs("patient");
+
     await expect(page.getByText("No prescriptions found")).toBeVisible();
     await expect(page.getByTestId("prescription-card")).toHaveCount(0);
     await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
