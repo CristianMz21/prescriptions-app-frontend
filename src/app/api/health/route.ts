@@ -1,15 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from "next/server";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export function GET() {
   return NextResponse.json(
     {
       ok: true,
-      service: 'prescriptions-frontend',
+      service: "prescriptions-frontend",
       uptimeSeconds: Math.round(process.uptime()),
       timestamp: new Date().toISOString(),
     },
-    { headers: { 'Cache-Control': 'no-store' } },
-  )
+    { headers: { "Cache-Control": "no-store" } },
+  );
 }

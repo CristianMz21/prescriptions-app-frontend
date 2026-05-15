@@ -1,26 +1,22 @@
-import type { MetricsResponseDto } from '@/lib/api/generated/schemas'
-import { Card } from '@/components/ui/card'
-import { MetricCard } from './MetricCard'
+import type { MetricsResponseDto } from "@/lib/api/generated/schemas";
+import { Card } from "@/components/ui/card";
+import { MetricCard } from "./MetricCard";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface MetricsGridProps {
-  metrics: MetricsResponseDto
+  metrics: MetricsResponseDto;
 }
 
 export function MetricsGrid({ metrics }: MetricsGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
       <MetricCard
         label="Total Prescriptions"
         value={metrics.totals.prescriptions}
-        icon="medication"
+        icon="pill"
         footer={
           <>
-            <span
-              className="material-symbols-outlined text-sm"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              arrow_upward
-            </span>
+            <AppIcon name="trendingUp" size="xs" />
             <span>Total issued</span>
           </>
         }
@@ -28,15 +24,10 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <MetricCard
         label="Active Patients"
         value={metrics.totals.patients}
-        icon="group"
+        icon="users"
         footer={
           <>
-            <span
-              className="material-symbols-outlined text-sm"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              arrow_upward
-            </span>
+            <AppIcon name="trendingUp" size="xs" />
             <span>Registered</span>
           </>
         }
@@ -44,15 +35,10 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <MetricCard
         label="Active Doctors"
         value={metrics.totals.doctors}
-        icon="local_hospital"
+        icon="hospital"
         footer={
           <>
-            <span
-              className="material-symbols-outlined text-sm"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              arrow_upward
-            </span>
+            <AppIcon name="trendingUp" size="xs" />
             <span>On duty</span>
           </>
         }
@@ -64,9 +50,10 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       >
         <div className="flex justify-between items-start mb-4">
           <span className="label-uppercase">Prescription Status</span>
-          <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">
-            analytics
-          </span>
+          <AppIcon
+            name="barChart3"
+            className="text-on-surface-variant group-hover:text-primary transition-colors"
+          />
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
@@ -84,5 +71,5 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
         </div>
       </Card>
     </div>
-  )
+  );
 }

@@ -5,42 +5,80 @@
  * API documentation for the MVP Prescription Management System.
  * OpenAPI spec version: 0.0.1
  */
+import type { PrescriptionSortBy } from './prescriptionSortBy';
 import type { PrescriptionStatus } from './prescriptionStatus';
+import type { SortOrder } from './sortOrder';
 
 export type AdminListPrescriptionsParams = {
 /**
- * Page number (1-indexed)
+ * Page number (1-indexed).
  * @minimum 1
  */
 page?: number;
 /**
- * Number of items per page
+ * Items per page (capped at 100 to bound DB cost).
  * @minimum 1
+ * @maximum 100
  */
 limit?: number;
+/**
+ * Sort direction.
+ */
+sortOrder?: SortOrder;
 /**
  * Filter by prescription status
  */
 status?: PrescriptionStatus;
 /**
- * Filter by author UUID (Doctor.id)
+ * Filter by author identifier — Doctor.id or related User.id.
  */
 authorId?: string;
 /**
- * Filter by patient UUID (Patient.id)
+ * Filter by patient identifier — Patient.id or related User.id.
  */
 patientId?: string;
 /**
- * Filter prescriptions created on or after this date (ISO 8601)
+ * Filter by createdAt >= fromDate (ISO 8601).
  */
-from?: string;
+fromDate?: string;
 /**
- * Filter prescriptions created on or before this date (ISO 8601)
+ * Filter by createdAt <= toDate (ISO 8601).
  */
-to?: string;
+toDate?: string;
 /**
- * Free-text query. Case-insensitive substring match against prescription notes and item names.
+ * Filter by consumedAt >= consumedFromDate (ISO 8601).
+ */
+consumedFromDate?: string;
+/**
+ * Filter by consumedAt <= consumedToDate (ISO 8601).
+ */
+consumedToDate?: string;
+/**
+ * Match case-insensitive substring against Prescription.code (e.g. "RX-AB").
+ * @maxLength 64
+ */
+code?: string;
+/**
+ * Filter by presence of notes. true → notes IS NOT NULL; false → notes IS NULL.
+ */
+hasNotes?: boolean;
+/**
+ * Substring match (case-insensitive) on patient.user.email.
+ * @maxLength 255
+ */
+patientEmail?: string;
+/**
+ * Substring match (case-insensitive) on author.user.email.
+ * @maxLength 255
+ */
+doctorEmail?: string;
+/**
+ * Free-text query. Case-insensitive substring against prescription notes and item names.
  * @maxLength 200
  */
 q?: string;
+/**
+ * Field to sort by (whitelist).
+ */
+sortBy?: PrescriptionSortBy;
 };

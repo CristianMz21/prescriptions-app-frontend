@@ -17,4 +17,6 @@ export interface CreatePrescriptionDto {
   items: PrescriptionItemDto[];
   /** Additional notes from the doctor */
   notes?: string;
+  /** Optional date past which the prescription is considered invalid; independent of consumedAt. */
+  expiryDate?: string;
 }

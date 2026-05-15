@@ -11,8 +11,13 @@ export interface PrescriptionItemDto {
   name: string;
   /** Dosage of the medication */
   dosage?: string;
-  /** Quantity to dispense (number of units) */
+  /** Quantity to dispense (number of units of `unit`) */
   quantity?: number;
+  /**
+     * Unit of measure that gives `quantity` meaning (mg, ml, cápsulas, comprimidos, gotas, ...). Required.
+     * @maxLength 32
+     */
+  unit: string;
   /** Instructions for the patient */
   instructions?: string;
 }

@@ -6,33 +6,69 @@
  * OpenAPI spec version: 0.0.1
  */
 import type { PrescriptionsFindAllStatus } from './prescriptionsFindAllStatus';
+import type { PrescriptionSortBy } from './prescriptionSortBy';
+import type { SortOrder } from './sortOrder';
 
 export type PrescriptionsFindAllParams = {
 /**
- * Número de página (1-indexed).
+ * Page number (1-indexed).
  * @minimum 1
  */
 page?: number;
 /**
- * Cantidad de items por página.
+ * Items per page (capped at 100 to bound DB cost).
  * @minimum 1
+ * @maximum 100
  */
 limit?: number;
+/**
+ * Sort direction.
+ */
+sortOrder?: SortOrder;
 /**
  * Filtrar por estado de prescripción.
  */
 status?: PrescriptionsFindAllStatus;
 /**
- * Filtrar desde fecha (ISO 8601).
+ * Filtrar por createdAt >= fromDate (ISO 8601).
  */
 fromDate?: string;
 /**
- * Filtrar hasta fecha (ISO 8601).
+ * Filtrar por createdAt <= toDate (ISO 8601).
  */
 toDate?: string;
+/**
+ * Filtrar por consumedAt >= consumedFromDate (ISO 8601).
+ */
+consumedFromDate?: string;
+/**
+ * Filtrar por consumedAt <= consumedToDate (ISO 8601).
+ */
+consumedToDate?: string;
+/**
+ * Match case-insensitive substring against Prescription.code (e.g. "RX-AB").
+ * @maxLength 64
+ */
+code?: string;
+/**
+ * Filter by patient. Accepts either Patient.id or the related User.id (server resolves either form). Ignored when caller role is PATIENT (tenant boundary).
+ */
+patientId?: string;
+/**
+ * Filter by doctor (author). Accepts either Doctor.id or the related User.id. Ignored when caller role is DOCTOR (tenant boundary).
+ */
+authorId?: string;
+/**
+ * Filter by presence of notes. true → notes IS NOT NULL; false → notes IS NULL.
+ */
+hasNotes?: boolean;
 /**
  * Case-insensitive substring match against prescription notes and item names. Role-based visibility is preserved.
  * @maxLength 200
  */
 q?: string;
+/**
+ * Field to sort by (whitelist).
+ */
+sortBy?: PrescriptionSortBy;
 };

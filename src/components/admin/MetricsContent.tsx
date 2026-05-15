@@ -1,57 +1,71 @@
-'use client'
+"use client";
 
-import { useAdminGetMetrics } from '@/lib/api/generated/prescriptionManagementAPI'
-import { ErrorState } from '@/components/feedback/ErrorState'
-import { MetricCardsSkeleton } from '@/components/feedback/Skeletons'
-import { useMetricsStream } from '@/lib/hooks/useMetricsStream'
-import { MetricsGrid } from './MetricsGrid'
-import { StatusDistribution } from './StatusDistribution'
-import { VolumeTrendsChart } from './VolumeTrendsChart'
-import { TopDoctorsTable } from './TopDoctorsTable'
+import { useAdminGetMetrics } from "@/lib/api/generated/prescriptionManagementAPI";
+import { ErrorState } from "@/components/feedback/ErrorState";
+import { MetricCardsSkeleton } from "@/components/feedback/Skeletons";
+import { useMetricsStream } from "@/lib/hooks/useMetricsStream";
+import { MetricsGrid } from "./MetricsGrid";
+import { StatusDistribution } from "./StatusDistribution";
+import { VolumeTrendsChart } from "./VolumeTrendsChart";
+import { TopDoctorsTable } from "./TopDoctorsTable";
+import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 interface MetricsContentProps {
-  live?: boolean
+  live?: boolean;
 }
 
 export function MetricsContent({ live = true }: MetricsContentProps = {}) {
-  const { data: metrics, isLoading, error } = useAdminGetMetrics()
-  useMetricsStream(live)
+  const { data: metrics, isLoading, error, refetch } = useAdminGetMetrics();
+  useMetricsStream(live);
 
   if (isLoading) {
     return (
-      <div data-testid="metrics-overview" className="max-w-[1440px] mx-auto w-full">
-        <header className="mb-8">
-          <h2 className="text-3xl font-bold text-primary tracking-tight">System Overview</h2>
-          <p className="text-base text-on-surface-variant mt-1">
-            Real-time metrics for network operations.
-          </p>
-        </header>
+      <PageShell data-testid="metrics-overview">
+        <PageHeader
+          title="System Overview"
+          description="Real-time metrics for network operations."
+        />
         <MetricCardsSkeleton />
-      </div>
-    )
+      </PageShell>
+    );
   }
-  if (error) return <ErrorState message={error.message} />
-  if (!metrics) return null
+  if (error)
+    return (
+      <ErrorState
+        message={error.message}
+        action={
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              refetch().catch(() => undefined);
+            }}
+          >
+            Retry
+          </Button>
+        }
+      />
+    );
+  if (!metrics) return null;
 
   return (
-    <div data-testid="metrics-overview" className="max-w-[1440px] mx-auto w-full">
-      <header className="mb-8">
-        <h2 className="text-3xl font-bold text-primary tracking-tight">
-          System Overview
-        </h2>
-        <p className="text-base text-on-surface-variant mt-1">
-          Real-time metrics for network operations.
-        </p>
-      </header>
+    <PageShell data-testid="metrics-overview" className="space-y-7">
+      <PageHeader
+        title="System Overview"
+        description="Real-time metrics for network operations."
+      />
 
       <MetricsGrid metrics={metrics} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <VolumeTrendsChart />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
+        <VolumeTrendsChart byDay={metrics.byDay} />
         <StatusDistribution metrics={metrics} />
       </div>
-
-      <TopDoctorsTable doctors={metrics.topDoctors} />
-    </div>
-  )
+      <div className="pt-1">
+        <TopDoctorsTable doctors={metrics.topDoctors} />
+      </div>
+    </PageShell>
+  );
 }

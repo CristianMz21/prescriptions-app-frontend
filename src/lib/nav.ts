@@ -1,27 +1,39 @@
-import type { Role } from '@/lib/api/generated/schemas'
-import { routes } from './routes'
+import type { Role } from "@/lib/api/generated/schemas";
+import { routes } from "./routes";
+import { isDoctorAnalyticsEnabled } from "./features";
+import type { AppIconName } from "@/config/icon-registry";
 
 export interface NavItem {
-  href: string
-  label: string
-  icon: string
+  href: string;
+  label: string;
+  icon: AppIconName;
 }
+
+const navItem = (href: string, label: string, icon: AppIconName): NavItem => ({
+  href,
+  label,
+  icon,
+});
 
 export const navigationByRole: Record<Role, NavItem[]> = {
   ADMIN: [
-    { href: routes.admin.metrics, label: 'Analytics', icon: 'monitoring' },
-    { href: routes.admin.prescriptions, label: 'Prescriptions', icon: 'medication' },
-    { href: routes.admin.users, label: 'Users', icon: 'group' },
-    { href: routes.admin.doctors, label: 'Doctors', icon: 'local_hospital' },
+    navItem(routes.admin.metrics, "Analytics", "barChart3"),
+    navItem(routes.admin.prescriptions, "Prescriptions", "pill"),
+    navItem(routes.admin.users, "Users", "users"),
+    navItem(routes.admin.doctors, "Doctors", "hospital"),
+    navItem(routes.admin.patients, "Patients", "userRound"),
   ],
   DOCTOR: [
-    { href: routes.doctor.prescriptions, label: 'Prescriptions', icon: 'medication' },
-    { href: routes.doctor.newPrescription, label: 'New Script', icon: 'add_circle' },
-    { href: routes.doctor.analytics, label: 'Analytics', icon: 'monitoring' },
-    { href: routes.doctor.profile, label: 'Profile', icon: 'account_circle' },
+    navItem(routes.doctor.prescriptions, "Prescriptions", "pill"),
+    navItem(routes.doctor.newPrescription, "New Script", "circlePlus"),
+    navItem(routes.doctor.patients, "Patients", "userRound"),
+    ...(isDoctorAnalyticsEnabled()
+      ? [navItem(routes.doctor.analytics, "Analytics", "barChart3")]
+      : []),
+    navItem(routes.doctor.profile, "Profile", "userCircle2"),
   ],
   PATIENT: [
-    { href: routes.patient.prescriptions, label: 'My Prescriptions', icon: 'medication' },
-    { href: routes.patient.profile, label: 'Profile', icon: 'account_circle' },
+    navItem(routes.patient.prescriptions, "My Prescriptions", "pill"),
+    navItem(routes.patient.profile, "Profile", "userCircle2"),
   ],
-}
+};

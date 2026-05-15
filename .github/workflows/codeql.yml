@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/**'
-      - 'app/**'
-      - 'lib/**'
-      - 'components/**'
+      - "src/**"
+      - "app/**"
+      - "lib/**"
+      - "components/**"
   pull_request:
     branches: [main]
     paths:
-      - 'src/**'
-      - 'app/**'
-      - 'lib/**'
-      - 'components/**'
+      - "src/**"
+      - "app/**"
+      - "lib/**"
+      - "components/**"
   workflow_dispatch:
 
 concurrency:

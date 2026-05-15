@@ -1,11 +1,12 @@
-import type { ReactNode } from 'react'
-import type { Role } from '@/lib/api/generated/schemas'
-import { Sidebar } from './Sidebar'
-import { MobileTopBar } from './MobileTopBar'
+import type { ReactNode } from "react";
+import type { Role } from "@/lib/api/generated/schemas";
+import { Sidebar } from "./Sidebar";
+import { MobileTopBar } from "./MobileTopBar";
+import { AppBreadcrumbs } from "./AppBreadcrumbs";
 
 interface AppShellProps {
-  role: Role
-  children: ReactNode
+  role: Role;
+  children: ReactNode;
 }
 
 export function AppShell({ role, children }: AppShellProps) {
@@ -16,8 +17,11 @@ export function AppShell({ role, children }: AppShellProps) {
       </div>
       <div className="flex-1 flex flex-col md:ml-64">
         <MobileTopBar role={role} />
-        <main className="flex-1 p-4 md:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-7 lg:p-10 space-y-4">
+          <AppBreadcrumbs />
+          {children}
+        </main>
       </div>
     </div>
-  )
+  );
 }

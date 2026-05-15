@@ -18,28 +18,27 @@ import {
   getUsersFindAllPatientsQueryKey,
   getUsersFindAllQueryKey,
   getUsersFindOneQueryKey,
-} from './generated/prescriptionManagementAPI'
+} from "./generated/prescriptionManagementAPI";
 import type {
   AdminGetMetricsParams,
   PrescriptionsFindAllParams,
   UsersFindAllDoctorsParams,
   UsersFindAllParams,
   UsersFindAllPatientsParams,
-} from './generated/schemas'
+} from "./generated/schemas";
 
 export const qk = {
   auth: {
     profile: () => getAuthGetProfileQueryKey(),
   },
   prescriptions: {
-    all: ['/prescriptions'] as const,
+    all: ["/prescriptions"] as const,
     list: (params?: PrescriptionsFindAllParams) =>
       getPrescriptionsFindAllQueryKey(params),
     detail: (id: string) => getPrescriptionsFindOneQueryKey(id),
   },
   users: {
-    all: (params?: UsersFindAllParams) =>
-      getUsersFindAllQueryKey(params),
+    all: (params?: UsersFindAllParams) => getUsersFindAllQueryKey(params),
     patients: (params?: UsersFindAllPatientsParams) =>
       getUsersFindAllPatientsQueryKey(params),
     doctors: (params?: UsersFindAllDoctorsParams) =>
@@ -50,4 +49,4 @@ export const qk = {
     summary: (params?: AdminGetMetricsParams) =>
       getAdminGetMetricsQueryKey(params),
   },
-} as const
+} as const;

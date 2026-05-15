@@ -1,5 +1,5 @@
-import { MetricsContent } from '@/components/admin/MetricsContent'
+import { MetricsContent } from "@/components/admin/MetricsContent";
 
 export default function AdminMetricsPage() {
-  return <MetricsContent />
+  return <MetricsContent />;
 }

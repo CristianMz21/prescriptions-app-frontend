@@ -43,6 +43,7 @@ import type {
   PrescriptionsFindAllParams,
   RefreshResponseDto,
   UpdateThemeDto,
+  UpdateUserDto,
   UserEntity,
   UserProfileResponseDto,
   UserResponseDto,
@@ -838,6 +839,70 @@ export const useUsersUpdateMyTheme = <TError = ErrorResponseDto,
         TContext
       > => {
       return useMutation(getUsersUpdateMyThemeMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Update the authenticated user profile (name and/or phone)
+ */
+export const usersUpdateMe = (
+    updateUserDto: UpdateUserDto,
+ signal?: AbortSignal
+) => {
+
+
+      return customInstance<UserResponseDto>(
+      {url: `/users/me`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateUserDto, signal
+    },
+      );
+    }
+
+
+
+export const getUsersUpdateMeMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersUpdateMe>>, TError,{data: UpdateUserDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof usersUpdateMe>>, TError,{data: UpdateUserDto}, TContext> => {
+
+const mutationKey = ['usersUpdateMe'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersUpdateMe>>, {data: UpdateUserDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  usersUpdateMe(data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersUpdateMeMutationResult = NonNullable<Awaited<ReturnType<typeof usersUpdateMe>>>
+    export type UsersUpdateMeMutationBody = UpdateUserDto
+    export type UsersUpdateMeMutationError = ErrorResponseDto
+
+    /**
+ * @summary Update the authenticated user profile (name and/or phone)
+ */
+export const useUsersUpdateMe = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersUpdateMe>>, TError,{data: UpdateUserDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersUpdateMe>>,
+        TError,
+        {data: UpdateUserDto},
+        TContext
+      > => {
+      return useMutation(getUsersUpdateMeMutationOptions(options), queryClient);
     }
 
 /**

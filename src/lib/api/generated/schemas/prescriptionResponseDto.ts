@@ -41,4 +41,9 @@ export interface PrescriptionResponseDto {
   author: PrescriptionAuthorSummaryDto;
   /** Patient summary */
   patient: PrescriptionPatientSummaryDto;
+  /**
+     * Optional date past which the prescription is considered invalid.
+     * @nullable
+     */
+  expiryDate?: string | null;
 }

@@ -1,15 +1,20 @@
-import axios, { type AxiosRequestConfig, AxiosError } from 'axios'
+import axios, { type AxiosRequestConfig, AxiosError } from "axios";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3000'
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE_URL && typeof window !== "undefined") {
+  console.warn(
+    "NEXT_PUBLIC_API_URL is not defined. API requests will fail if they are not relative.",
+  );
+}
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-})
+});
 
 export class ApiError extends Error {
   constructor(
@@ -17,42 +22,52 @@ export class ApiError extends Error {
     public readonly message: string,
     public readonly path?: string,
   ) {
-    super(message)
-    this.name = 'ApiError'
+    super(message);
+    this.name = "ApiError";
   }
 }
 
 // Endpoints whose 401 must NOT trigger a refresh attempt — refreshing them
 // would either loop infinitely or overwrite a deliberate logout.
-const AUTH_ENDPOINTS = ['/auth/login', '/auth/refresh', '/auth/logout', '/auth/profile']
+const AUTH_ENDPOINTS = [
+  "/auth/login",
+  "/auth/refresh",
+  "/auth/logout",
+  "/auth/profile",
+];
 
 function isAuthRequest(url?: string): boolean {
-  if (!url) return false
-  return AUTH_ENDPOINTS.some((path) => url.includes(path))
+  if (!url) return false;
+  return AUTH_ENDPOINTS.some((path) => url.includes(path));
 }
 
 // Single in-flight refresh promise so concurrent 401s coalesce into one
 // /auth/refresh call. After settle, the next 401 starts a fresh attempt.
-let inflightRefresh: Promise<void> | null = null
+let inflightRefresh: Promise<void> | null = null;
 
 async function refreshSession(): Promise<void> {
-  if (inflightRefresh) return inflightRefresh
+  if (inflightRefresh) return inflightRefresh;
   inflightRefresh = apiClient
-    .post('/auth/refresh', {}, { _skipAuthInterceptor: true } as AxiosRequestConfig)
+    .post("/auth/refresh", {}, {
+      _skipAuthInterceptor: true,
+    } as AxiosRequestConfig)
     .then(() => undefined)
     .finally(() => {
-      inflightRefresh = null
-    })
-  return inflightRefresh
+      inflightRefresh = null;
+    });
+  return inflightRefresh;
 }
 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const config = error.config as
-      | (AxiosRequestConfig & { _retry?: boolean; _skipAuthInterceptor?: boolean })
-      | undefined
-    const status = error.response?.status
+      | (AxiosRequestConfig & {
+          _retry?: boolean;
+          _skipAuthInterceptor?: boolean;
+        })
+      | undefined;
+    const status = error.response?.status;
 
     // Try a one-shot refresh + replay only when:
     // - the original call returned 401
@@ -67,9 +82,9 @@ apiClient.interceptors.response.use(
       !isAuthRequest(config.url)
     ) {
       try {
-        await refreshSession()
-        config._retry = true
-        return apiClient.request(config)
+        await refreshSession();
+        config._retry = true;
+        return apiClient.request(config);
       } catch {
         // Fall through to ApiError below — refresh failed, the user is
         // genuinely unauthenticated. UI layer (route guards) will redirect.
@@ -77,13 +92,14 @@ apiClient.interceptors.response.use(
     }
 
     if (error.response) {
-      const data = error.response.data as { message?: string } | undefined
-      const message: string = data?.message || error.response.statusText || 'Request failed'
-      throw new ApiError(error.response.status, message, error.config?.url)
+      const data = error.response.data as { message?: string } | undefined;
+      const message: string =
+        data?.message || error.response.statusText || "Request failed";
+      throw new ApiError(error.response.status, message, error.config?.url);
     }
-    throw error
+    throw error;
   },
-)
+);
 
 /**
  * Orval mutator entry point.
@@ -96,8 +112,8 @@ apiClient.interceptors.response.use(
 export const customInstance = async <T = unknown>(
   config: AxiosRequestConfig,
 ): Promise<T> => {
-  const response = await apiClient.request<T>(config)
-  return response.data
-}
+  const response = await apiClient.request<T>(config);
+  return response.data;
+};
 
-export default customInstance
+export default customInstance;

@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState } from 'react'
-import { AuthProvider } from '@/lib/hooks/useAuth'
-import { Toaster } from '@/components/ui/sonner'
-import type { UserProfileResponseDto } from '@/lib/api/generated/schemas'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
+import { AuthProvider } from "@/lib/hooks/useAuth";
+import { ClientToaster } from "@/components/providers/ClientToaster";
+import type { UserProfileResponseDto } from "@/lib/api/generated/schemas";
 
 interface ProvidersProps {
-  children: React.ReactNode
-  initialUser: UserProfileResponseDto | null
+  children: React.ReactNode;
+  initialUser: UserProfileResponseDto | null;
 }
 
 export function Providers({ children, initialUser }: ProvidersProps) {
@@ -22,12 +22,12 @@ export function Providers({ children, initialUser }: ProvidersProps) {
           },
         },
       }),
-  )
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider initialUser={initialUser}>{children}</AuthProvider>
-      <Toaster richColors position="top-right" closeButton />
+      <ClientToaster />
     </QueryClientProvider>
-  )
+  );
 }

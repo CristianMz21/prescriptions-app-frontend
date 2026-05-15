@@ -26,4 +26,9 @@ export interface PrescriptionItemResponseDto {
      * @nullable
      */
   instructions?: string | null;
+  /**
+     * Unit of measure.
+     * @maxLength 32
+     */
+  unit: string;
 }

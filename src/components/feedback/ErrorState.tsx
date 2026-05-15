@@ -1,9 +1,10 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
+import { AppIcon } from "@/components/icons/AppIcon";
 
 interface ErrorStateProps {
-  message: string
-  action?: ReactNode
-  className?: string
+  message: string;
+  action?: ReactNode;
+  className?: string;
 }
 
 export function ErrorState({ message, action, className }: ErrorStateProps) {
@@ -11,14 +12,14 @@ export function ErrorState({ message, action, className }: ErrorStateProps) {
     <div
       className={
         className ??
-        'flex flex-col items-center justify-center h-64 gap-4 text-error'
+        "flex flex-col items-center justify-center h-64 gap-4 text-error"
       }
       role="alert"
       data-testid="error-state"
     >
-      <span className="material-symbols-outlined text-4xl">error</span>
+      <AppIcon name="shieldAlert" size="xl" className="text-error" />
       <p className="text-sm">{message}</p>
       {action}
     </div>
-  )
+  );
 }

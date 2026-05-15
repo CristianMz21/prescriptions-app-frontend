@@ -1,23 +1,21 @@
-import type { PrescriptionStatus } from '@/lib/api/generated/schemas'
+import type { PrescriptionStatus } from "@/lib/api/generated/schemas";
+import type { AppIconName } from "@/config/icon-registry";
 
 export interface PrescriptionStatusMeta {
-  icon: string
-  label: string
-  filled: boolean
-  tone: string
+  icon: AppIconName;
+  label: string;
+  tone: string;
 }
 
 export const STATUS_META: Record<PrescriptionStatus, PrescriptionStatusMeta> = {
   PENDING: {
-    icon: 'pending_actions',
-    label: 'Pending',
-    filled: false,
-    tone: 'text-on-surface-variant border-outline-variant',
+    icon: "clipboardList",
+    label: "Pending",
+    tone: "text-on-surface-variant border-outline-variant",
   },
   CONSUMED: {
-    icon: 'check_circle',
-    label: 'Consumed',
-    filled: true,
-    tone: 'text-primary border-outline-variant/50',
+    icon: "checkCircle2",
+    label: "Consumed",
+    tone: "text-primary border-outline-variant/50",
   },
-}
+};
