@@ -1,0 +1,243 @@
+name: Frontend E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+  PNPM_VERSION: "11.1.1"
+  BACKEND_PORT: 3000
+  FRONTEND_PORT: 3001
+  POSTGRES_CONTAINER: postgres:16
+
+jobs:
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: ${{ env.POSTGRES_CONTAINER }}
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: prescriptions_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout frontend
+        uses: actions/checkout@v4
+
+      - name: Checkout backend
+        uses: actions/checkout@v4
+        with:
+          repository: CristianMz21/prescriptions-app-backend
+          path: backend
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: frontend/prescriptions-app/pnpm-lock.yaml
+
+      - name: Approve frontend build scripts
+        run: pnpm approve-builds --all
+        working-directory: ./frontend/prescriptions-app
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./frontend/prescriptions-app
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: ./frontend/prescriptions-app
+
+      - name: Approve backend build scripts
+        run: pnpm approve-builds --all
+        working-directory: ./backend
+
+      - name: Install backend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./backend
+
+      - name: Set backend environment
+        run: |
+          cat >> .env << 'EOF'
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/prescriptions_test?schema=public
+          JWT_ACCESS_SECRET=test-access-secret-for-ci
+          JWT_REFRESH_SECRET=test-refresh-secret-for-ci
+          JWT_ACCESS_TTL=15m
+          JWT_REFRESH_TTL=7d
+          FRONTEND_URL=http://localhost:${{ env.FRONTEND_PORT }}
+          APP_ORIGIN=http://localhost:${{ env.FRONTEND_PORT }}
+          NODE_ENV=test
+          PORT=${{ env.BACKEND_PORT }}
+          EOF
+        working-directory: ./backend
+
+      - name: Set frontend environment
+        run: |
+          cat >> .env.local << 'EOF'
+          NEXT_PUBLIC_API_URL=http://127.0.0.1:${{ env.BACKEND_PORT }}
+          EOF
+        working-directory: ./frontend/prescriptions-app
+
+      - name: Prisma generate
+        run: pnpm exec prisma generate
+        working-directory: ./backend
+
+      - name: Run Prisma migrations
+        run: pnpm exec prisma migrate deploy
+        working-directory: ./backend
+
+      - name: Read backend seed credentials
+        id: seed-credentials
+        run: |
+          echo "Looking for seed file..."
+          SEED_PATH=""
+          for candidate in "prisma/seed.ts" "prisma/seed.js" "src/**/seed*" "seed.ts" "seed.js"; do
+            FOUND=$(find . -name "$candidate" -type f 2>/dev/null | head -1)
+            if [ -n "$FOUND" ]; then
+              SEED_PATH="$FOUND"
+              break
+            fi
+          done
+
+          if [ -z "$SEUND_PATH" ] && [ -z "$SEED_PATH" ]; then
+            echo "WARNING: Could not find seed file"
+          else
+            echo "Seed file: $SEED_PATH"
+          fi
+
+          echo "paths=$(echo "$SEED_PATH" | base64)" >> $GITHUB_OUTPUT
+        working-directory: ./backend
+
+      - name: Run Prisma seed
+        run: pnpm exec prisma db seed
+        working-directory: ./backend
+
+      - name: Start backend
+        run: |
+          pnpm start:dev > backend.log 2>&1 &
+          echo $! > backend.pid
+        working-directory: ./backend
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "PostgreSQL ready"
+              break
+            fi
+            echo "Waiting for PostgreSQL... ($i/30)"
+            sleep 2
+          done
+
+      - name: Wait for backend readiness
+        run: |
+          for i in {1..60}; do
+            if curl -sf http://127.0.0.1:${{ env.BACKEND_PORT }}/ > /dev/null 2>&1; then
+              echo "Backend ready"
+              break
+            fi
+            echo "Waiting for backend... ($i/60)"
+            sleep 3
+          done
+        working-directory: ./backend
+
+      - name: Check backend startup logs
+        run: |
+          if grep -q "Exception\|Error\|failed\|FATAL" backend.log 2>/dev/null; then
+            echo "ERROR: Backend startup issues detected:"
+            grep "Exception\|Error\|failed\|FATAL" backend.log | head -20
+            exit 1
+          fi
+        working-directory: ./backend
+
+      - name: Start frontend
+        run: |
+          pnpm exec next dev -H 127.0.0.1 -p ${{ env.FRONTEND_PORT }} > frontend.log 2>&1 &
+          echo $! > frontend.pid
+        working-directory: ./frontend/prescriptions-app
+
+      - name: Wait for frontend login page
+        run: |
+          for i in {1..60}; do
+            if curl -sf http://127.0.0.1:${{ env.FRONTEND_PORT }}/login > /dev/null 2>&1; then
+              echo "Frontend ready"
+              exit 0
+            fi
+            echo "Waiting for frontend... ($i/60)"
+            sleep 3
+          done
+          echo "ERROR: Frontend failed to start. Logs:"
+          cat frontend.log
+          exit 1
+        working-directory: ./frontend/prescriptions-app
+
+      - name: Verify seed credentials in test fixtures
+        run: |
+          CREDENTIALS=$(grep -r "admin@test.com\|doctor@test.com\|patient@test.com" . --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v node_modules | head -5 || true)
+          if [ -z "$CREDENTIALS" ]; then
+            echo "WARNING: Could not find standard seed credentials in tests"
+          else
+            echo "Found credentials references:"
+            echo "$CREDENTIALS"
+          fi
+        working-directory: ./frontend/prescriptions-app
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
+        working-directory: ./frontend/prescriptions-app
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_number }}
+          path: |
+            frontend/prescriptions-app/playwright-report/
+            frontend/prescriptions-app/test-results/
+          retention-days: 7
+
+      - name: Upload backend logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-logs-${{ github.run_number }}
+          path: backend.log
+          retention-days: 7
+
+      - name: Upload frontend logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-logs-${{ github.run_number }}
+          path: frontend.log
+          retention-days: 7
+
+      - name: Cleanup processes
+        if: always()
+        run: |
+          [ -f backend.pid ] && kill $(cat backend.pid) 2>/dev/null || true
+          [ -f frontend.pid ] && kill $(cat frontend.pid) 2>/dev/null || true
