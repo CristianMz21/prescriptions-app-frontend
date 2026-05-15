@@ -6,14 +6,14 @@ import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { ApiError, API_BASE_URL, apiClient, customInstance } from "./custom-instance";
 
-const ORIGIN = apiClient.defaults.baseURL;
-if (!ORIGIN) {
-  throw new Error("API origin is not configured in apiClient defaults.");
-}
+// Snapshot the original Axios defaults BEFORE any later test setup mutates
+// `apiClient.defaults.baseURL` (msw needs a concrete origin even when
+// NEXT_PUBLIC_API_URL is unset in CI). Captured here at module load.
+const ORIGINAL_BASE_URL = apiClient.defaults.baseURL;
 
 describe("apiClient (underlying axios instance)", () => {
-  it("uses the configured API_BASE_URL", () => {
-    expect(apiClient.defaults.baseURL).toBe(API_BASE_URL);
+  it("derives baseURL from NEXT_PUBLIC_API_URL at module load", () => {
+    expect(ORIGINAL_BASE_URL).toBe(API_BASE_URL);
   });
 
   it("enables credentialed requests for cookie-based auth", () => {
@@ -40,6 +40,16 @@ describe("ApiError", () => {
     expect(err.path).toBeUndefined();
   });
 });
+
+// CI runs vitest without `NEXT_PUBLIC_API_URL`, so apiClient.defaults.baseURL
+// is undefined at module load. Pin a stable origin here so msw can register
+// handlers and the interceptor can resolve relative URLs. The original
+// `apiClient.defaults.baseURL === API_BASE_URL` invariant is asserted above
+// BEFORE this mutation runs.
+const ORIGIN = apiClient.defaults.baseURL || "http://localhost:3000";
+if (!apiClient.defaults.baseURL) {
+  apiClient.defaults.baseURL = ORIGIN;
+}
 
 describe("response interceptor (non-refresh paths)", () => {
   const server = setupServer(
