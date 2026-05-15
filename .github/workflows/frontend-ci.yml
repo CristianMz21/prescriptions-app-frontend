@@ -240,6 +240,12 @@ jobs:
           APP_ORIGIN: http://localhost:3001
           NODE_ENV: test
           SEED_DEFAULT_PASSWORD: Password123!
+          # Lowest-cost bcrypt rounds for the test fixture only. Production
+          # default (10) is unchanged. The backend silently clamps any value
+          # outside [4, 15] back to 10, so this can never accidentally
+          # weaken a non-test environment. Drops seed wall-time ~10s and
+          # makes every login bcrypt.compare ~5ms instead of ~100ms-1s.
+          BCRYPT_SALT_ROUNDS: 4
         run: |
           cd backend
           # `migrate reset --force --skip-seed` drops + re-creates the schema
@@ -260,6 +266,10 @@ jobs:
           NODE_ENV: test
           PORT: ${{ env.BACKEND_PORT }}
           SEED_DEFAULT_PASSWORD: Password123!
+          # Match the seed step — login bcrypt.compare uses the same rounds
+          # as the stored hash. Mismatch would silently bcrypt-validate at
+          # the higher cost factor and re-introduce the per-login bottleneck.
+          BCRYPT_SALT_ROUNDS: 4
         run: |
           cd backend
           pnpm start:dev > ../backend.log 2>&1 &
