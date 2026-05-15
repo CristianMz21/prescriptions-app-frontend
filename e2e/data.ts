@@ -5,8 +5,11 @@ import type {
   UserEntity,
 } from "../src/lib/api/generated/schemas";
 
-export const BACKEND_URL =
-  process.env.E2E_BACKEND_URL ?? "http://localhost:3000";
+export const BACKEND_URL = process.env.E2E_BACKEND_URL;
+
+if (!BACKEND_URL) {
+  throw new Error("E2E_BACKEND_URL environment variable is not defined.");
+}
 
 export const SEED = {
   admin: { email: "admin@clinic.com", password: "Password123!" },

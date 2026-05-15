@@ -1,7 +1,12 @@
 import axios, { type AxiosRequestConfig, AxiosError } from "axios";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE_URL && typeof window !== "undefined") {
+  console.warn(
+    "NEXT_PUBLIC_API_URL is not defined. API requests will fail if they are not relative.",
+  );
+}
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

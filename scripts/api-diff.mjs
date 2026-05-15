@@ -10,7 +10,12 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const API_URL = process.env.API_URL ?? "http://localhost:3000";
+const API_URL = process.env.API_URL;
+
+if (!API_URL) {
+  console.error("ERROR: API_URL environment variable is not defined.");
+  process.exit(1);
+}
 const SPEC_PATH =
   process.env.OPENAPI_PATH ??
   join(process.cwd(), "..", "..", "backend", "openapi.json");

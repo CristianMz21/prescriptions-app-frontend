@@ -10,7 +10,11 @@ import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { apiClient, ApiError } from "./custom-instance";
 
-const ORIGIN = apiClient.defaults.baseURL ?? "http://localhost:3000";
+const ORIGIN = apiClient.defaults.baseURL;
+
+if (!ORIGIN) {
+  throw new Error("API origin is not configured in apiClient defaults.");
+}
 
 let refreshCallCount = 0;
 let prescriptionsCallCount = 0;
