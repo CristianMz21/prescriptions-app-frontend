@@ -236,8 +236,17 @@ jobs:
           JWT_REFRESH_SECRET: test-refresh-secret-for-ci
           JWT_ACCESS_TTL: 15m
           JWT_REFRESH_TTL: 7d
-          FRONTEND_URL: http://localhost:3001
-          APP_ORIGIN: http://localhost:3001
+          # Hostname coordination (test env only): cookies set with
+          # SameSite=Lax must come from the same registrable host the
+          # browser is talking to. The browser origin (Playwright baseURL,
+          # via E2E_FRONTEND_URL below) and the API origin (NEXT_PUBLIC_API_URL
+          # baked into the production build) BOTH use 127.0.0.1 — so the
+          # backend's CORS allowlist + Set-Cookie domain must match.
+          # Mixing `localhost` and `127.0.0.1` was the cause of every
+          # login-using test failing at the waitForResponse for
+          # /auth/profile in runs #25899822561 → #25908060243.
+          FRONTEND_URL: http://127.0.0.1:3001
+          APP_ORIGIN: http://127.0.0.1:3001
           NODE_ENV: test
           SEED_DEFAULT_PASSWORD: Password123!
           # Lowest-cost bcrypt rounds for the test fixture only. Production
@@ -261,8 +270,17 @@ jobs:
           JWT_REFRESH_SECRET: test-refresh-secret-for-ci
           JWT_ACCESS_TTL: 15m
           JWT_REFRESH_TTL: 7d
-          FRONTEND_URL: http://localhost:3001
-          APP_ORIGIN: http://localhost:3001
+          # Hostname coordination (test env only): cookies set with
+          # SameSite=Lax must come from the same registrable host the
+          # browser is talking to. The browser origin (Playwright baseURL,
+          # via E2E_FRONTEND_URL below) and the API origin (NEXT_PUBLIC_API_URL
+          # baked into the production build) BOTH use 127.0.0.1 — so the
+          # backend's CORS allowlist + Set-Cookie domain must match.
+          # Mixing `localhost` and `127.0.0.1` was the cause of every
+          # login-using test failing at the waitForResponse for
+          # /auth/profile in runs #25899822561 → #25908060243.
+          FRONTEND_URL: http://127.0.0.1:3001
+          APP_ORIGIN: http://127.0.0.1:3001
           NODE_ENV: test
           PORT: ${{ env.BACKEND_PORT }}
           SEED_DEFAULT_PASSWORD: Password123!
@@ -304,12 +322,16 @@ jobs:
           NEXT_PUBLIC_API_URL: http://127.0.0.1:${{ env.BACKEND_PORT }}
         run: |
           cd frontend
-          pnpm exec next start -p ${{ env.FRONTEND_PORT }} > ../frontend.log 2>&1 &
+          # Bind explicitly to 127.0.0.1 so the browser + backend both use
+          # the same loopback hostname. Without -H, Next listens on 0.0.0.0
+          # and Playwright's baseURL=http://127.0.0.1:3001 works fine, but
+          # the hostname-mismatch comment on the seed step still applies.
+          pnpm exec next start -H 127.0.0.1 -p ${{ env.FRONTEND_PORT }} > ../frontend.log 2>&1 &
           echo $! > ../frontend.pid
       - name: Wait for frontend readiness (strict 200 on /login)
         run: |
           for i in {1..60}; do
-            CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${FRONTEND_PORT}/login || echo "000")
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:${FRONTEND_PORT}/login || echo "000")
             if [ "$CODE" = "200" ]; then
               echo "Frontend ready (HTTP $CODE on /login)"
               exit 0
@@ -322,8 +344,11 @@ jobs:
           exit 1
       - name: Run Playwright E2E
         env:
-          E2E_BACKEND_URL: http://localhost:${{ env.BACKEND_PORT }}
-          E2E_FRONTEND_URL: http://localhost:${{ env.FRONTEND_PORT }}
+          # Both URLs use 127.0.0.1 to match NEXT_PUBLIC_API_URL baked into
+          # the build + the Set-Cookie domain on backend responses. See the
+          # comment block on the `Reset + migrate + seed` step.
+          E2E_BACKEND_URL: http://127.0.0.1:${{ env.BACKEND_PORT }}
+          E2E_FRONTEND_URL: http://127.0.0.1:${{ env.FRONTEND_PORT }}
         run: cd frontend && pnpm test:e2e
       - name: Upload Playwright report
         if: failure()
