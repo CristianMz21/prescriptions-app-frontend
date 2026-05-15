@@ -1,5 +1,6 @@
 import { test, expect } from "./fixtures";
-import { BACKEND_URL } from "./data";
+
+const PRESCRIPTIONS_REQUEST_PATTERN = "**/prescriptions*";
 
 test.describe("UI behavior under backend failure / empty data", () => {
   test("doctor list: 500 from /prescriptions surfaces ErrorState", async ({
@@ -8,7 +9,7 @@ test.describe("UI behavior under backend failure / empty data", () => {
   }) => {
     await loginAs("doctor");
     // Mock the next list fetch only — login already passed.
-    await page.route(`${BACKEND_URL}/prescriptions*`, (route) => {
+    await page.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
       if (route.request().method() === "GET") {
         return route.fulfill({
           status: 500,
@@ -28,7 +29,7 @@ test.describe("UI behavior under backend failure / empty data", () => {
     page,
   }) => {
     await loginAs("patient");
-    await page.route(`${BACKEND_URL}/prescriptions*`, (route) => {
+    await page.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
       if (route.request().method() === "GET") {
         return route.fulfill({
           status: 200,
