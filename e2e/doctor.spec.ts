@@ -91,7 +91,10 @@ test.describe("Doctor prescription flows", () => {
     await page.goto(href!);
     await expect(page.getByText(medName).first()).toBeVisible();
     await expect(page.getByText(/100mg/i).first()).toBeVisible();
-    await expect(page.getByText(/30 comprimidos/i).first()).toBeVisible();
+    // Detail view renders quantity as "Quantity: 30" without the unit
+    // label inline; the unit ("comprimidos") is shown elsewhere on the
+    // page header. Assert the visible quantity format directly.
+    await expect(page.getByText(/Quantity:\s*30/i).first()).toBeVisible();
     await expect(page.getByText(/Once daily/i).first()).toBeVisible();
   });
 
