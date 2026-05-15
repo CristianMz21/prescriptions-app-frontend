@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -19,6 +19,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -51,6 +52,7 @@ const UNIT_OPTIONS = [
 
 const DEBOUNCE_MS = 300;
 const PATIENT_LIMIT = 20;
+const MIN_SEARCH_CHARS = 2;
 
 export function CreatePrescriptionForm() {
   const router = useRouter();
@@ -64,6 +66,10 @@ export function CreatePrescriptionForm() {
   const [error, setError] = useState<string | null>(null);
   const [isResolvingPatient, setIsResolvingPatient] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [patientPage, setPatientPage] = useState(1);
+  const [selectedPatientSnapshot, setSelectedPatientSnapshot] =
+    useState<UserEntity | null>(null);
+  const [showPatientResults, setShowPatientResults] = useState(true);
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -82,17 +88,25 @@ export function CreatePrescriptionForm() {
     };
   }, [searchQuery]);
 
-  const queryParams = {
-    limit: PATIENT_LIMIT,
-    page: 1,
-    ...(debouncedSearch.trim().length > 0 ? { q: debouncedSearch.trim() } : {}),
-  };
+  const trimmedSearch = debouncedSearch.trim();
+  const canSearchPatients = trimmedSearch.length >= MIN_SEARCH_CHARS;
+
+  const queryParams = useMemo(
+    () => ({
+      limit: PATIENT_LIMIT,
+      page: patientPage,
+      ...(canSearchPatients ? { q: trimmedSearch } : {}),
+    }),
+    [canSearchPatients, patientPage, trimmedSearch],
+  );
 
   const {
     data: patientsData,
     isLoading: isSearching,
     isError: searchError,
-  } = useUsersFindAllPatients(queryParams);
+  } = useUsersFindAllPatients(queryParams, {
+    query: { enabled: canSearchPatients },
+  });
 
   const patients: UserEntity[] = patientsData?.data ?? [];
 
@@ -168,7 +182,8 @@ export function CreatePrescriptionForm() {
   };
 
   const isSubmitting = createMutation.isPending || isResolvingPatient;
-  const selectedPatient = patients.find((p) => p.id === selectedUserId);
+  const selectedPatient =
+    patients.find((p) => p.id === selectedUserId) ?? selectedPatientSnapshot;
 
   return (
     <div className="mx-auto max-w-5xl px-3 md:px-6 lg:px-8 py-4 md:py-6">
@@ -213,66 +228,133 @@ export function CreatePrescriptionForm() {
                 id="patient-search"
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search patient by email..."
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPatientPage(1);
+                  setShowPatientResults(true);
+                }}
+                placeholder="Search by patient name or email..."
                 className="pl-10 py-3 text-base border-outline-variant/60 focus-visible:ring-1 focus-visible:ring-primary/60"
                 autoComplete="off"
               />
-              {isSearching && (
+              {isSearching ? (
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant animate-spin">
                   progress_activity
                 </span>
-              )}
+              ) : null}
             </div>
-            <Select
-              value={selectedUserId}
-              onValueChange={(value) => setSelectedUserId(value ?? "")}
-              disabled={isSearching}
-            >
-              <SelectTrigger
-                id="patient"
-                className="w-full border-outline-variant/60"
-              >
-                <SelectValue
-                  placeholder={
-                    isSearching ? "Searching..." : "Select a patient..."
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {searchError ? (
-                  <div className="px-4 py-3 text-sm text-error flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">
-                      error
-                    </span>
-                    Failed to load patients
+
+            <div className="rounded-md border border-outline-variant/30 overflow-hidden bg-surface-container-lowest/20">
+              {!canSearchPatients ? (
+                <p className="px-3 py-3 text-sm text-on-surface-variant">
+                  Type at least {MIN_SEARCH_CHARS} characters.
+                </p>
+              ) : searchError ? (
+                <p className="px-3 py-3 text-sm text-error">Failed to load patients.</p>
+              ) : !showPatientResults ? (
+                <div className="px-3 py-3 flex items-center justify-between gap-3">
+                  <p className="text-sm text-on-surface-variant">
+                    Patient selected. Continue with medication details.
+                  </p>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowPatientResults(true)}
+                  >
+                    Change
+                  </Button>
+                </div>
+              ) : patients.length === 0 ? (
+                <p className="px-3 py-3 text-sm text-on-surface-variant">No patients found.</p>
+              ) : (
+                <ul className="max-h-64 overflow-y-auto divide-y divide-outline-variant/20">
+                  {patients.map((patient) => {
+                    const selected = selectedUserId === patient.id;
+                    return (
+                      <li key={patient.id}>
+                        <button
+                          type="button"
+                          className={`w-full text-left px-3 py-2.5 transition-colors hover:bg-surface-variant/20 ${
+                            selected ? "bg-primary/10" : ""
+                          }`}
+                          onClick={() => {
+                            setSelectedUserId(patient.id);
+                            setSelectedPatientSnapshot(patient);
+                            setError(null);
+                            setShowPatientResults(false);
+                            window.requestAnimationFrame(() => {
+                              const medInput = document.getElementById("med-name-0");
+                              medInput?.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center",
+                              });
+                              medInput?.focus();
+                            });
+                          }}
+                        >
+                          <div className="font-medium text-primary">{patient.name}</div>
+                          <div className="text-xs text-on-surface-variant font-mono">
+                            {patient.email}
+                          </div>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {showPatientResults && canSearchPatients && patientsData?.meta ? (
+                <>
+                  <Separator />
+                  <div className="flex items-center justify-between gap-2 p-2.5">
+                    <p className="text-xs text-on-surface-variant">
+                      {patientsData.meta.total.toLocaleString()} results · page{" "}
+                      {patientsData.meta.page}/{patientsData.meta.totalPages}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={patientPage <= 1 || isSearching}
+                        onClick={() => setPatientPage((p) => Math.max(1, p - 1))}
+                      >
+                        Prev
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={patientPage >= patientsData.meta.totalPages || isSearching}
+                        onClick={() => setPatientPage((p) => p + 1)}
+                      >
+                        Next
+                      </Button>
+                    </div>
                   </div>
-                ) : patients.length === 0 ? (
-                  <div className="px-4 py-3 text-sm text-on-surface-variant">
-                    {debouncedSearch.trim().length > 0
-                      ? "No patients found"
-                      : "No patients available"}
-                  </div>
-                ) : (
-                  patients.map((patient) => (
-                    <SelectItem key={patient.id} value={patient.id}>
-                      {patient.name} — {patient.email}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+                </>
+              ) : null}
+            </div>
             {selectedPatient ? (
-              <div className="rounded-md border border-primary/25 bg-primary/10 px-3 py-2 text-xs text-primary">
-                Selected:{" "}
-                <span className="font-semibold">{selectedPatient.name}</span>{" "}
-                <span className="text-on-surface-variant">
-                  ({selectedPatient.email})
+              <div className="rounded-md border border-primary/25 bg-primary/10 px-3 py-2 text-xs text-primary flex items-center justify-between gap-3">
+                <span>
+                  Selected:{" "}
+                  <span className="font-semibold">{selectedPatient.name}</span>{" "}
+                  <span className="text-on-surface-variant">
+                    ({selectedPatient.email})
+                  </span>
                 </span>
+                <button
+                  type="button"
+                  className="text-[11px] font-semibold underline underline-offset-2 hover:text-primary/80"
+                  onClick={() => setShowPatientResults(true)}
+                >
+                  Change patient
+                </button>
               </div>
             ) : (
               <p className="text-xs text-on-surface-variant">
-                Tip: type at least 3 letters for faster patient lookup.
+                Tip: search by name/email and pick from live suggestions.
               </p>
             )}
             {patientsData?.meta &&

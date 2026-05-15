@@ -169,8 +169,11 @@ jobs:
           fi
 
       - name: Start frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:${{ env.BACKEND_PORT }}
         run: |
-          pnpm exec next dev -H 127.0.0.1 -p ${{ env.FRONTEND_PORT }} > ../frontend.log 2>&1 &
+          pnpm build
+          pnpm exec next start -p ${{ env.FRONTEND_PORT }} > ../frontend.log 2>&1 &
           echo $! > ../frontend.pid
           echo "Frontend PID: $(cat ../frontend.pid)"
 

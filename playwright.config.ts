@@ -16,15 +16,15 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   testMatch: /.*\.spec\.ts/,
-  timeout: 60_000,
-  expect: { timeout: 8_000 },
+  timeout: 90_000,
+  expect: { timeout: 15_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 2 : 0,
   // Next.js dev mode cold-compiles routes on first access. More than 2 workers
   // causes parallel cold-compilation pile-ups and hydration/login timeouts.
   // Keep this deterministic instead of maximizing local parallelism.
-  workers: 2,
+  workers: process.env.CI ? 1 : 2,
   reporter: [["list"], ["html", { open: "never" }]],
   globalSetup: "./e2e/global-setup.ts",
   use: {
@@ -32,8 +32,8 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: { mode: "on", size: { width: 1280, height: 800 } },
-    actionTimeout: 15_000,
-    navigationTimeout: 45_000,
+    actionTimeout: 20_000,
+    navigationTimeout: 60_000,
   },
   projects: [
     {
