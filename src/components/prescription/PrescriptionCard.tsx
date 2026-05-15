@@ -27,7 +27,7 @@ export function PrescriptionCard({
     <div
       data-testid="prescription-card"
       data-rx-code={rx.code}
-      className={`glass-panel rounded-xl p-6 relative group overflow-hidden ${
+      className={`glass-panel rounded-xl p-4 md:p-6 relative group overflow-hidden ${
         isExpired ? "opacity-80" : ""
       }`}
     >
@@ -59,7 +59,7 @@ export function PrescriptionCard({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
           <div className="md:col-span-2 flex flex-col gap-2">
             {lead ? (
               <>
@@ -129,7 +129,7 @@ export function PrescriptionCard({
             ) : null}
           </div>
 
-          <div className="flex flex-col gap-4 border-l-0 md:border-l border-outline-variant/30 md:pl-8 pt-4 md:pt-0">
+          <div className="flex flex-col gap-4 border-l-0 md:border-l border-outline-variant/30 md:pl-6 lg:pl-8 pt-2 md:pt-0">
             {rx.author ? (
               <div className="flex flex-col gap-1">
                 <span className="label-uppercase tracking-widest text-[0.6rem] text-on-surface-variant">
@@ -177,7 +177,7 @@ export function PrescriptionCard({
         </div>
 
         {actions && !isExpired ? (
-          <div className="flex justify-end items-center gap-4 pt-4 mt-2 border-t border-outline-variant/20">
+          <div className="flex flex-col sm:flex-row sm:justify-end items-stretch sm:items-center gap-2 sm:gap-3 pt-4 mt-2 border-t border-outline-variant/20 [&>*]:w-full sm:[&>*]:w-auto">
             {actions}
           </div>
         ) : isExpired ? (

@@ -250,7 +250,9 @@ export function CreatePrescriptionForm() {
                   Type at least {MIN_SEARCH_CHARS} characters.
                 </p>
               ) : searchError ? (
-                <p className="px-3 py-3 text-sm text-error">Failed to load patients.</p>
+                <p className="px-3 py-3 text-sm text-error">
+                  Failed to load patients.
+                </p>
               ) : !showPatientResults ? (
                 <div className="px-3 py-3 flex items-center justify-between gap-3">
                   <p className="text-sm text-on-surface-variant">
@@ -266,7 +268,9 @@ export function CreatePrescriptionForm() {
                   </Button>
                 </div>
               ) : patients.length === 0 ? (
-                <p className="px-3 py-3 text-sm text-on-surface-variant">No patients found.</p>
+                <p className="px-3 py-3 text-sm text-on-surface-variant">
+                  No patients found.
+                </p>
               ) : (
                 <ul className="max-h-64 overflow-y-auto divide-y divide-outline-variant/20">
                   {patients.map((patient) => {
@@ -284,7 +288,8 @@ export function CreatePrescriptionForm() {
                             setError(null);
                             setShowPatientResults(false);
                             window.requestAnimationFrame(() => {
-                              const medInput = document.getElementById("med-name-0");
+                              const medInput =
+                                document.getElementById("med-name-0");
                               medInput?.scrollIntoView({
                                 behavior: "smooth",
                                 block: "center",
@@ -293,7 +298,9 @@ export function CreatePrescriptionForm() {
                             });
                           }}
                         >
-                          <div className="font-medium text-primary">{patient.name}</div>
+                          <div className="font-medium text-primary">
+                            {patient.name}
+                          </div>
                           <div className="text-xs text-on-surface-variant font-mono">
                             {patient.email}
                           </div>
@@ -317,7 +324,9 @@ export function CreatePrescriptionForm() {
                         size="sm"
                         variant="outline"
                         disabled={patientPage <= 1 || isSearching}
-                        onClick={() => setPatientPage((p) => Math.max(1, p - 1))}
+                        onClick={() =>
+                          setPatientPage((p) => Math.max(1, p - 1))
+                        }
                       >
                         Prev
                       </Button>
@@ -325,7 +334,10 @@ export function CreatePrescriptionForm() {
                         type="button"
                         size="sm"
                         variant="outline"
-                        disabled={patientPage >= patientsData.meta.totalPages || isSearching}
+                        disabled={
+                          patientPage >= patientsData.meta.totalPages ||
+                          isSearching
+                        }
                         onClick={() => setPatientPage((p) => p + 1)}
                       >
                         Next

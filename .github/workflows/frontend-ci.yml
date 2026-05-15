@@ -13,11 +13,8 @@ env:
 
 jobs:
   frontend-static-validation:
+    name: Lint + Typecheck + Unit Tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
-
     steps:
       - uses: actions/checkout@v4
 
@@ -29,7 +26,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
       - name: Approve build scripts
         run: pnpm approve-builds --all
@@ -66,11 +62,8 @@ jobs:
         run: pnpm build
 
   forbidden-pattern-scan:
+    name: Security Scan
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
-
     steps:
       - uses: actions/checkout@v4
 
@@ -90,13 +83,10 @@ jobs:
             echo "ERROR: Forbidden patterns detected. Fix them before merging."
             exit 1
           fi
-          echo "No forbidden patterns found."
 
   frontend-e2e:
+    name: Playwright E2E (Build + Start)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
 
     services:
       postgres:
@@ -124,7 +114,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
       - name: Approve build scripts
         run: pnpm approve-builds --all
@@ -134,37 +123,6 @@ jobs:
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
-
-      - name: Set backend environment
-        run: |
-          cat >> .env.backend << EOF
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/prescriptions_test?schema=public
-          JWT_ACCESS_SECRET=test-access-secret-for-ci
-          JWT_REFRESH_SECRET=test-refresh-secret-for-ci
-          JWT_ACCESS_TTL=15m
-          JWT_REFRESH_TTL=7d
-          FRONTEND_URL=http://localhost:3001
-          APP_ORIGIN=http://localhost:3001
-          NODE_ENV=test
-          PORT=3000
-          EOF
-
-      - name: Set frontend environment
-        run: |
-          cat >> .env.local << EOF
-          NEXT_PUBLIC_API_URL=http://127.0.0.1:3000
-          EOF
-
-      - name: Wait for PostgreSQL
-        run: |
-          for i in {1..30}; do
-            if pg_isready -h localhost -p 5432 -U postgres; then
-              echo "PostgreSQL ready"
-              break
-            fi
-            echo "Waiting for PostgreSQL... ($i/30)"
-            sleep 2
-          done
 
       - name: Start backend
         env:
@@ -221,43 +179,24 @@ jobs:
 
       - name: Run E2E tests
         run: pnpm test:e2e
+        env:
+          E2E_BACKEND_URL: http://localhost:3000
+          E2E_FRONTEND_URL: http://localhost:3001
 
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-ci
           path: playwright-report/
           retention-days: 7
 
-      - name: Upload Playwright traces
-        if: failure()
+      - name: Upload logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-traces
-          path: .playwright/traces/
-          retention-days: 7
-
-      - name: Upload Playwright videos
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-videos
-          path: test-results/
-          retention-days: 7
-
-      - name: Upload backend logs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-logs
-          path: backend.log
-          retention-days: 7
-
-      - name: Upload frontend logs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-logs
-          path: frontend.log
+          name: ci-logs
+          path: |
+            ../backend.log
+            frontend.log
           retention-days: 7

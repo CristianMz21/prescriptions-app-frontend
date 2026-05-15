@@ -2,8 +2,8 @@ import { PrescriptionCardList } from "@/components/prescription/PrescriptionCard
 
 export default function PatientPrescriptionsPage() {
   return (
-    <>
-      <div className="mb-12 flex flex-col gap-2">
+    <div className="mx-auto max-w-6xl px-2 md:px-4">
+      <div className="mb-8 md:mb-10 flex flex-col gap-2">
         <h2 className="text-3xl font-bold text-primary tracking-tight">
           My Prescriptions
         </h2>
@@ -13,6 +13,6 @@ export default function PatientPrescriptionsPage() {
         </p>
       </div>
       <PrescriptionCardList />
-    </>
+    </div>
   );
 }
