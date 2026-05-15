@@ -9,9 +9,9 @@ export const BACKEND_URL =
   process.env.E2E_BACKEND_URL ?? "http://localhost:3000";
 
 export const SEED = {
-  admin: { email: "admin@clinic.com", password: "Password123!" },
-  doctor: { email: "doctor@clinic.com", password: "Password123!" },
-  patient: { email: "patient@clinic.com", password: "Password123!" },
+  admin: { email: "admin@test.com", password: "Password123!" },
+  doctor: { email: "doctor@test.com", password: "Password123!" },
+  patient: { email: "patient@test.com", password: "Password123!" },
 } as const;
 
 export type SeededRole = keyof typeof SEED;
@@ -75,7 +75,7 @@ export async function resolvePatientProfileId(
  *  state. */
 export async function seedPrescription(
   apiRequest: APIRequestContext,
-  options: { medName?: string } = {},
+  options: { medName?: string; expiryDate?: string } = {},
 ): Promise<PrescriptionResponseDto> {
   await backendLogin({
     apiRequest,
@@ -95,10 +95,12 @@ export async function seedPrescription(
           name: medName,
           dosage: "100mg",
           quantity: 30,
+          unit: "comprimidos",
           instructions: "Once daily",
         },
       ],
       notes: "E2E seed",
+      expiryDate: options.expiryDate,
     },
   });
   if (res.status() !== 201) {

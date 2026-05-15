@@ -26,7 +26,7 @@ const IGNORED_CONSOLE_PATTERNS: RegExp[] = [
 ];
 
 export const test = base.extend<AppFixtures>({
-  consoleErrors: async ({ page }, useFixture, testInfo) => {
+  consoleErrors: async ({ page }, fixtureUse, testInfo) => {
     const collector: ConsoleErrorCollector = { errors: [] };
     const onMsg = (msg: ConsoleMessage) => {
       if (msg.type() !== "error") return;
@@ -38,7 +38,7 @@ export const test = base.extend<AppFixtures>({
     page.on("pageerror", (err) =>
       collector.errors.push(`pageerror: ${err.message}`),
     );
-    await useFixture(collector);
+    await fixtureUse(collector);
     page.off("console", onMsg);
     if (collector.errors.length > 0 && testInfo.status === "passed") {
       throw new Error(
@@ -49,13 +49,13 @@ export const test = base.extend<AppFixtures>({
     }
   },
 
-  apiRequest: async ({}, useFixture) => {
+  apiRequest: async ({}, fixtureUse) => {
     const ctx = await request.newContext({ baseURL: BACKEND_URL });
-    await useFixture(ctx);
+    await fixtureUse(ctx);
     await ctx.dispose();
   },
 
-  loginAs: async ({ page }, useFixture) => {
+  loginAs: async ({ page }, fixtureUse) => {
     const fn = async (role: SeededRole): Promise<UserProfileResponseDto> => {
       const creds = SEED[role];
 
@@ -89,7 +89,7 @@ export const test = base.extend<AppFixtures>({
       const profile = (await profileResult.json()) as UserProfileResponseDto;
       return profile;
     };
-    await useFixture(fn);
+    await fixtureUse(fn);
   },
 });
 

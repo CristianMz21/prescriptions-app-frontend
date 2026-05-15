@@ -17,7 +17,7 @@ export default async function globalSetup(): Promise<void> {
     // Seed login round-trip so test failures surface backend/credential issues
     // up front, not midway through a spec.
     const login = await ctx.post(`${BACKEND}/auth/login`, {
-      data: { email: "admin@clinic.com", password: "Password123!" },
+      data: { email: "admin@test.com", password: "Password123!" },
     });
     if (login.status() !== 201) {
       throw new Error(
