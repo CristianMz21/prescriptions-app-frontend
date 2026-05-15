@@ -8,10 +8,10 @@ test.describe("UI behavior under backend failure / empty data", () => {
     page,
     context,
   }) => {
-    let mocked = false;
+    await loginAs("doctor");
+
     await context.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
-      if (!mocked && route.request().method() === "GET") {
-        mocked = true;
+      if (route.request().method() === "GET") {
         return route.fulfill({
           status: 500,
           contentType: "application/json",
@@ -21,11 +21,16 @@ test.describe("UI behavior under backend failure / empty data", () => {
       return route.continue();
     });
 
-    await loginAs("doctor");
-
-    await expect(page.getByTestId("error-state")).toBeVisible();
-    await expect(page.getByText(/forced failure/i)).toBeVisible();
-    await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
+    const isolatedPage = await context.newPage();
+    try {
+      await isolatedPage.goto("/doctor/prescriptions");
+      await expect(isolatedPage.getByTestId("error-state")).toBeVisible();
+      await expect(isolatedPage.getByText(/forced failure/i)).toBeVisible();
+    } finally {
+      await isolatedPage.close();
+      await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
+      await page.bringToFront();
+    }
   });
 
   test('patient list: empty array → EmptyState "No prescriptions found"', async ({
@@ -33,10 +38,10 @@ test.describe("UI behavior under backend failure / empty data", () => {
     page,
     context,
   }) => {
-    let mocked = false;
+    await loginAs("patient");
+
     await context.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
-      if (!mocked && route.request().method() === "GET") {
-        mocked = true;
+      if (route.request().method() === "GET") {
         return route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -49,11 +54,16 @@ test.describe("UI behavior under backend failure / empty data", () => {
       return route.continue();
     });
 
-    await loginAs("patient");
-
-    await expect(page.getByText("No prescriptions found")).toBeVisible();
-    await expect(page.getByTestId("prescription-card")).toHaveCount(0);
-    await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
+    const isolatedPage = await context.newPage();
+    try {
+      await isolatedPage.goto("/patient/prescriptions");
+      await expect(isolatedPage.getByText("No prescriptions found")).toBeVisible();
+      await expect(isolatedPage.getByTestId("prescription-card")).toHaveCount(0);
+    } finally {
+      await isolatedPage.close();
+      await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
+      await page.bringToFront();
+    }
   });
 
   test("patient detail: nonexistent id → ErrorState", async ({
