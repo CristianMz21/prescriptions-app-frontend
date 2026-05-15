@@ -88,7 +88,15 @@ test.describe("Admin onboarding (P1 — usersControllerCreate)", () => {
 
     const rows = page.getByTestId("prescription-row");
     await expect(rows.first()).toBeVisible();
-    await rows.first().getByRole("link", { name: /view/i }).click();
+    // Read the View link's href and goto directly — same Next.js <Link>
+    // click race observed on the doctor list applies here on the admin
+    // list. See e2e/doctor.spec.ts for the documented pattern.
+    const href = await rows
+      .first()
+      .getByRole("link", { name: /view/i })
+      .getAttribute("href");
+    expect(href, "View link must have an href").toBeTruthy();
+    await page.goto(href!);
 
     await expect(page.getByText("RX Number")).toBeVisible();
     // Admin should see details but NOT the consume button
