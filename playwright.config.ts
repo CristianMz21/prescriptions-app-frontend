@@ -26,9 +26,10 @@ export default defineConfig({
   timeout: 90_000,
   expect: { timeout: 15_000 },
   // Cap the entire suite wall-time. With retries=0 below, a passing
-  // suite finishes in ~5-6 min, a failing suite fails fast. The cap is
-  // a backstop against a runner hang, not the normal wall-time.
-  globalTimeout: 25 * 60 * 1000,
+  // suite finishes in ~3-4 min, a failing suite fails at first error.
+  // 8 min gives a tight feedback loop on CI — if anything wedges, we
+  // abort and pull artifacts instead of waiting 25 min.
+  globalTimeout: 8 * 60 * 1000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   // No retries. Retries hide flakes and triple wall-time on legit
@@ -67,15 +68,12 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command: "pnpm exec next dev -H 127.0.0.1 -p 3001",
-    url: "http://127.0.0.1:3001/login",
-    reuseExistingServer: true,
-    timeout: 120_000,
-    stdout: "ignore",
-    stderr: "pipe",
-    env: {
-      NEXT_PUBLIC_API_URL: process.env.E2E_BACKEND_URL,
-    },
-  },
+  // No `webServer` block. In CI the workflow already starts `next start`
+  // on :3001 and gates the test step on a strict 200 readiness probe
+  // (see `.github/workflows/frontend-ci.yml`). Locally, run the dev
+  // server in a separate shell before `pnpm test:e2e` — this matches
+  // every other dev workflow in the repo. The previous `webServer`
+  // config could wedge here when its internal `reuseExistingServer`
+  // probe disagreed with the externally-started server about timing,
+  // producing zero test outcomes for 25+ min (run #25906586850).
 });
