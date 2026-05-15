@@ -1,15 +1,18 @@
 import axios, { type AxiosRequestConfig, AxiosError } from "axios";
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BROWSER_API_PROXY_BASE_URL = "/api/backend";
+const runtimeBaseUrl =
+  typeof window === "undefined" ? API_BASE_URL : BROWSER_API_PROXY_BASE_URL;
 
-if (!API_BASE_URL && typeof window !== "undefined") {
+if (!runtimeBaseUrl && typeof window !== "undefined") {
   console.warn(
-    "NEXT_PUBLIC_API_URL is not defined. API requests will fail if they are not relative.",
+    "NEXT_PUBLIC_API_URL is not defined. API requests will fail.",
   );
 }
 
 export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: runtimeBaseUrl,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
