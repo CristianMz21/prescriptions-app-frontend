@@ -209,6 +209,13 @@ jobs:
         # without this, the backend's `nest build` errors with `Module
         # "@prisma/client/default" has no exported member 'Role'` etc.
         run: cd backend && pnpm exec prisma generate
+      - name: Install Puppeteer Chrome (required by backend PdfService)
+        # Backend's PdfService uses Puppeteer to render PDF prescriptions.
+        # Without Chrome in the puppeteer cache, every `GET
+        # /prescriptions/:id/pdf` returns 500 ("Could not find Chrome
+        # ver. X"). Observed in runs #25910559603 onwards as the cause
+        # of patient PDF + patient consume flow failures.
+        run: cd backend && pnpm exec puppeteer browsers install chrome
       - name: Install Playwright chromium (with system deps)
         run: cd frontend && pnpm exec playwright install --with-deps chromium
       - name: Wait for PostgreSQL
