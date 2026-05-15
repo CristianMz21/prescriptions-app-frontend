@@ -219,6 +219,11 @@ jobs:
           done
           echo "::error::PostgreSQL never became ready"
           exit 1
+      - name: Build backend (seed runs against compiled output)
+        # The backend's `prisma.seed` field in package.json is
+        # `node dist/prisma/seed.js` (introduced for Render boot), so the
+        # seed step below depends on the compiled bundle existing.
+        run: cd backend && pnpm build
       - name: Reset + migrate + seed (deterministic)
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prescriptions_test?schema=public
