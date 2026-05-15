@@ -58,6 +58,16 @@ export default defineConfig({
     video: "retain-on-failure",
     actionTimeout: 20_000,
     navigationTimeout: 60_000,
+    // Match the app's runtime default. Seeded users have
+    // `themePreference: SYSTEM`, which `app/layout.tsx` resolves to
+    // `.dark` on `<html>` during SSR. Without this override Chromium
+    // reports `prefers-color-scheme: light`, the client-side
+    // ThemeToggle then strips `.dark` after hydration, and the page
+    // ends up in light mode — different from what the app actually
+    // ships to real users on dark-defaulting systems. Pinning the
+    // test browser to dark keeps SSR and hydration in agreement and
+    // exercises the design tokens the design team actually authored.
+    colorScheme: "dark",
   },
   projects: [
     {
