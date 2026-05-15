@@ -9,47 +9,31 @@ export interface NavItem {
   icon: AppIconName;
 }
 
+const navItem = (href: string, label: string, icon: AppIconName): NavItem => ({
+  href,
+  label,
+  icon,
+});
+
 export const navigationByRole: Record<Role, NavItem[]> = {
   ADMIN: [
-    { href: routes.admin.metrics, label: "Analytics", icon: "barChart3" },
-    {
-      href: routes.admin.prescriptions,
-      label: "Prescriptions",
-      icon: "pill",
-    },
-    { href: routes.admin.users, label: "Users", icon: "users" },
-    { href: routes.admin.doctors, label: "Doctors", icon: "hospital" },
-    { href: routes.admin.patients, label: "Patients", icon: "userRound" },
+    navItem(routes.admin.metrics, "Analytics", "barChart3"),
+    navItem(routes.admin.prescriptions, "Prescriptions", "pill"),
+    navItem(routes.admin.users, "Users", "users"),
+    navItem(routes.admin.doctors, "Doctors", "hospital"),
+    navItem(routes.admin.patients, "Patients", "userRound"),
   ],
   DOCTOR: [
-    {
-      href: routes.doctor.prescriptions,
-      label: "Prescriptions",
-      icon: "pill",
-    },
-    {
-      href: routes.doctor.newPrescription,
-      label: "New Script",
-      icon: "circlePlus",
-    },
-    { href: routes.doctor.patients, label: "Patients", icon: "userRound" },
+    navItem(routes.doctor.prescriptions, "Prescriptions", "pill"),
+    navItem(routes.doctor.newPrescription, "New Script", "circlePlus"),
+    navItem(routes.doctor.patients, "Patients", "userRound"),
     ...(isDoctorAnalyticsEnabled()
-      ? [
-          {
-            href: routes.doctor.analytics,
-            label: "Analytics",
-            icon: "barChart3",
-          },
-        ]
+      ? [navItem(routes.doctor.analytics, "Analytics", "barChart3")]
       : []),
-    { href: routes.doctor.profile, label: "Profile", icon: "userCircle2" },
+    navItem(routes.doctor.profile, "Profile", "userCircle2"),
   ],
   PATIENT: [
-    {
-      href: routes.patient.prescriptions,
-      label: "My Prescriptions",
-      icon: "pill",
-    },
-    { href: routes.patient.profile, label: "Profile", icon: "userCircle2" },
+    navItem(routes.patient.prescriptions, "My Prescriptions", "pill"),
+    navItem(routes.patient.profile, "Profile", "userCircle2"),
   ],
 };

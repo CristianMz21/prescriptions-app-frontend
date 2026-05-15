@@ -9,6 +9,8 @@ import { StatusDistribution } from "./StatusDistribution";
 import { VolumeTrendsChart } from "./VolumeTrendsChart";
 import { TopDoctorsTable } from "./TopDoctorsTable";
 import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/shared/PageShell";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 interface MetricsContentProps {
   live?: boolean;
@@ -20,20 +22,13 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
 
   if (isLoading) {
     return (
-      <div
-        data-testid="metrics-overview"
-        className="max-w-[1440px] mx-auto w-full px-1 md:px-2 lg:px-3"
-      >
-        <header className="mb-10">
-          <h2 className="text-3xl font-bold text-primary tracking-tight">
-            System Overview
-          </h2>
-          <p className="text-base text-on-surface-variant mt-1">
-            Real-time metrics for network operations.
-          </p>
-        </header>
+      <PageShell data-testid="metrics-overview">
+        <PageHeader
+          title="System Overview"
+          description="Real-time metrics for network operations."
+        />
         <MetricCardsSkeleton />
-      </div>
+      </PageShell>
     );
   }
   if (error)
@@ -50,18 +45,11 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
   if (!metrics) return null;
 
   return (
-    <div
-      data-testid="metrics-overview"
-      className="max-w-[1440px] mx-auto w-full px-1 md:px-2 lg:px-3 space-y-7"
-    >
-      <header className="mb-2">
-        <h2 className="text-3xl font-bold text-primary tracking-tight">
-          System Overview
-        </h2>
-        <p className="text-base text-on-surface-variant mt-1">
-          Real-time metrics for network operations.
-        </p>
-      </header>
+    <PageShell data-testid="metrics-overview" className="space-y-7">
+      <PageHeader
+        title="System Overview"
+        description="Real-time metrics for network operations."
+      />
 
       <MetricsGrid metrics={metrics} />
 
@@ -72,6 +60,6 @@ export function MetricsContent({ live = true }: MetricsContentProps = {}) {
       <div className="pt-1">
         <TopDoctorsTable doctors={metrics.topDoctors} />
       </div>
-    </div>
+    </PageShell>
   );
 }

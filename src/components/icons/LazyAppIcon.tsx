@@ -13,6 +13,19 @@ const OPTIONAL_ICON_LOADERS = {
 
 type LazyIconName = keyof typeof OPTIONAL_ICON_LOADERS;
 
+const LAZY_ICONS: Record<LazyIconName, ComponentType<AppIconBaseProps>> = {
+  activity: lazy(
+    OPTIONAL_ICON_LOADERS.activity as () => Promise<{
+      default: ComponentType<AppIconBaseProps>;
+    }>,
+  ),
+  shieldAlert: lazy(
+    OPTIONAL_ICON_LOADERS.shieldAlert as () => Promise<{
+      default: ComponentType<AppIconBaseProps>;
+    }>,
+  ),
+};
+
 interface LazyAppIconProps extends AppIconBaseProps {
   name: LazyIconName | AppIconName;
   fallbackName?: AppIconName;
@@ -26,12 +39,7 @@ export function LazyAppIcon({
   if (!(name in OPTIONAL_ICON_LOADERS)) {
     return <AppIcon name={name as AppIconName} {...props} />;
   }
-
-  const Loader = lazy(
-    OPTIONAL_ICON_LOADERS[name as LazyIconName] as () => Promise<{
-      default: ComponentType<AppIconBaseProps>;
-    }>,
-  );
+  const Loader = LAZY_ICONS[name as LazyIconName];
   return (
     <Suspense fallback={<AppIcon name={fallbackName} className="animate-spin" {...props} />}>
       <Loader {...props} />

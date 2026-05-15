@@ -16,12 +16,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
         icon="pill"
         footer={
           <>
-            <span
-              className="material-symbols-outlined text-sm"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              arrow_upward
-            </span>
+            <AppIcon name="trendingUp" size="xs" />
             <span>Total issued</span>
           </>
         }
@@ -32,12 +27,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
         icon="users"
         footer={
           <>
-            <span
-              className="material-symbols-outlined text-sm"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              arrow_upward
-            </span>
+            <AppIcon name="trendingUp" size="xs" />
             <span>Registered</span>
           </>
         }
@@ -48,12 +38,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
         icon="hospital"
         footer={
           <>
-            <span
-              className="material-symbols-outlined text-sm"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              arrow_upward
-            </span>
+            <AppIcon name="trendingUp" size="xs" />
             <span>On duty</span>
           </>
         }
