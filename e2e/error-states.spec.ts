@@ -6,10 +6,11 @@ test.describe("UI behavior under backend failure / empty data", () => {
   test("doctor list: 500 from /prescriptions surfaces ErrorState", async ({
     loginAs,
     page,
+    context,
   }) => {
     await loginAs("doctor");
     // Mock the next list fetch only — login already passed.
-    await page.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
+    await context.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
       if (route.request().method() === "GET") {
         return route.fulfill({
           status: 500,
@@ -22,14 +23,16 @@ test.describe("UI behavior under backend failure / empty data", () => {
     await page.goto("/doctor/prescriptions");
     await expect(page.getByTestId("error-state")).toBeVisible();
     await expect(page.getByText(/forced failure/i)).toBeVisible();
+    await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
   });
 
   test('patient list: empty array → EmptyState "No prescriptions found"', async ({
     loginAs,
     page,
+    context,
   }) => {
     await loginAs("patient");
-    await page.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
+    await context.route(PRESCRIPTIONS_REQUEST_PATTERN, (route) => {
       if (route.request().method() === "GET") {
         return route.fulfill({
           status: 200,
@@ -45,6 +48,7 @@ test.describe("UI behavior under backend failure / empty data", () => {
     await page.goto("/patient/prescriptions");
     await expect(page.getByText("No prescriptions found")).toBeVisible();
     await expect(page.getByTestId("prescription-card")).toHaveCount(0);
+    await context.unroute(PRESCRIPTIONS_REQUEST_PATTERN);
   });
 
   test("patient detail: nonexistent id → ErrorState", async ({

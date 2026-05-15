@@ -50,6 +50,7 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   use: {
     baseURL: process.env.E2E_FRONTEND_URL,
+    serviceWorkers: "block",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     // Video only on failure (was: always-on). Per-test always-on recording

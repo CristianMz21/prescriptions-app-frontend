@@ -105,18 +105,11 @@ export const test = base.extend<AppFixtures>({
             ? "DOCTOR"
             : "PATIENT";
 
-      // Verify role-based visual elements to confirm state.
-      if (expectedRole === "ADMIN") {
-        await expect(page.getByTestId("metrics-overview")).toBeVisible();
-      } else if (expectedRole === "DOCTOR") {
-        await expect(
-          page.getByRole("heading", { name: /active prescriptions/i }),
-        ).toBeVisible();
-      } else if (expectedRole === "PATIENT") {
-        await expect(
-          page.getByRole("heading", { name: /my prescriptions/i }),
-        ).toBeVisible();
-      }
+      // Verify authenticated app shell state without coupling to page-specific
+      // body content (some tests intentionally mock those payloads).
+      await expect(page.getByTestId("sidebar-user-role")).toHaveText(
+        expectedRole,
+      );
 
       return {
         id: "",
