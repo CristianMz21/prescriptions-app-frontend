@@ -64,9 +64,14 @@ export function PrescriptionTable({
               );
 
             return (
+              // Mobile-only card variant. Uses a distinct testid so E2E tests
+              // running at desktop viewports (default 1280×800) target the
+              // visible <TableRow> below rather than this `md:hidden` element
+              // — sharing `prescription-row` made `.first()` resolve to a
+              // hidden node and every doctor.spec.ts row-click test timed out.
               <article
                 key={rx.id}
-                data-testid="prescription-row"
+                data-testid="prescription-row-mobile"
                 data-rx-code={rx.code}
                 className={`rounded-lg border border-outline-variant/40 bg-surface-container-lowest/40 p-3 ${
                   isExpired ? "border-error/50" : ""
