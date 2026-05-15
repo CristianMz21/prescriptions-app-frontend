@@ -57,7 +57,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: frontend/prescriptions-app/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Approve frontend build scripts
         run: pnpm approve-builds --all
@@ -80,26 +80,49 @@ jobs:
         working-directory: ./backend
 
       - name: Set backend environment
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prescriptions_test?schema=public
+          JWT_ACCESS_SECRET: test-access-secret-for-ci
+          JWT_REFRESH_SECRET: test-refresh-secret-for-ci
+          JWT_ACCESS_TTL: 15m
+          JWT_REFRESH_TTL: 7d
+          FRONTEND_URL: http://localhost:${{ env.FRONTEND_PORT }}
+          APP_ORIGIN: http://localhost:${{ env.FRONTEND_PORT }}
+          NODE_ENV: test
+          PORT: ${{ env.BACKEND_PORT }}
         run: |
-          cat >> .env << 'EOF'
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/prescriptions_test?schema=public
-          JWT_ACCESS_SECRET=test-access-secret-for-ci
-          JWT_REFRESH_SECRET=test-refresh-secret-for-ci
-          JWT_ACCESS_TTL=15m
-          JWT_REFRESH_TTL=7d
-          FRONTEND_URL=http://localhost:${{ env.FRONTEND_PORT }}
-          APP_ORIGIN=http://localhost:${{ env.FRONTEND_PORT }}
-          NODE_ENV=test
-          PORT=${{ env.BACKEND_PORT }}
-          EOF
-        working-directory: ./backend
+          cd backend
+          printf '%s\n' \
+            "DATABASE_URL=$DATABASE_URL" \
+            "JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET" \
+            "JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET" \
+            "JWT_ACCESS_TTL=$JWT_ACCESS_TTL" \
+            "JWT_REFRESH_TTL=$JWT_REFRESH_TTL" \
+            "FRONTEND_URL=$FRONTEND_URL" \
+            "APP_ORIGIN=$APP_ORIGIN" \
+            "NODE_ENV=$NODE_ENV" \
+            "PORT=$PORT" \
+            > .env
 
       - name: Set frontend environment
+        env:
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:${{ env.BACKEND_PORT }}
         run: |
-          cat >> .env.local << 'EOF'
-          NEXT_PUBLIC_API_URL=http://127.0.0.1:${{ env.BACKEND_PORT }}
-          EOF
-        working-directory: ./frontend/prescriptions-app
+          cd frontend/prescriptions-app
+          printf '%s\n' "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" > .env.local
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "PostgreSQL ready"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL... ($i/30)"
+            sleep 2
+          done
+          echo "ERROR: PostgreSQL failed to start"
+          exit 1
 
       - name: Prisma generate
         run: pnpm exec prisma generate
@@ -109,80 +132,53 @@ jobs:
         run: pnpm exec prisma migrate deploy
         working-directory: ./backend
 
-      - name: Read backend seed credentials
-        id: seed-credentials
-        run: |
-          echo "Looking for seed file..."
-          SEED_PATH=""
-          for candidate in "prisma/seed.ts" "prisma/seed.js" "src/**/seed*" "seed.ts" "seed.js"; do
-            FOUND=$(find . -name "$candidate" -type f 2>/dev/null | head -1)
-            if [ -n "$FOUND" ]; then
-              SEED_PATH="$FOUND"
-              break
-            fi
-          done
-
-          if [ -z "$SEUND_PATH" ] && [ -z "$SEED_PATH" ]; then
-            echo "WARNING: Could not find seed file"
-          else
-            echo "Seed file: $SEED_PATH"
-          fi
-
-          echo "paths=$(echo "$SEED_PATH" | base64)" >> $GITHUB_OUTPUT
-        working-directory: ./backend
-
       - name: Run Prisma seed
         run: pnpm exec prisma db seed
         working-directory: ./backend
 
       - name: Start backend
         run: |
-          pnpm start:dev > backend.log 2>&1 &
-          echo $! > backend.pid
+          pnpm start:dev > ../backend.log 2>&1 &
+          echo $! > ../backend.pid
+          echo "Backend PID: $(cat ../backend.pid)"
         working-directory: ./backend
-
-      - name: Wait for PostgreSQL
-        run: |
-          for i in {1..30}; do
-            if pg_isready -h localhost -p 5432 -U postgres; then
-              echo "PostgreSQL ready"
-              break
-            fi
-            echo "Waiting for PostgreSQL... ($i/30)"
-            sleep 2
-          done
 
       - name: Wait for backend readiness
         run: |
+          echo "Waiting for backend on port ${{ env.BACKEND_PORT }}..."
           for i in {1..60}; do
-            if curl -sf http://127.0.0.1:${{ env.BACKEND_PORT }}/ > /dev/null 2>&1; then
-              echo "Backend ready"
-              break
+            HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" http://127.0.0.1:${{ env.BACKEND_PORT }}/ 2>/dev/null || echo "000")
+            if [ "$HTTP_CODE" != "000" ] && [ "$HTTP_CODE" != "401" ]; then
+              echo "Backend ready (HTTP $HTTP_CODE)"
+              exit 0
             fi
-            echo "Waiting for backend... ($i/60)"
+            echo "Waiting for backend... ($i/60) last code: $HTTP_CODE"
             sleep 3
           done
-        working-directory: ./backend
+          echo "ERROR: Backend failed to start. Logs:"
+          cat ../backend.log
+          exit 1
 
-      - name: Check backend startup logs
+      - name: Check backend for errors
         run: |
-          if grep -q "Exception\|Error\|failed\|FATAL" backend.log 2>/dev/null; then
+          if grep -qi "Exception\|FATAL\|Unable to connect" ../backend.log; then
             echo "ERROR: Backend startup issues detected:"
-            grep "Exception\|Error\|failed\|FATAL" backend.log | head -20
+            grep -i "Exception\|FATAL\|Unable to connect" ../backend.log | head -20
             exit 1
           fi
-        working-directory: ./backend
 
       - name: Start frontend
         run: |
-          pnpm exec next dev -H 127.0.0.1 -p ${{ env.FRONTEND_PORT }} > frontend.log 2>&1 &
-          echo $! > frontend.pid
+          pnpm exec next dev -H 127.0.0.1 -p ${{ env.FRONTEND_PORT }} > ../frontend.log 2>&1 &
+          echo $! > ../frontend.pid
+          echo "Frontend PID: $(cat ../frontend.pid)"
         working-directory: ./frontend/prescriptions-app
 
       - name: Wait for frontend login page
         run: |
+          echo "Waiting for frontend on port ${{ env.FRONTEND_PORT }}..."
           for i in {1..60}; do
-            if curl -sf http://127.0.0.1:${{ env.FRONTEND_PORT }}/login > /dev/null 2>&1; then
+            if curl -sf -o /dev/null http://127.0.0.1:${{ env.FRONTEND_PORT }}/login 2>/dev/null; then
               echo "Frontend ready"
               exit 0
             fi
@@ -190,9 +186,8 @@ jobs:
             sleep 3
           done
           echo "ERROR: Frontend failed to start. Logs:"
-          cat frontend.log
+          cat ../frontend.log
           exit 1
-        working-directory: ./frontend/prescriptions-app
 
       - name: Verify seed credentials in test fixtures
         run: |
