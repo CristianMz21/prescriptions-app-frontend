@@ -10,10 +10,11 @@ import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { apiClient, ApiError } from "./custom-instance";
 
-const ORIGIN = apiClient.defaults.baseURL;
+const ORIGIN = apiClient.defaults.baseURL || "http://localhost:3000";
 
-if (!ORIGIN) {
-  throw new Error("API origin is not configured in apiClient defaults.");
+// Ensure the apiClient has a baseURL for the test to function correctly
+if (!apiClient.defaults.baseURL) {
+  apiClient.defaults.baseURL = ORIGIN;
 }
 
 let refreshCallCount = 0;

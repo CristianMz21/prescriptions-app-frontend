@@ -30,13 +30,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const EMPTY_ITEM: PrescriptionItemDto = {
+type PrescriptionItemFormState = PrescriptionItemDto & { localId: string };
+
+const createEmptyItem = (): PrescriptionItemFormState => ({
   name: "",
   dosage: "",
   quantity: undefined,
   unit: "",
   instructions: "",
-};
+  localId: Math.random().toString(36).slice(2, 11),
+});
 
 const UNIT_OPTIONS = [
   "cápsulas",
@@ -61,8 +64,8 @@ export function CreatePrescriptionForm() {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [notes, setNotes] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
-  const [items, setItems] = useState<PrescriptionItemDto[]>([
-    { ...EMPTY_ITEM },
+  const [items, setItems] = useState<PrescriptionItemFormState[]>([
+    createEmptyItem(),
   ]);
   const [error, setError] = useState<string | null>(null);
   const [isResolvingPatient, setIsResolvingPatient] = useState(false);
@@ -125,7 +128,7 @@ export function CreatePrescriptionForm() {
     },
   });
 
-  const handleAddItem = () => setItems((prev) => [...prev, { ...EMPTY_ITEM }]);
+  const handleAddItem = () => setItems((prev) => [...prev, createEmptyItem()]);
   const handleRemoveItem = (index: number) =>
     setItems((prev) =>
       prev.length > 1 ? prev.filter((_, i) => i !== index) : prev,
@@ -148,9 +151,9 @@ export function CreatePrescriptionForm() {
       setError("Please select a patient");
       return;
     }
-    const validItems = items.filter(
-      (item) => item.name.trim() !== "" && item.unit.trim() !== "",
-    );
+    const validItems = items
+      .filter((item) => item.name.trim() !== "" && item.unit.trim() !== "")
+      .map(({ localId: _, ...rest }) => rest);
     if (validItems.length === 0) {
       setError("At least one medication with name and unit is required");
       return;
@@ -405,7 +408,7 @@ export function CreatePrescriptionForm() {
           <div className="space-y-4">
             {items.map((item, index) => (
               <MedicationItemRow
-                key={`med-item-${index}-${item.name}`}
+                key={item.localId}
                 index={index}
                 item={item}
                 onChange={(field, value) => updateItem(index, field, value)}
