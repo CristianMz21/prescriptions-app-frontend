@@ -39,24 +39,7 @@ export async function POST(
   const loginUrl = new URL("/login", request.url);
 
   // Explicit auth check — no `redirect()` to fight with.
-  // TEMP DIAGNOSTIC: log incoming cookies + auth outcome so we can see
-  // exactly why the patient consume E2E lands on /login. Remove once
-  // the root cause is identified and fixed (or moved to a structured
-  // logger). The Cookie header is logged with sensitive values masked.
-  const incomingCookie = request.headers.get("cookie") ?? "(none)";
-  const maskedCookie = incomingCookie.replace(
-    /=([^;]+)/g,
-    (_, v) => `=<${v.length}b>`,
-  );
-  console.error(
-    `[consume-route] POST /patient/prescriptions/${id}/consume; cookies: ${maskedCookie}`,
-  );
   const auth = await getAuth();
-  console.error(
-    `[consume-route] getAuth result: ${
-      auth ? `role=${auth.role} id=${auth.id}` : "null"
-    }`,
-  );
   if (!auth) {
     return NextResponse.redirect(loginUrl, { status: 303 });
   }
@@ -78,19 +61,11 @@ export async function POST(
       }
     }
 
-    console.error(
-      `[consume-route] about to PATCH /prescriptions/${id}/consume (reason=${
-        reason ? `<${reason.length}c>` : "none"
-      })`,
-    );
     await serverApiRequest({
       url: `/prescriptions/${id}/consume`,
       method: "PATCH",
       data: reason ? { reason } : {},
     });
-    console.error(
-      `[consume-route] PATCH succeeded, redirecting to detail`,
-    );
 
     detailUrl.searchParams.set("consumed", "1");
     return NextResponse.redirect(detailUrl, { status: 303 });
@@ -98,16 +73,8 @@ export async function POST(
     // Let framework-issued NEXT_REDIRECT digests through unmodified (defensive
     // — `getAuth` swallows redirects already, but downstream code may not).
     if (isRedirectError(err)) {
-      console.error(`[consume-route] re-throwing framework redirect`);
       throw err;
     }
-    console.error(
-      `[consume-route] caught error during consume PATCH: ${
-        err instanceof Error
-          ? `${err.name}: ${err.message}`
-          : String(err)
-      }`,
-    );
     return NextResponse.redirect(errorListUrl, { status: 303 });
   }
 }
