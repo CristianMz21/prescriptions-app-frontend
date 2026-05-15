@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 /**
@@ -12,8 +12,10 @@ export function useLegacyUrlMigration() {
   const pathname = usePathname();
   const params = useSearchParams();
   const router = useRouter();
+  const migratedRef = useRef(false);
 
   useEffect(() => {
+    if (migratedRef.current) return;
     if (!pathname.includes("/admin/prescriptions")) return;
 
     const hasLegacyFrom = params.has("from");
@@ -32,6 +34,7 @@ export function useLegacyUrlMigration() {
       next.delete("to");
     }
 
+    migratedRef.current = true;
     router.replace(`${pathname}?${next.toString()}`);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- runs once on mount
+  }, [params, pathname, router]);
 }

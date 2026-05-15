@@ -1,7 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks --
- * Playwright fixtures expose a `use` callback that ESLint's react-hooks plugin
- * misreads as React's `use` hook. These are test fixtures, not React.
- */
 import {
   test as base,
   expect,
@@ -11,7 +7,7 @@ import {
   type Page,
 } from "@playwright/test";
 import type { UserProfileResponseDto } from "../src/lib/api/generated/schemas";
-import { BACKEND_URL, LANDING_PATH, SEED, type SeededRole } from "./data";
+import { BACKEND_URL, SEED, type SeededRole } from "./data";
 
 interface ConsoleErrorCollector {
   errors: string[];
@@ -30,7 +26,7 @@ const IGNORED_CONSOLE_PATTERNS: RegExp[] = [
 ];
 
 export const test = base.extend<AppFixtures>({
-  consoleErrors: async ({ page }, use, testInfo) => {
+  consoleErrors: async ({ page }, useFixture, testInfo) => {
     const collector: ConsoleErrorCollector = { errors: [] };
     const onMsg = (msg: ConsoleMessage) => {
       if (msg.type() !== "error") return;
@@ -42,7 +38,7 @@ export const test = base.extend<AppFixtures>({
     page.on("pageerror", (err) =>
       collector.errors.push(`pageerror: ${err.message}`),
     );
-    await use(collector);
+    await useFixture(collector);
     page.off("console", onMsg);
     if (collector.errors.length > 0 && testInfo.status === "passed") {
       throw new Error(
@@ -53,13 +49,13 @@ export const test = base.extend<AppFixtures>({
     }
   },
 
-  apiRequest: async ({}, use) => {
+  apiRequest: async ({}, useFixture) => {
     const ctx = await request.newContext({ baseURL: BACKEND_URL });
-    await use(ctx);
+    await useFixture(ctx);
     await ctx.dispose();
   },
 
-  loginAs: async ({ page }, use) => {
+  loginAs: async ({ page }, useFixture) => {
     const fn = async (role: SeededRole): Promise<UserProfileResponseDto> => {
       const creds = SEED[role];
 
@@ -93,7 +89,7 @@ export const test = base.extend<AppFixtures>({
       const profile = (await profileResult.json()) as UserProfileResponseDto;
       return profile;
     };
-    await use(fn);
+    await useFixture(fn);
   },
 });
 

@@ -164,6 +164,16 @@ jobs:
           done
 
       - name: Start backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prescriptions_test?schema=public
+          JWT_ACCESS_SECRET: test-access-secret-for-ci
+          JWT_REFRESH_SECRET: test-refresh-secret-for-ci
+          JWT_ACCESS_TTL: 15m
+          JWT_REFRESH_TTL: 7d
+          FRONTEND_URL: http://localhost:3001
+          APP_ORIGIN: http://localhost:3001
+          NODE_ENV: test
+          PORT: 3000
         run: |
           git clone --depth 1 https://github.com/CristianMz21/prescriptions-app-backend.git ../backend
           cd ../backend
