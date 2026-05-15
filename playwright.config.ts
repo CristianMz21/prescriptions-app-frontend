@@ -19,11 +19,22 @@ process.env.E2E_FRONTEND_URL = process.env.E2E_FRONTEND_URL || "http://127.0.0.1
 export default defineConfig({
   testDir: "./e2e",
   testMatch: /.*\.spec\.ts/,
-  timeout: 90_000,
-  expect: { timeout: 15_000 },
+  // Aggressive but safe budgets — every assertion in this suite resolves in
+  // under a second on a passing run, so the wide budgets were just hiding
+  // flakes. Real failures surface fast; the suite no longer wedges for an
+  // hour on retry storms (observed: run #25902797435 ran 66+ min before
+  // being cancelled at default retries=2 + timeout=90s).
+  timeout: 30_000,
+  expect: { timeout: 5_000 },
+  // Cap the entire suite wall-time. If something pathologically hangs the
+  // job aborts at 15 min instead of burning a full GitHub Actions hour.
+  globalTimeout: 15 * 60 * 1000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  // No retries in CI. Retries hide flakes and triple the wall-time when a
+  // test is broken. Deterministic suites do not need retries; if a real
+  // flake appears, fix it at the root.
+  retries: 0,
   // Worker count is bounded by backend CPU, not by Next.js. The login flow
   // hits NestJS `/auth/login` which performs a bcrypt.compare (cost ~100ms
   // per call). On a 2-vCPU GitHub Actions runner with two Chromium browsers
@@ -40,9 +51,12 @@ export default defineConfig({
     baseURL: process.env.E2E_FRONTEND_URL,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
-    video: { mode: "on", size: { width: 1280, height: 800 } },
-    actionTimeout: 20_000,
-    navigationTimeout: 60_000,
+    // Video only on failure (was: always-on). Per-test always-on recording
+    // was ~50% of wall-time per test on prior CI runs; retain-on-failure
+    // keeps the debugging signal where it matters and halves test time.
+    video: "retain-on-failure",
+    actionTimeout: 10_000,
+    navigationTimeout: 30_000,
   },
   projects: [
     {
