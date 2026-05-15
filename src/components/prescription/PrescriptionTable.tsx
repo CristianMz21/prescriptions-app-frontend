@@ -148,31 +148,31 @@ export function PrescriptionTable({
         </div>
 
         <div className="hidden md:block">
-          <Table>
+          <Table className="w-full table-fixed">
             <TableHeader>
               <TableRow className="border-b border-outline-variant/30 bg-surface-container-lowest/50">
-                <TableHead className="uppercase tracking-wider text-xs">
+                <TableHead className="uppercase tracking-wider text-xs w-[22%]">
                   Name
                 </TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">
+                <TableHead className="uppercase tracking-wider text-xs hidden xl:table-cell xl:w-[18%]">
                   Patient
                 </TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">
+                <TableHead className="uppercase tracking-wider text-xs hidden lg:table-cell lg:w-[14%]">
                   RX Code
                 </TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">
+                <TableHead className="uppercase tracking-wider text-xs w-[28%] lg:w-[24%] xl:w-[18%]">
                   Medications
                 </TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">
+                <TableHead className="uppercase tracking-wider text-xs w-[16%] lg:w-[14%] xl:w-[12%]">
                   Status
                 </TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">
+                <TableHead className="uppercase tracking-wider text-xs hidden lg:table-cell lg:w-[12%] xl:w-[10%]">
                   Expiry
                 </TableHead>
-                <TableHead className="uppercase tracking-wider text-xs">
+                <TableHead className="uppercase tracking-wider text-xs hidden xl:table-cell xl:w-[10%]">
                   Date
                 </TableHead>
-                <TableHead className="text-right uppercase tracking-wider text-xs">
+                <TableHead className="text-right uppercase tracking-wider text-xs w-[64px]">
                   Actions
                 </TableHead>
               </TableRow>
@@ -186,6 +186,14 @@ export function PrescriptionTable({
                   new Date(expiryDate) < now;
                 const expiryDateStr = expiryDate ? formatDate(expiryDate) : "—";
                 const createdDateStr = formatDate(rx.createdAt);
+                const patientEmail = rx.patient?.user?.email || "N/A";
+                const patientName =
+                  patientNameByEmail?.get(
+                    (rx.patient?.user?.email ?? "").toLowerCase(),
+                  ) ??
+                  getUserDisplayName(
+                    rx.patient?.user as { email?: string; name?: string },
+                  );
 
                 return (
                   <TableRow
@@ -196,53 +204,74 @@ export function PrescriptionTable({
                       index % 2 === 0 ? "bg-surface/20" : ""
                     } ${isExpired ? "bg-error/5" : ""}`}
                   >
-                    <TableCell className="text-sm font-semibold text-primary py-3.5 min-w-[150px]">
-                      {patientNameByEmail?.get(
-                        (rx.patient?.user?.email ?? "").toLowerCase(),
-                      ) ??
-                        getUserDisplayName(
-                          rx.patient?.user as { email?: string; name?: string },
-                        )}
-                    </TableCell>
-                    <TableCell className="text-sm py-3.5 min-w-[180px]">
-                      <div className="flex flex-col">
-                        <span className="font-mono text-on-surface">
-                          {rx.patient?.user?.email || "N/A"}
+                    <TableCell className="text-sm font-semibold text-primary py-3.5">
+                      <div className="flex flex-col gap-0.5 min-w-0">
+                        <span className="truncate" title={patientName}>
+                          {patientName}
+                        </span>
+                        {/* Below xl, surface the email here since the
+                            Patient column is hidden. */}
+                        <span
+                          className="truncate font-mono text-xs font-normal text-on-surface-variant xl:hidden"
+                          title={patientEmail}
+                        >
+                          {patientEmail}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm font-mono text-on-surface py-3.5 min-w-[150px]">
-                      {rx.code}
+                    <TableCell className="text-sm py-3.5 hidden xl:table-cell">
+                      <span
+                        className="block truncate font-mono text-on-surface"
+                        title={patientEmail}
+                      >
+                        {patientEmail}
+                      </span>
                     </TableCell>
-                    <TableCell className="text-sm text-on-surface py-3.5 min-w-[360px]">
-                      {rx.items?.map((item) => (
-                        <span key={item.id} className="block last:mb-0 mb-0.5">
-                          {item.name}{" "}
-                          {item.quantity
-                            ? `(${item.quantity})`
-                            : "(Cantidad no especificada)"}
-                        </span>
-                      )) || "N/A"}
+                    <TableCell className="text-sm font-mono text-on-surface py-3.5 hidden lg:table-cell">
+                      <span className="block truncate" title={rx.code}>
+                        {rx.code}
+                      </span>
                     </TableCell>
-                    <TableCell className="py-3.5 min-w-[130px]">
-                      <div className="flex flex-col gap-1">
+                    <TableCell className="text-sm text-on-surface py-3.5">
+                      <div
+                        className="line-clamp-2 break-words"
+                        title={
+                          rx.items
+                            ?.map(
+                              (item) =>
+                                `${item.name}${item.quantity ? ` (${item.quantity})` : ""}`,
+                            )
+                            .join(", ") || "N/A"
+                        }
+                      >
+                        {rx.items?.map((item, i) => (
+                          <span key={item.id}>
+                            {i > 0 ? ", " : ""}
+                            {item.name}
+                            {item.quantity ? ` (${item.quantity})` : ""}
+                          </span>
+                        )) || "N/A"}
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-3.5">
+                      <div className="flex flex-col gap-1 items-start">
                         <PrescriptionStatusBadge status={rx.status} />
                         {isExpired && (
-                          <span className="text-[0.6rem] font-bold text-error uppercase tracking-widest text-center">
+                          <span className="text-[0.6rem] font-bold text-error uppercase tracking-widest">
                             Expired
                           </span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell
-                      className={`text-sm tabular-nums py-3.5 min-w-[120px] ${isExpired ? "text-error font-semibold" : "text-on-surface-variant"}`}
+                      className={`text-sm tabular-nums py-3.5 hidden lg:table-cell ${isExpired ? "text-error font-semibold" : "text-on-surface-variant"}`}
                     >
                       {expiryDateStr}
                     </TableCell>
-                    <TableCell className="text-sm tabular-nums text-on-surface-variant py-3.5 min-w-[110px]">
+                    <TableCell className="text-sm tabular-nums text-on-surface-variant py-3.5 hidden xl:table-cell">
                       {createdDateStr}
                     </TableCell>
-                    <TableCell className="text-right py-3.5 pr-4 min-w-[80px]">
+                    <TableCell className="text-right py-3.5 pr-3">
                       <Link
                         href={getDetailHref(rx.id)}
                         aria-label={`View ${rx.code}`}
