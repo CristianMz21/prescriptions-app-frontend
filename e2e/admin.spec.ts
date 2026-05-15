@@ -1,4 +1,14 @@
 import { test, expect } from "./fixtures";
+import { seedPrescription } from "./data";
+
+const readIntegerMetric = async (
+  card: ReturnType<import("@playwright/test").Page["locator"]>,
+): Promise<number> => {
+  const text = await card.locator(".tabular-nums").first().textContent();
+  const n = Number((text ?? "").trim());
+  expect(Number.isInteger(n), `expected integer, got "${text}"`).toBe(true);
+  return n;
+};
 
 test.describe("Admin metrics dashboard", () => {
   test.beforeEach(async ({ loginAs }) => {
@@ -98,5 +108,30 @@ test.describe("Admin metrics dashboard", () => {
     await expect(
       page.getByRole("link", { name: /new prescription/i }),
     ).not.toBeVisible();
+  });
+
+  // Cross-stack metric correctness: capture the Total Prescriptions count, mint
+  // a new RX directly against the backend, reload the admin dashboard, and
+  // assert the visible total is exactly +1. Catches a class of bugs where the
+  // metric query and the underlying truth drift apart.
+  test("metrics: Total Prescriptions increments by exactly 1 after backend creates an RX", async ({
+    page,
+    apiRequest,
+  }) => {
+    const totalCard = page.locator(
+      '[data-metric-label="Total Prescriptions"]',
+    );
+    await expect(totalCard).toBeVisible();
+    const before = await readIntegerMetric(totalCard);
+
+    // Mint a new prescription on the backend (doctor session) — no UI involved.
+    await seedPrescription(apiRequest, { medName: `MetricCheck-${Date.now()}` });
+
+    // Force the admin metrics page to re-query.
+    await page.reload();
+    await expect(totalCard).toBeVisible();
+    const after = await readIntegerMetric(totalCard);
+
+    expect(after).toBe(before + 1);
   });
 });

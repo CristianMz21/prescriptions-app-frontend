@@ -114,4 +114,58 @@ test.describe("Auth & route guards", () => {
       await expect(page).toHaveURL(/\/login$/);
     });
   }
+
+  // Refresh-token rotation: when the access cookie disappears but the refresh
+  // cookie is still valid, the very next protected request must trigger a
+  // POST /auth/refresh that succeeds (200) and the originally-attempted call
+  // must replay and succeed without a /login redirect.
+  test("refresh-token rotation: missing accessToken triggers /auth/refresh and replay succeeds", async ({
+    page,
+    loginAs,
+  }) => {
+    await loginAs("doctor");
+    await expect(page).toHaveURL(/\/doctor\/prescriptions$/);
+
+    // Drop only the access cookie. The refresh cookie is unchanged.
+    const before = await page.context().cookies();
+    const access = before.find((c) => c.name === "accessToken");
+    const refresh = before.find((c) => c.name === "refreshToken");
+    expect(access, "expected accessToken cookie after login").toBeDefined();
+    expect(refresh, "expected refreshToken cookie after login").toBeDefined();
+
+    await page.context().clearCookies({ name: "accessToken" });
+    const afterClear = await page.context().cookies();
+    expect(
+      afterClear.find((c) => c.name === "accessToken"),
+      "accessToken should be cleared",
+    ).toBeUndefined();
+    expect(
+      afterClear.find((c) => c.name === "refreshToken"),
+      "refreshToken must still be present",
+    ).toBeDefined();
+
+    // Watch for the silent refresh + the original /auth/profile retry.
+    const refreshCall = page.waitForResponse(
+      (res) =>
+        res.url().endsWith("/auth/refresh") &&
+        res.request().method() === "POST",
+    );
+
+    // Navigate to a protected page. The custom axios interceptor must see the
+    // 401, fire POST /auth/refresh, then retransmit the original call.
+    await page.goto("/doctor/prescriptions");
+
+    const refreshRes = await refreshCall;
+    expect(refreshRes.status()).toBe(200);
+
+    // After rotation we must be on the protected page, NOT redirected to /login.
+    await expect(page).toHaveURL(/\/doctor\/prescriptions$/);
+
+    // And the access cookie is restored.
+    const afterRefresh = await page.context().cookies();
+    expect(
+      afterRefresh.find((c) => c.name === "accessToken"),
+      "accessToken cookie should be re-set by /auth/refresh",
+    ).toBeDefined();
+  });
 });

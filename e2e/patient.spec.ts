@@ -1,5 +1,10 @@
 import { test, expect } from "./fixtures";
-import { seedPrescription, uniqueMedName } from "./data";
+import { backendLogin, BACKEND_URL, SEED, seedPrescription, uniqueMedName } from "./data";
+
+interface PrescriptionApiRow {
+  id: string;
+  patientId: string;
+}
 
 test.describe("Patient prescription flows", () => {
   test("list renders glass cards (not the doctor table)", async ({
@@ -175,5 +180,60 @@ test.describe("Patient prescription flows", () => {
     await expect(
       page.getByRole("button", { name: /mark as consumed/i }),
     ).toHaveCount(0);
+  });
+
+  // RBAC isolation: a logged-in patient must never receive a prescription whose
+  // patientId differs from their own. The list endpoint filters server-side,
+  // so we drive the test via the admin endpoint to obtain a "not mine" RX id,
+  // then re-login as the seed patient and assert the direct GET is refused.
+  test("rbac: patient cannot read another patient's prescription", async ({
+    apiRequest,
+  }) => {
+    // Login as admin to enumerate prescriptions across patients.
+    await backendLogin({
+      apiRequest,
+      email: SEED.admin.email,
+      password: SEED.admin.password,
+    });
+    const allRes = await apiRequest.get(
+      `${BACKEND_URL}/admin/prescriptions?limit=50`,
+    );
+    expect(allRes.status()).toBe(200);
+    const all = (await allRes.json()) as { data: PrescriptionApiRow[] };
+
+    // Find the seed patient's own profile id so we can deliberately pick an RX
+    // whose patientId is NOT theirs.
+    await backendLogin({
+      apiRequest,
+      email: SEED.patient.email,
+      password: SEED.patient.password,
+    });
+    const profileRes = await apiRequest.get(`${BACKEND_URL}/auth/profile`);
+    expect(profileRes.status()).toBe(200);
+    const profile = (await profileRes.json()) as {
+      patient?: { id: string };
+    };
+    const ownPatientId = profile.patient?.id;
+    expect(ownPatientId).toBeTruthy();
+
+    // Seed creates faker-generated patients with prescriptions, so the
+    // "different patientId" pool is non-empty by design. If this expectation
+    // ever fails it means the seed is no longer multi-patient — the RBAC
+    // assertion would then be impossible to exercise and we want CI to flag it.
+    const otherRx = all.data.find((p) => p.patientId !== ownPatientId);
+    expect(
+      otherRx,
+      "Seed must contain at least one RX owned by a non-seed patient for the RBAC isolation check to be meaningful.",
+    ).toBeDefined();
+    if (!otherRx) return; // narrow for TS
+
+    // Already logged in as the seed patient. The backend must refuse the read.
+    const otherRes = await apiRequest.get(
+      `${BACKEND_URL}/prescriptions/${otherRx.id}`,
+    );
+    expect(
+      [403, 404].includes(otherRes.status()),
+      `Expected 403 or 404 reading another patient's RX, got ${otherRes.status()}`,
+    ).toBe(true);
   });
 });

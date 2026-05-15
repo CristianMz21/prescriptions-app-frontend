@@ -1,5 +1,25 @@
 import { test, expect } from "./fixtures";
-import { SEED, uniqueMedName } from "./data";
+import { backendLogin, BACKEND_URL, SEED, uniqueMedName } from "./data";
+
+interface PrescriptionItemApi {
+  name: string;
+  dosage?: string | null;
+  quantity?: number | null;
+  unit: string;
+}
+
+interface PrescriptionApi {
+  id: string;
+  authorId: string;
+  patientId: string;
+  status: string;
+  items: PrescriptionItemApi[];
+}
+
+interface PrescriptionListApi {
+  data: PrescriptionApi[];
+  meta: { total: number };
+}
 
 test.describe("Doctor prescription flows", () => {
   test("seeded prescriptions render in a table with monochrome status badges", async ({
@@ -163,5 +183,62 @@ test.describe("Doctor prescription flows", () => {
     await expect(
       page.getByRole("button", { name: /remove medication/i }),
     ).toBeDisabled();
+  });
+
+  // Closes a gap where the UI could render success without the DB reflecting
+  // the new prescription. Verifies backend state directly after the UI flow.
+  test("create flow: backend GET confirms the new prescription is persisted with the seeded doctor as author", async ({
+    loginAs,
+    createPrescriptionUI,
+    apiRequest,
+  }) => {
+    await loginAs("doctor");
+    const medName = uniqueMedName("StateCheck");
+
+    await createPrescriptionUI({
+      patientEmail: SEED.patient.email,
+      medicationName: medName,
+      unit: "comprimidos",
+      dosage: "250mg",
+      quantity: "20",
+      instructions: "Twice daily",
+    });
+
+    // Drive the backend with the doctor's session and locate the just-created
+    // RX by free-text search on medication name (?q=). Asserting authorId,
+    // status, items, dosage, and quantity proves the UI did not silently swap
+    // any field before persisting.
+    await backendLogin({
+      apiRequest,
+      email: SEED.doctor.email,
+      password: SEED.doctor.password,
+    });
+    // `Prescription.authorId` references `Doctor.id` (the profile id), not the
+    // User id. Resolve it via /auth/profile.doctor.id so the equality assertion
+    // catches an author mismatch precisely.
+    const profileRes = await apiRequest.get(`${BACKEND_URL}/auth/profile`);
+    expect(profileRes.status()).toBe(200);
+    const profile = (await profileRes.json()) as {
+      doctor?: { id: string };
+    };
+    expect(profile.doctor?.id).toBeTruthy();
+    const doctorProfileId = profile.doctor?.id ?? "";
+
+    const listRes = await apiRequest.get(
+      `${BACKEND_URL}/prescriptions?q=${encodeURIComponent(medName)}&limit=10`,
+    );
+    expect(listRes.status()).toBe(200);
+    const list = (await listRes.json()) as PrescriptionListApi;
+    const created = list.data.find((p) =>
+      p.items.some((i) => i.name === medName),
+    );
+    expect(created, `RX with med ${medName} not found in backend`).toBeDefined();
+    if (!created) return; // narrow for TS
+    expect(created.status).toBe("PENDING");
+    expect(created.authorId).toBe(doctorProfileId);
+    const item = created.items.find((i) => i.name === medName);
+    expect(item?.dosage).toBe("250mg");
+    expect(item?.quantity).toBe(20);
+    expect(item?.unit).toBe("comprimidos");
   });
 });
