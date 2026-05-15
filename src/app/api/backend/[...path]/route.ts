@@ -43,6 +43,15 @@ function buildOutboundHeaders(upstream: Response): Headers {
   for (const raw of setCookies) {
     outbound.append("set-cookie", rewriteCookiePath(raw));
   }
+  // Node `fetch` already decompresses the response body and our pass-through
+  // re-emits the raw bytes. Forwarding the upstream's `content-encoding` (or
+  // its now-wrong `content-length`/`transfer-encoding`) would make the
+  // browser try to decompress an already-decoded body and fail with
+  // `net::ERR_CONTENT_DECODING_FAILED`. Strip the hop-by-hop framing so the
+  // runtime sets the correct values on the outgoing response.
+  outbound.delete("content-encoding");
+  outbound.delete("content-length");
+  outbound.delete("transfer-encoding");
   return outbound;
 }
 
