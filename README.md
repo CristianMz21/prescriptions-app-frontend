@@ -63,16 +63,24 @@ src/
 For Vercel deployment with Render backend, set:
 
 ```bash
-NEXT_PUBLIC_API_URL=/backend
+NEXT_PUBLIC_API_URL=https://prescriptions-app-backend.onrender.com
 ```
 
-This project proxies `/backend/*` to:
-`https://prescriptions-app-backend.onrender.com/*` via `next.config.ts` rewrites.
+The browser is routed through a same-origin proxy at `/api/backend/*`
+(`src/app/api/backend/[...path]/route.ts`) so the backend's `Set-Cookie`
+lands on the Vercel host and SSR `getAuth()` can read it via
+`next/headers cookies()`. The proxy's `fetch()` requires an absolute
+upstream URL, so `NEXT_PUBLIC_API_URL` must be a full `https://…` value
+on Vercel (Production and Preview).
+
+The legacy `/backend/:path*` rewrite in `next.config.ts` is left in
+place as a safety net for any direct `/backend/...` link but is no
+longer the primary client path.
 
 ## Vercel Deploy
 
 1. Import this repo into Vercel.
-2. Set env var `NEXT_PUBLIC_API_URL=/backend` in Production/Preview.
+2. Set env var `NEXT_PUBLIC_API_URL=https://prescriptions-app-backend.onrender.com` in Production/Preview.
 3. Deploy.
 4. Validate login/session and authenticated routes.
 
