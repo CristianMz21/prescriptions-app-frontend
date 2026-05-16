@@ -99,17 +99,33 @@ export function LoginFormCard() {
           ) : null}
         </div>
 
-        <Button type="submit" disabled={isLoading} className="mt-1 h-11 w-full">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          aria-busy={isLoading}
+          data-testid="login-submit"
+          className="mt-1 h-11 w-full"
+        >
           {isLoading ? (
-            <span className="material-symbols-outlined animate-spin">
-              progress_activity
-            </span>
+            <>
+              <span
+                aria-hidden="true"
+                className="material-symbols-outlined animate-spin motion-reduce:animate-none"
+              >
+                progress_activity
+              </span>
+              <span className="font-bold uppercase tracking-widest">
+                Signing in…
+              </span>
+            </>
           ) : (
             <>
               <span className="font-bold uppercase tracking-widest">
                 Sign In
               </span>
-              <span className="material-symbols-outlined text-lg">login</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-lg">
+                login
+              </span>
             </>
           )}
         </Button>
