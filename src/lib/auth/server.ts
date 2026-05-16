@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import axios, {
@@ -151,16 +152,25 @@ export async function serverApiRequest<T = unknown>(
   );
 }
 
-export async function getAuth(): Promise<UserProfileResponseDto | null> {
-  try {
-    return await serverApiRequest<UserProfileResponseDto>({
-      url: "/auth/profile",
-      method: "GET",
-    });
-  } catch {
-    return null;
-  }
-}
+/**
+ * `React.cache` dedupes `getAuth()` calls inside a single server
+ * render. Previously the root `app/layout.tsx`, every role
+ * `layout.tsx`, and individual pages each issued their own
+ * `/auth/profile` request — three or more round-trips per page on
+ * the slow Render free tier. Now they coalesce to one.
+ */
+export const getAuth = cache(
+  async (): Promise<UserProfileResponseDto | null> => {
+    try {
+      return await serverApiRequest<UserProfileResponseDto>({
+        url: "/auth/profile",
+        method: "GET",
+      });
+    } catch {
+      return null;
+    }
+  },
+);
 
 export async function requireAuth(): Promise<UserProfileResponseDto> {
   const auth = await getAuth();

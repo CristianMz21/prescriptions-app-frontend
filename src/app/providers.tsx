@@ -18,8 +18,16 @@ export function Providers({ children, initialUser }: ProvidersProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
+            // 60 s is comfortable for read-heavy admin / list pages.
+            // Anything more aggressive (refetchOnWindowFocus, refetch
+            // on reconnect, refetch on mount when fresh) caused
+            // request storms when the user alt-tabbed back to the
+            // app — disable all three explicitly so each fetch is
+            // intentional or cache-driven.
             staleTime: 60 * 1000,
             retry: 1,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
           },
         },
       }),
