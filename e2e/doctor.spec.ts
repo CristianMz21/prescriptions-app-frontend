@@ -1,5 +1,10 @@
 import { test, expect } from "./fixtures";
 import { backendLogin, BACKEND_URL, SEED, uniqueMedName } from "./data";
+import { getRxByCode, getItemsByRxId, closeDb } from "./db-helpers";
+
+test.afterAll(async () => {
+  await closeDb();
+});
 
 interface PrescriptionItemApi {
   name: string;
@@ -78,6 +83,22 @@ test.describe("Doctor prescription flows", () => {
       "data-status",
       "PENDING",
     );
+
+    // DB assertion: the created row exists in Postgres with the right
+    // status, owner relations, and item. Reads the RX code rendered on
+    // the new row, then verifies via direct DB query.
+    const rxCode = await newRow.getAttribute("data-rx-code");
+    expect(rxCode, "new row must expose data-rx-code").toBeTruthy();
+    const dbRx = await getRxByCode(rxCode!);
+    expect(dbRx, `rx ${rxCode} must exist in Postgres`).not.toBeNull();
+    expect(dbRx!.status).toBe("PENDING");
+    expect(dbRx!.consumedAt).toBeNull();
+    const dbItems = await getItemsByRxId(dbRx!.id);
+    expect(dbItems).toHaveLength(1);
+    expect(dbItems[0].name).toBe(medName);
+    expect(dbItems[0].dosage).toBe("100mg");
+    expect(dbItems[0].quantity).toBe(30);
+    expect(dbItems[0].unit).toBe("comprimidos");
 
     // Verify detail view. Read the href off the View link and navigate
     // directly — the Next.js <Link>'s client-side router push is flaky
