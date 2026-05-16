@@ -10,9 +10,9 @@ export type AdminGetMetricsParams = {
 /**
  * Start date for filtering metrics (ISO 8601 date string)
  */
-from?: string;
+fromDate?: string;
 /**
  * End date for filtering metrics (ISO 8601 date string)
  */
-to?: string;
+toDate?: string;
 };
