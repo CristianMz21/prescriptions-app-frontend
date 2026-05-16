@@ -12,7 +12,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ role }: SidebarProps) {
-  const { logout, user } = useAuth();
+  const { logout, user, isLoading } = useAuth();
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 card-glass z-50 flex flex-col py-margin-desktop border-r border-outline-variant/30">
@@ -56,11 +56,16 @@ export function Sidebar({ role }: SidebarProps) {
         <button
           type="button"
           data-testid="sidebar-logout"
-          onClick={() => void logout()}
-          className="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors w-full text-left text-sm font-medium"
+          onClick={() => {
+            if (isLoading) return;
+            void logout();
+          }}
+          disabled={isLoading}
+          aria-busy={isLoading}
+          className="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors w-full text-left text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
         >
           <AppIcon name="logOut" size="md" />
-          Sign Out
+          {isLoading ? "Signing out…" : "Sign Out"}
         </button>
       </div>
     </aside>
