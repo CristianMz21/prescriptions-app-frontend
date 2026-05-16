@@ -355,3 +355,20 @@ body {
   --color-input: var(--input);
   --color-ring: var(--ring);
 }
+
+/* Drives `<GlobalLoadingIndicator>`'s top-of-viewport progress bar.
+   A 33%-wide stripe slides edge-to-edge in 1.2s on repeat — close to
+   the YouTube/NProgress convention so the affordance reads instantly.
+   `motion-reduce` users get a static bar (utility on the element). */
+@keyframes global-progress {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.animate-global-progress {
+  animation: global-progress 1.2s linear infinite;
+}
