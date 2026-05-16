@@ -13,18 +13,32 @@ A Next.js 15 application for managing medical prescriptions, built with the Rx-O
 
 ## Getting Started
 
+**Prereqs:** pnpm 11.1.1, Node ≥ 20.
+
 ```bash
-# Install dependencies
-pnpm install
-
-# Copy environment config
-cp .env.local.example .env.local
-
-# Start development server
-pnpm dev
+pnpm dev:up      # equivalent to: node scripts/dev-up.mjs
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Opens on [http://localhost:3001](http://localhost:3001). The script
+works on **Windows, macOS and Linux** without shell-specific syntax.
+
+It also pings the backend at `http://127.0.0.1:3000` and prints a
+warning (not an error) if it's down — the UI still starts so you can
+work on static screens offline. For the full stack, run
+[`pnpm dev:up`](../../backend/scripts/dev-up.mjs) in the backend repo
+first, or use the monorepo orchestrator at `scripts/dev-up.mjs`.
+
+<details>
+<summary><strong>What dev-up does</strong></summary>
+
+1. Preflight: `pnpm` + Node ≥ 20.
+2. Creates `.env.local` from `.env.local.example` if missing.
+3. `pnpm install --frozen-lockfile` (skipped when lockfile is unchanged).
+4. Pings the backend (warn-only).
+5. Regenerates the Orval API client if `../../backend/openapi.json` is newer than the local `.gen-timestamp`. Skip with `--skip-codegen`.
+6. `exec PORT=3001 pnpm dev` (Ctrl-C stops it cleanly).
+
+</details>
 
 ## Scripts
 

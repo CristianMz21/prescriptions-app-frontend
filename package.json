@@ -27,7 +27,8 @@
     "test:e2e:report": "playwright show-report",
     "api:clean": "rm -rf src/lib/api/generated",
     "api:gen": "orval",
-    "api:refresh": "pnpm api:clean && pnpm api:gen"
+    "api:refresh": "pnpm api:clean && pnpm api:gen",
+    "dev:up": "node scripts/dev-up.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
