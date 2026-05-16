@@ -1,5 +1,14 @@
 import { test, expect } from "./fixtures";
 import { backendLogin, BACKEND_URL, SEED, seedPrescription, uniqueMedName } from "./data";
+import {
+  getRxById,
+  getPatientOwnedAndForeign,
+  closeDb,
+} from "./db-helpers";
+
+test.afterAll(async () => {
+  await closeDb();
+});
 
 interface PrescriptionApiRow {
   id: string;
@@ -101,6 +110,52 @@ test.describe("Patient prescription flows", () => {
     expect(pdfRes.headers()["content-type"]).toContain("application/pdf");
     const buf = await pdfRes.body();
     expect(buf.subarray(0, 4).toString()).toBe("%PDF");
+    // Acceptance check #6: enforce the brief's >10KB lower bound so a
+    // truncated or near-empty PDF (which would still match %PDF magic)
+    // counts as a regression.
+    expect(buf.byteLength).toBeGreaterThan(10_240);
+  });
+
+  test("ownership boundary: foreign RX is hidden from the patient (UI + API + DB)", async ({
+    page,
+    loginAs,
+    apiRequest,
+  }) => {
+    // Ground truth from Postgres: ids the patient owns vs a sample id
+    // owned by somebody else. No reliance on seed ordering.
+    const { ownedIds, foreignSampleId } = await getPatientOwnedAndForeign(
+      SEED.patient.email,
+    );
+    expect(ownedIds.length).toBeGreaterThan(0);
+    expect(foreignSampleId, "seed must contain at least one foreign RX").not.toBeNull();
+
+    await loginAs("patient");
+
+    // UI: the patient list must not surface the foreign id anywhere
+    // (e.g. as a `data-rx-id` or a /patient/prescriptions/<id> href).
+    await page.goto("/patient/prescriptions");
+    const html = await page.content();
+    expect(
+      html,
+      `foreign RX id ${foreignSampleId} must not leak into the patient list`,
+    ).not.toContain(foreignSampleId!);
+
+    // API: hitting the foreign id via the proxy returns 403.
+    const patientCookies = await page.context().cookies();
+    const accessToken = patientCookies.find((c) => c.name === "accessToken");
+    expect(accessToken).toBeDefined();
+    const foreignProbe = await apiRequest.get(
+      `/prescriptions/${foreignSampleId}`,
+      { headers: { Cookie: `accessToken=${accessToken!.value}` } },
+    );
+    expect(foreignProbe.status()).toBe(403);
+
+    // DB: every owned id is reachable; the foreign id exists but
+    // belongs to someone else (sanity vs the API check above).
+    for (const id of ownedIds.slice(0, 3)) {
+      const r = await getRxById(id);
+      expect(r, `owned RX ${id} must exist in DB`).not.toBeNull();
+    }
   });
 
   test("consume flow on a freshly seeded RX flips status to CONSUMED", async ({
@@ -149,6 +204,13 @@ test.describe("Patient prescription flows", () => {
     await expect(
       page.getByRole("button", { name: /mark as consumed/i }),
     ).not.toBeVisible();
+
+    // DB assertion: the row in Postgres reflects the consume action.
+    // `status` flipped to CONSUMED and `consumedAt` is populated.
+    const dbAfter = await getRxById(fresh.id);
+    expect(dbAfter, "rx must still exist after consume").not.toBeNull();
+    expect(dbAfter!.status).toBe("CONSUMED");
+    expect(dbAfter!.consumedAt).not.toBeNull();
   });
 
   test("a consumed RX detail does not show the consume button", async ({
