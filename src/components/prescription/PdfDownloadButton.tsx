@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { API_BASE_URL } from "@/lib/api/client";
+import { BROWSER_API_PROXY_BASE_URL } from "@/lib/api/client";
 
 interface PdfDownloadButtonProps {
   prescriptionId: string;
@@ -13,8 +13,12 @@ export function PdfDownloadButton({ prescriptionId }: PdfDownloadButtonProps) {
       variant="outline"
       size="default"
       onClick={() =>
+        // Route through the same-origin proxy so the Vercel-host HttpOnly
+        // session cookie travels with the request. Hitting `API_BASE_URL`
+        // directly is cross-origin and the browser strips the cookie →
+        // backend returns 401.
         window.open(
-          `${API_BASE_URL}/prescriptions/${prescriptionId}/pdf`,
+          `${BROWSER_API_PROXY_BASE_URL}/prescriptions/${prescriptionId}/pdf`,
           "_blank",
           "noopener,noreferrer",
         )

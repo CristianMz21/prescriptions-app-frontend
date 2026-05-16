@@ -576,14 +576,25 @@ function MedicationItemRow({
           >
             <SelectTrigger
               id={ids.unit}
+              data-testid={`med-unit-${index}-trigger`}
+              aria-label={`Medication unit, item ${index + 1}`}
               className={!item.unit ? "border-primary/50" : ""}
             >
               <SelectValue placeholder="Select…" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__NONE__">—</SelectItem>
+              <SelectItem
+                value="__NONE__"
+                data-testid={`med-unit-${index}-option-none`}
+              >
+                —
+              </SelectItem>
               {UNIT_OPTIONS.map((u) => (
-                <SelectItem key={u} value={u}>
+                <SelectItem
+                  key={u}
+                  value={u}
+                  data-testid={`med-unit-${index}-option-${u}`}
+                >
                   {u}
                 </SelectItem>
               ))}

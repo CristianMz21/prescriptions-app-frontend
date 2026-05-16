@@ -2,4 +2,9 @@
 // (Next.js route handlers, server components) usage that bypasses TanStack
 // Query. Client components should import the generated React Query hooks
 // (e.g. `useAuthControllerGetProfile`) directly.
-export { apiClient, API_BASE_URL, ApiError } from "./custom-instance";
+export {
+  apiClient,
+  API_BASE_URL,
+  BROWSER_API_PROXY_BASE_URL,
+  ApiError,
+} from "./custom-instance";

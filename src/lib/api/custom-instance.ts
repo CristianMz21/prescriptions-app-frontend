@@ -1,7 +1,12 @@
 import axios, { type AxiosRequestConfig, AxiosError } from "axios";
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-const BROWSER_API_PROXY_BASE_URL = "/api/backend";
+/** Same-origin path the browser uses to reach the backend through the
+ *  Next.js proxy at `src/app/api/backend/[...path]/route.ts`. Exported so
+ *  non-axios consumers (e.g. direct `window.open(...)` PDF downloads) can
+ *  build URLs that carry the Vercel-host session cookie automatically.
+ *  Server-side callers should keep using {@link API_BASE_URL}. */
+export const BROWSER_API_PROXY_BASE_URL = "/api/backend";
 const runtimeBaseUrl =
   typeof window === "undefined" ? API_BASE_URL : BROWSER_API_PROXY_BASE_URL;
 
