@@ -47,13 +47,23 @@ test.describe("Admin metrics — date filters (UI + API + DB)", () => {
     await loginAs("admin");
     await page.goto("/admin/metrics");
 
+    // Fill + wait for the URL to settle between writes. `useUrlFilters`
+    // reads from `useSearchParams()`, which only re-renders once the
+    // router.push lands; two back-to-back fills lose the first write
+    // because the second one reads stale params.
     await page.getByTestId("metrics-from-date").fill("2026-01-01");
-    await page.getByTestId("metrics-to-date").fill("2026-12-31");
-
     await expect
       .poll(() => page.url(), { timeout: 5_000 })
       .toMatch(/fromDate=2026-01-01/);
-    await expect(page).toHaveURL(/toDate=2026-12-31/);
+
+    await page.getByTestId("metrics-to-date").fill("2026-12-31");
+    await expect
+      .poll(() => page.url(), { timeout: 5_000 })
+      .toMatch(/toDate=2026-12-31/);
+
+    // Final state has both.
+    expect(page.url()).toMatch(/fromDate=2026-01-01/);
+    expect(page.url()).toMatch(/toDate=2026-12-31/);
   });
 
   test("API totals for a date range match Postgres-computed totals", async ({
